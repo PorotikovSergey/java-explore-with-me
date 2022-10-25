@@ -4,6 +4,7 @@ import lombok.*;
 import ru.practicum.explore.dto.UserShortDto;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "events")
@@ -33,8 +34,9 @@ public class Event {
     @Column(name = "created_on")
     private String createdOn;
 
-    @Column(name = "event_date")
-    private String eventDate;
+//------------------тут нужно поменять название переменной на просто event_date-----------------
+    @Column(name = "event_date_time")
+    private LocalDateTime eventDateTime;
 
     @Transient
     private UserShortDto initiator;

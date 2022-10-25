@@ -53,7 +53,6 @@ public class PublicController {
                                             Boolean onlyAvailable,
                                             @RequestParam(name = "sort", defaultValue = "EVENT_DATE")
                                             String sort) {
-        log.error("----------------!!!!!!!!!!!!!!!!ЭТА ИНФОРМАЦИЯ ТАК ЖЕ ДОЛЖНА ОТПРАВЛЯТЬСЯ В СТАТИСТИКУ!!!!!!!!!!!!");
         EndpointHit hit = new EndpointHit(0, request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
         fromMainToStatsClient.postHit(hit);
         return eventResponse.getEventsPublic(text, categories, paid, rangeStart,
@@ -62,7 +61,6 @@ public class PublicController {
 
     @GetMapping("/events/{id}")
     public ResponseEntity<Object> getEventById(HttpServletRequest request, @PathVariable long id) {
-        log.error("----------------!!!!!!!!!!!!!!!!ЭТА ИНФОРМАЦИЯ ТАК ЖЕ ДОЛЖНА ОТПРАВЛЯТЬСЯ В СТАТИСТИКУ!!!!!!!!!!!!");
         EndpointHit hit = new EndpointHit(0, request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
         fromMainToStatsClient.postHit(hit);
         return eventResponse.getEventByIdPublic(id);

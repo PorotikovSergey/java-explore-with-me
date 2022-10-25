@@ -23,14 +23,14 @@ public class StatsController {
 
     @PostMapping("/hit")
     public ResponseEntity<Object> postHit(@RequestBody EndpointHit endpointHit) {
-        System.out.println("зашли в модуль статистики с хитом - "+endpointHit);
+        System.out.println("----stats controller----постим в модуль статистики хит - "+endpointHit);
         ResponseEntity<Object> responseEntity = new ResponseEntity<>(statsService.postHit(endpointHit), HttpStatus.OK);
-        System.out.println("возвращаем "+responseEntity);
+        System.out.println("----stats controller----возвращаем из статистики после поста"+responseEntity);
         return responseEntity;
     }
 
     @GetMapping("/stats")
-    public List<ViewStats> getStats(@RequestParam(name = "uris")
+    public ResponseEntity<Object> getStats(@RequestParam(name = "uris")
                                     List<String> uris,
                                     @RequestParam(name = "unique", defaultValue = "false")
                                     boolean unique,
@@ -38,7 +38,10 @@ public class StatsController {
                                     String start,
                                     @RequestParam(name = "end")
                                     String end) {
-        return statsService.getStats(uris, unique, start, end);
+        System.out.println("----stats controller----получаем из модуля статистики ");
+        ResponseEntity<Object> responseEntity = new ResponseEntity<>(statsService.getStats(uris, unique, start, end), HttpStatus.OK);
+        System.out.println("----stats controller----возвращаем из статистики посте гета"+responseEntity);
+        return responseEntity;
     }
 
 }

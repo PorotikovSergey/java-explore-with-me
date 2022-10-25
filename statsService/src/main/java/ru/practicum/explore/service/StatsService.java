@@ -9,6 +9,7 @@ import ru.practicum.explore.storage.StatsRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -26,14 +27,25 @@ public class StatsService {
         statsRepository.save(endpointHit);
         log.warn("хит запощен");
         EndpointHit backHit = statsRepository.findById(endpointHit.getId()).get();
-        return endpointHit;
+        System.out.println("возвращаем из стораджа после сохранения хита "+backHit);
+        return backHit;
     }
 
     public List<ViewStats> getStats(List<String> uris, boolean unique, String start, String end) {
+        System.out.println("зашли в последний рубеж - получение из строраджа по параметрам uris-"+ uris +", unique-"+ unique +", start-"+ start +", end-"+ end);
+        System.out.println("вот такие хиты все "+statsRepository.findAll());
+        List<EndpointHit> list = statsRepository.findAllByUriIn(uris);
+        System.out.println("вот такие хиты нашлись "+list);
+        List<ViewStats> resultList = list.stream().map(this::getViewStats).collect(Collectors.toList());
         log.warn("статистика получена");
-        List<EndpointHit> list = statsRepository.findAll();
-        List<ViewStats> resultList = new ArrayList<>();
-        resultList.add(new ViewStats());
+        System.out.println("возвращаем из стораджа после получения статистики и маппинга "+resultList);
         return resultList;
+    }
+
+    private ViewStats getViewStats(EndpointHit endpointHit) {
+        ViewStats viewStats = new ViewStats();
+        viewStats.setApp(endpointHit.getApp());
+        viewStats.setUri(endpointHit.getUri());
+        return viewStats;
     }
 }

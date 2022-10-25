@@ -5,6 +5,8 @@ import ru.practicum.explore.dto.*;
 import ru.practicum.explore.model.*;
 import ru.practicum.explore.service.*;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -56,7 +58,12 @@ public class Mapper {
         eventFullDto.setTitle(event.getTitle());
         eventFullDto.setAnnotation(event.getAnnotation());
         eventFullDto.setDescription(event.getDescription());
-        eventFullDto.setEventDate(event.getEventDate());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime dateTime = event.getEventDateTime();
+        String formattedDateTime = dateTime.format(formatter);
+        eventFullDto.setEventDate(formattedDateTime);
+
         eventFullDto.setLocation(event.getLocation());
         eventFullDto.setPaid(event.getPaid());
         eventFullDto.setParticipantLimit(event.getParticipantLimit());
@@ -89,7 +96,11 @@ public class Mapper {
         eventShortDto.setCategory(categoryDto);
 
         eventShortDto.setConfirmedRequests(event.getConfirmedRequests());
-        eventShortDto.setEventDate(event.getEventDate());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime dateTime = event.getEventDateTime();
+        String formattedDateTime = dateTime.format(formatter);
+        eventShortDto.setEventDate(formattedDateTime);
 
         User user = userService.getUser(event.getOwnerId());
         UserShortDto initiator = fromUserToShortDto(user);
@@ -99,6 +110,38 @@ public class Mapper {
         return eventShortDto;
     }
 
+    public Event fromUpdateEventRequestToEvent(UpdateEventRequest updateEventRequest) {
+        Event event = new Event();
+        event.setAnnotation(updateEventRequest.getAnnotation());
+        event.setCategoryId(updateEventRequest.getCategory());
+        event.setDescription(updateEventRequest.getDescription());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        event.setEventDateTime(LocalDateTime.parse(updateEventRequest.getEventDate(), formatter));
+
+        event.setId(updateEventRequest.getEventId());
+        event.setPaid(updateEventRequest.getPaid());
+        event.setParticipantLimit(updateEventRequest.getParticipantLimit());
+        event.setTitle(updateEventRequest.getTitle());
+        return event;
+    }
+
+    public Event fromAdminUpdateEventRequestToEvent(AdminUpdateEventRequest adminUpdateEventRequest) {
+        Event event = new Event();
+        event.setAnnotation(adminUpdateEventRequest.getAnnotation());
+        event.setCategoryId(adminUpdateEventRequest.getCategory());
+        event.setDescription(adminUpdateEventRequest.getDescription());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        event.setEventDateTime(LocalDateTime.parse(adminUpdateEventRequest.getEventDate(), formatter));
+
+        event.setPaid(adminUpdateEventRequest.getPaid());
+        event.setParticipantLimit(adminUpdateEventRequest.getParticipantLimit());
+        event.setTitle(adminUpdateEventRequest.getTitle());
+        event.setLocation(adminUpdateEventRequest.getLocation());
+        event.setRequestModeration(adminUpdateEventRequest.isRequestModeration());
+        return event;
+    }
 
     public Event fromNewDtoToEvent(NewEventDto newEventDto) {
         Event event = new Event();
@@ -106,7 +149,10 @@ public class Mapper {
         event.setAnnotation(newEventDto.getAnnotation());
         event.setDescription(newEventDto.getDescription());
         event.setCategoryId(newEventDto.getCategory());
-        event.setEventDate(newEventDto.getEventDate());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        event.setEventDateTime(LocalDateTime.parse(newEventDto.getEventDate(), formatter));
+
         Location location = new Location();
         location.setLat(newEventDto.getLocation().getLat());
         location.setLon(newEventDto.getLocation().getLon());
@@ -195,32 +241,7 @@ public class Mapper {
         return participationRequestDto;
     }
 
-    public Event fromUpdateEventRequestToEvent(UpdateEventRequest updateEventRequest) {
-        Event event = new Event();
-        event.setAnnotation(updateEventRequest.getAnnotation());
-        event.setCategoryId(updateEventRequest.getCategory());
-        event.setDescription(updateEventRequest.getDescription());
-        event.setEventDate(updateEventRequest.getEventDate());
-        event.setId(updateEventRequest.getEventId());
-        event.setPaid(updateEventRequest.getPaid());
-        event.setParticipantLimit(updateEventRequest.getParticipantLimit());
-        event.setTitle(updateEventRequest.getTitle());
-        return event;
-    }
 
-    public Event fromAdminUpdateEventRequestToEvent(AdminUpdateEventRequest adminUpdateEventRequest) {
-        Event event = new Event();
-        event.setAnnotation(adminUpdateEventRequest.getAnnotation());
-        event.setCategoryId(adminUpdateEventRequest.getCategory());
-        event.setDescription(adminUpdateEventRequest.getDescription());
-        event.setEventDate(adminUpdateEventRequest.getEventDate());
-        event.setPaid(adminUpdateEventRequest.getPaid());
-        event.setParticipantLimit(adminUpdateEventRequest.getParticipantLimit());
-        event.setTitle(adminUpdateEventRequest.getTitle());
-        event.setLocation(adminUpdateEventRequest.getLocation());
-        event.setRequestModeration(adminUpdateEventRequest.isRequestModeration());
-        return event;
-    }
 
 //-----------------------------------------------------------------------------------------
 

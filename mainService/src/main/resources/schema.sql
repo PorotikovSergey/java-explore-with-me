@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS events (
                                       location_id BIGINT,
                                       state VARCHAR,
                                       description VARCHAR,
-                                      event_date VARCHAR,
+                                      event_date_time TIMESTAMP,
                                       paid BOOLEAN,
                                       participant_limit BIGINT,
                                       published_on VARCHAR,

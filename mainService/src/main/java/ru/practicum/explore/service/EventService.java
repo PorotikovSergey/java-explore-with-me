@@ -147,11 +147,11 @@ public class EventService {
         if (optional.isPresent()) {
             Event event = optional.get();
             event.setPublishedOn(LocalDateTime.now().toString());
-            if (event.getEventDate().equals(event.getPublishedOn())) {
-                System.out.println("тут нужно поставить разницу минимум в час!");
-                System.out.println("Да и вообще у меня даты ещё не сделаны");
-                return null;
-            }
+//            if (event.getEventDate().equals(event.getPublishedOn())) {
+//                System.out.println("тут нужно поставить разницу минимум в час!");
+//                System.out.println("Да и вообще у меня даты ещё не сделаны");
+//                return null;
+//            }
             if (!event.getState().equals(EventState.PENDING.toString())) {
                 return null;
             }
@@ -186,9 +186,9 @@ public class EventService {
         if (!newEvent.getDescription().isBlank()) {
             oldEvent.setDescription(newEvent.getDescription());
         }
-        if (!newEvent.getEventDate().isBlank()) {
-            oldEvent.setEventDate(newEvent.getEventDate());
-        }
+//        if (!newEvent.getEventDate().isBlank()) {
+//            oldEvent.setEventDate(newEvent.getEventDate());
+//        }
         if (newEvent.getPaid() != null) {     //-------вот тут нужно починить
             oldEvent.setPaid(newEvent.getPaid());
         }
