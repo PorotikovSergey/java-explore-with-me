@@ -1,0 +1,63 @@
+package ru.practicum.explore.model;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.*;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.web.util.DefaultUriBuilderFactory;
+
+import java.util.List;
+
+@Service
+public class FromMainToStatsClient extends BaseClient {
+
+    @Autowired
+    public FromMainToStatsClient(@Value("${stats-service.url}") String serverUrl, RestTemplateBuilder builder) {
+        super(
+                builder
+                        .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl))
+                        .requestFactory(HttpComponentsClientHttpRequestFactory::new)
+                        .build()
+        );
+    }
+
+    public ResponseEntity<Object> postHit(EndpointHit endpointHit) {
+        System.out.println(" -клиент-  внутри postHit");
+        System.out.println("отсылаем по POST /hit - "+endpointHit);
+        return postAndSendRequest(HttpMethod.POST, "/hit", endpointHit);
+    }
+
+    public ResponseEntity<Object> getStats(List<String> uris, Boolean unique, String start, String end) {
+        System.out.println(" -клиент-  внутри getStats");
+        return getAndSendRequest(HttpMethod.GET, "/stats", uris, unique, start, end);
+    }
+
+    private <T> ResponseEntity<Object> postAndSendRequest(HttpMethod method, String path, T body) {
+        System.out.println("внутри postAndSendRequest");
+        HttpEntity<T> requestEntity = new HttpEntity<>(body);
+        ResponseEntity<Object> statsResponse = rest.exchange(path, method, requestEntity, Object.class);
+        return prepareResponse(statsResponse);
+    }
+
+    private <T> ResponseEntity<Object> getAndSendRequest(HttpMethod method, String path, List<String> uris, Boolean unique, String start, String end) {
+        System.out.println("внутри getAndSendRequest");
+        ResponseEntity<Object> statsResponse = rest.exchange(path, method, new HttpEntity<>(null, null), Object.class);
+        return prepareResponse(statsResponse);
+    }
+
+    private static ResponseEntity<Object> prepareResponse(ResponseEntity<Object> response) {
+        if (response.getStatusCode().is2xxSuccessful()) {
+            return response;
+        }
+
+        ResponseEntity.BodyBuilder responseBuilder = ResponseEntity.status(response.getStatusCode());
+
+        if (response.hasBody()) {
+            return responseBuilder.body(response.getBody());
+        }
+
+        return responseBuilder.build();
+    }
+}
