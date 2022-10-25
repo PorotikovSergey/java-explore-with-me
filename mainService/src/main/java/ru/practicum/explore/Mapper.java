@@ -60,7 +60,7 @@ public class Mapper {
         eventFullDto.setDescription(event.getDescription());
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        LocalDateTime dateTime = event.getEventDateTime();
+        LocalDateTime dateTime = event.getEventDate();
         String formattedDateTime = dateTime.format(formatter);
         eventFullDto.setEventDate(formattedDateTime);
 
@@ -98,7 +98,7 @@ public class Mapper {
         eventShortDto.setConfirmedRequests(event.getConfirmedRequests());
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        LocalDateTime dateTime = event.getEventDateTime();
+        LocalDateTime dateTime = event.getEventDate();
         String formattedDateTime = dateTime.format(formatter);
         eventShortDto.setEventDate(formattedDateTime);
 
@@ -117,7 +117,7 @@ public class Mapper {
         event.setDescription(updateEventRequest.getDescription());
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        event.setEventDateTime(LocalDateTime.parse(updateEventRequest.getEventDate(), formatter));
+        event.setEventDate(LocalDateTime.parse(updateEventRequest.getEventDate(), formatter));
 
         event.setId(updateEventRequest.getEventId());
         event.setPaid(updateEventRequest.getPaid());
@@ -133,7 +133,7 @@ public class Mapper {
         event.setDescription(adminUpdateEventRequest.getDescription());
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        event.setEventDateTime(LocalDateTime.parse(adminUpdateEventRequest.getEventDate(), formatter));
+        event.setEventDate(LocalDateTime.parse(adminUpdateEventRequest.getEventDate(), formatter));
 
         event.setPaid(adminUpdateEventRequest.getPaid());
         event.setParticipantLimit(adminUpdateEventRequest.getParticipantLimit());
@@ -151,7 +151,7 @@ public class Mapper {
         event.setCategoryId(newEventDto.getCategory());
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        event.setEventDateTime(LocalDateTime.parse(newEventDto.getEventDate(), formatter));
+        event.setEventDate(LocalDateTime.parse(newEventDto.getEventDate(), formatter));
 
         Location location = new Location();
         location.setLat(newEventDto.getLocation().getLat());
@@ -237,7 +237,13 @@ public class Mapper {
         participationRequestDto.setRequester(request.getRequester());
         participationRequestDto.setStatus(request.getStatus());
         participationRequestDto.setEvent(request.getEvent());
-        participationRequestDto.setCreated(request.getCreated());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
+        LocalDateTime dateTime = request.getCreateOn();
+        String formattedDateTime = dateTime.format(formatter);
+
+        participationRequestDto.setCreated(formattedDateTime);
+
         return participationRequestDto;
     }
 

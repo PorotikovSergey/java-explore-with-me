@@ -3,6 +3,7 @@ package ru.practicum.explore.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "participant_requests")
@@ -26,8 +27,8 @@ public class Request {
     @Column(name = "requester")
     private long requester;
 
-    @Column(name = "created")
-    private String created;
+    @Column(name = "create_on")
+    private LocalDateTime createOn;
 
     @Column(name = "status")
     private String status;

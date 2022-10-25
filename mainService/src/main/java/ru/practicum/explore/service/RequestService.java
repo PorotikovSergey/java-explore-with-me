@@ -102,7 +102,9 @@ public class RequestService {
         Request request = new Request();
         request.setRequester(userId);
         request.setEvent(eventId);
-        request.setCreated(LocalDateTime.now().toString());
+
+        request.setCreateOn(LocalDateTime.now());
+
         request.setOwnerId(event.getOwnerId());
         request.setRequester(userId);
         if (!event.isRequestModeration()) {

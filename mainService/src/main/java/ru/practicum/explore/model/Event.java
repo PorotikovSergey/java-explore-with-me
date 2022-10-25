@@ -34,9 +34,9 @@ public class Event {
     @Column(name = "created_on")
     private String createdOn;
 
-//------------------тут нужно поменять название переменной на просто event_date-----------------
+//------------------тут лучше поменять название переменной на просто event_date-----------------
     @Column(name = "event_date_time")
-    private LocalDateTime eventDateTime;
+    private LocalDateTime eventDate;
 
     @Transient
     private UserShortDto initiator;
