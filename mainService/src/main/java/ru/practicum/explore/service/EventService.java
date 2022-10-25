@@ -94,7 +94,7 @@ public class EventService {
 
     public Event postEventPrivate(long userId, Event event) {
         event.setOwnerId(userId);
-        event.setCreatedOn(Date.from(Instant.now()).toString());
+        event.setCreatedOn(LocalDateTime.now());
         locationService.addLocation(event.getLocation());
         event.setLocationId(event.getLocation().getId());
         eventRepository.save(event);
@@ -189,7 +189,7 @@ public class EventService {
 //        if (!newEvent.getEventDate().isBlank()) {
 //            oldEvent.setEventDate(newEvent.getEventDate());
 //        }
-        if (newEvent.getPaid() != null) {     //-------вот тут нужно починить
+        if (newEvent.getPaid() != null) {
             oldEvent.setPaid(newEvent.getPaid());
         }
         if (newEvent.getParticipantLimit() > 0) {

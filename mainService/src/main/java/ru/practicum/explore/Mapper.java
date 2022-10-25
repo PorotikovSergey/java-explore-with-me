@@ -71,7 +71,12 @@ public class Mapper {
         eventFullDto.setState(event.getState());
         eventFullDto.setPublishedOn(event.getPublishedOn());
         eventFullDto.setViews(event.getViews());
-        eventFullDto.setCreatedOn(event.getCreatedOn());
+
+        DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime dateTime1 = event.getCreatedOn();
+        String formattedDateTime1 = dateTime1.format(formatter1);
+        eventFullDto.setCreatedOn(formattedDateTime1);
+
         Category category = categoryService.getCategoryByIdPublic(event.getCategoryId());
         CategoryDto categoryDto = fromCategoryToDto(category);
         eventFullDto.setCategory(categoryDto);

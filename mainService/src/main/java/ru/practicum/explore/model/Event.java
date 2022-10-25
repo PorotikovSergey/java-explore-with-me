@@ -32,7 +32,7 @@ public class Event {
     private long confirmedRequests;
 
     @Column(name = "created_on")
-    private String createdOn;
+    private LocalDateTime createdOn;
 
 //------------------тут лучше поменять название переменной на просто event_date-----------------
     @Column(name = "event_date_time")

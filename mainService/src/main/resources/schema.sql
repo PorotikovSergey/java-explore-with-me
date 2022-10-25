@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS events (
                                       annotation VARCHAR,
                                       category_id BIGINT,
                                       confirmed_requests BIGINT,
-                                      created_on VARCHAR,
+                                      created_on TIMESTAMP,
                                       location_id BIGINT,
                                       state VARCHAR,
                                       description VARCHAR,
