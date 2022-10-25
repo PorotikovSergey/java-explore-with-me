@@ -35,7 +35,7 @@ public class Event {
     private LocalDateTime createdOn;
 
 //------------------тут лучше поменять название переменной на просто event_date-----------------
-    @Column(name = "event_date_time")
+    @Column(name = "event_date")
     private LocalDateTime eventDate;
 
     @Transient

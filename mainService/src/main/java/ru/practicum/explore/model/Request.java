@@ -27,7 +27,7 @@ public class Request {
     @Column(name = "requester")
     private long requester;
 
-    @Column(name = "create_on")
+    @Column(name = "created_on")
     private LocalDateTime createOn;
 
     @Column(name = "status")

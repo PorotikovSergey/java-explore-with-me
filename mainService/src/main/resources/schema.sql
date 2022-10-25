@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS participant_requests (
                                       event_owner_id BIGINT,
                                       event BIGINT,
                                       requester BIGINT,
-                                      create_on TIMESTAMP,
+                                      created_on TIMESTAMP,
                                       status VARCHAR,
                                       CONSTRAINT pk_request PRIMARY KEY (id)
 );
