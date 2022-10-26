@@ -69,7 +69,14 @@ public class Mapper {
         eventFullDto.setParticipantLimit(event.getParticipantLimit());
         eventFullDto.setRequestModeration(event.isRequestModeration());
         eventFullDto.setState(event.getState());
-        eventFullDto.setPublishedOn(event.getPublishedOn());
+
+        DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime dateTime2 = event.getPublishedOn();
+        if(dateTime2!=null) {
+            String formattedDateTime2 = dateTime2.format(formatter2);
+            eventFullDto.setPublishedOn(formattedDateTime2);
+        }
+//        eventFullDto.setPublishedOn(event.getPublishedOn().);
         eventFullDto.setViews(event.getViews());
 
         DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

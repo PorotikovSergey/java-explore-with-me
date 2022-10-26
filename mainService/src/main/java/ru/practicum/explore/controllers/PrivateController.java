@@ -59,6 +59,7 @@ public class PrivateController {
 
     @PatchMapping("/events/{eventId}/requests/{reqId}/confirm")
     public ResponseEntity<Object> requestApprove(@PathVariable long userId, @PathVariable long eventId, @PathVariable long reqId) {
+        log.error("1");
         return requestResponse.requestApprovePrivate(userId, eventId, reqId);
     }
 

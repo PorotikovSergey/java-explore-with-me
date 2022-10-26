@@ -23,10 +23,10 @@ CREATE TABLE IF NOT EXISTS events (
                                       location_id BIGINT,
                                       state VARCHAR,
                                       description VARCHAR,
-                                      event_date_time TIMESTAMP,
+                                      event_date TIMESTAMP,
                                       paid BOOLEAN,
                                       participant_limit BIGINT,
-                                      published_on VARCHAR,
+                                      published_on TIMESTAMP,
                                       request_moderation BOOLEAN,
                                       views BIGINT,
                                       CONSTRAINT pk_event PRIMARY KEY (id)

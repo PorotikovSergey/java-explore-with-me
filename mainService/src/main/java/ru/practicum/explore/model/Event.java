@@ -34,7 +34,6 @@ public class Event {
     @Column(name = "created_on")
     private LocalDateTime createdOn;
 
-//------------------тут лучше поменять название переменной на просто event_date-----------------
     @Column(name = "event_date")
     private LocalDateTime eventDate;
 
@@ -54,7 +53,7 @@ public class Event {
     private long participantLimit;
 
     @Column(name = "published_on")
-    private String publishedOn;
+    private LocalDateTime publishedOn;
 
     @Column(name = "request_moderation")
     private boolean requestModeration;

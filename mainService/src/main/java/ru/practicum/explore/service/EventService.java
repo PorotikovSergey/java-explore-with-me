@@ -51,7 +51,7 @@ public class EventService {
         Optional<Event> optional = eventRepository.findById(id);
         if (optional.isPresent()) {
             Event backEvent = optional.get();
-            if (!backEvent.getPublishedOn().isBlank()) {
+            if (backEvent.getPublishedOn()!=null) {
                 return backEvent;
             }
         }
@@ -146,7 +146,7 @@ public class EventService {
         Optional<Event> optional = eventRepository.findById(eventId);
         if (optional.isPresent()) {
             Event event = optional.get();
-            event.setPublishedOn(LocalDateTime.now().toString());
+            event.setPublishedOn(LocalDateTime.now());
 //            if (event.getEventDate().equals(event.getPublishedOn())) {
 //                System.out.println("тут нужно поставить разницу минимум в час!");
 //                System.out.println("Да и вообще у меня даты ещё не сделаны");
