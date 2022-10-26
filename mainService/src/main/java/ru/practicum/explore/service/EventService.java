@@ -12,6 +12,7 @@ import ru.practicum.explore.storage.EventRepository;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +33,7 @@ public class EventService {
 
     public List<Event> getEventsPublic(FilterSearchedParams params, Integer from, Integer size) {
         List<Event> textSearchedList = searchEventsByText(params.getText());
+        System.out.println(params);
         List<Event> afterParamsList = getFilteredEventsFromParams(textSearchedList, params);
         List<Event> afterPageableList = getPageableList(afterParamsList, from, size);
         return afterPageableList;
@@ -51,7 +53,7 @@ public class EventService {
         Optional<Event> optional = eventRepository.findById(id);
         if (optional.isPresent()) {
             Event backEvent = optional.get();
-            if (backEvent.getPublishedOn()!=null) {
+            if (backEvent.getPublishedOn() != null) {
                 return backEvent;
             }
         }
@@ -227,16 +229,25 @@ public class EventService {
 
     private List<Event> getFilteredEventsFromParams(List<Event> list, FilterSearchedParams params) {
         if (params.getOnlyAvailable()) {
-            list = list.stream().filter(s -> s.getPublishedOn()!=null).collect(Collectors.toList());
+            list = list.stream().filter(s -> s.getPublishedOn() != null).collect(Collectors.toList());
 
         }
-        if (params.getPaid()!=null) {
-                list = list.stream().filter(s -> s.getPaid().equals(params.getPaid())).collect(Collectors.toList());
+        if (params.getPaid() != null) {
+            list = list.stream().filter(s -> s.getPaid().equals(params.getPaid())).collect(Collectors.toList());
         }
         if (!params.getCategories().isEmpty()) {
             for (Long category : params.getCategories()) {
                 list = list.stream().filter(s -> s.getCategoryId() == category).collect(Collectors.toList());
             }
+        }
+        if (params.getRangeStart() == null) {
+            list = list.stream().filter(s -> s.getEventDate().isAfter(LocalDateTime.now())).collect(Collectors.toList());
+        } else {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime start = LocalDateTime.parse(params.getRangeStart(), formatter);
+            LocalDateTime end = LocalDateTime.parse(params.getRangeEnd(), formatter);
+            list = list.stream().filter(s -> s.getEventDate().isAfter(start)).collect(Collectors.toList());
+            list = list.stream().filter(s -> s.getEventDate().isBefore(end)).collect(Collectors.toList());
         }
         return list;
     }
