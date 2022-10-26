@@ -4,8 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.explore.Mapper;
 import ru.practicum.explore.model.EndpointHit;
-import ru.practicum.explore.model.ViewStats;
+import ru.practicum.explore.model.Hit;
 import ru.practicum.explore.service.StatsService;
 
 import java.util.List;
@@ -15,17 +16,18 @@ import java.util.List;
 public class StatsController {
 
     public final StatsService statsService;
+    private final Mapper mapper;
 
     @Autowired
-    public StatsController(StatsService statsService) {
+    public StatsController(StatsService statsService, Mapper mapper) {
         this.statsService = statsService;
+        this.mapper = mapper;
     }
 
     @PostMapping("/hit")
     public ResponseEntity<Object> postHit(@RequestBody EndpointHit endpointHit) {
-        System.out.println("----stats controller----постим в модуль статистики хит - "+endpointHit);
-        ResponseEntity<Object> responseEntity = new ResponseEntity<>(statsService.postHit(endpointHit), HttpStatus.OK);
-        System.out.println("----stats controller----возвращаем из статистики после поста"+responseEntity);
+        Hit hit = mapper.fromEndpointHitToHit(endpointHit);
+        ResponseEntity<Object> responseEntity = new ResponseEntity<>(statsService.postHit(hit), HttpStatus.OK);
         return responseEntity;
     }
 
@@ -38,10 +40,9 @@ public class StatsController {
                                     String start,
                                     @RequestParam(name = "end")
                                     String end) {
-        System.out.println("----stats controller----получаем из модуля статистики ");
         ResponseEntity<Object> responseEntity = new ResponseEntity<>(statsService.getStats(uris, unique, start, end), HttpStatus.OK);
-        System.out.println("----stats controller----возвращаем из статистики посте гета"+responseEntity);
         return responseEntity;
     }
+
 
 }

@@ -156,11 +156,10 @@ public class EventService {
         if (optional.isPresent()) {
             Event event = optional.get();
             event.setPublishedOn(LocalDateTime.now());
-//            if (event.getEventDate().equals(event.getPublishedOn())) {
-//                System.out.println("тут нужно поставить разницу минимум в час!");
-//                System.out.println("Да и вообще у меня даты ещё не сделаны");
-//                return null;
-//            }
+            LocalDateTime testDateTime = LocalDateTime.now().plusHours(1);
+            if (event.getEventDate().isBefore(testDateTime)) {
+                return null;
+            }
             if (!event.getState().equals(EventState.PENDING.toString())) {
                 return null;
             }

@@ -12,6 +12,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     public Event findEventByIdAndOwnerId(long id, long ownerId);
 
+    public List<Event> findAllByOwnerIdInAndAndCategoryIdIn(List<Long> userIds, List<Long> categoryIds);
+
     public List<Event> findAllByCategoryId(long catId);
 
     public List<Event> findAllByAnnotationContainingIgnoreCase(String text);
