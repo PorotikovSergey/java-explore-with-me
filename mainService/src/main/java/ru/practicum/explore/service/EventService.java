@@ -13,6 +13,7 @@ import ru.practicum.explore.storage.EventRepository;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -254,6 +255,11 @@ public class EventService {
             LocalDateTime end = LocalDateTime.parse(params.getRangeEnd(), formatter);
             list = list.stream().filter(s -> s.getEventDate().isAfter(start)).collect(Collectors.toList());
             list = list.stream().filter(s -> s.getEventDate().isBefore(end)).collect(Collectors.toList());
+        }
+        if(params.getSort().equals("VIEWS")) {
+            list = list.stream().sorted(Comparator.comparing(Event::getViews)).collect(Collectors.toList());
+        } else {
+            list = list.stream().sorted(Comparator.comparing(Event::getEventDate)).collect(Collectors.toList());
         }
         return list;
     }
