@@ -77,7 +77,10 @@ public class EventService {
                 if (eventForPatch.getState().equals(EventState.PUBLISHED.toString())) {
                     return null;
                 }
-//------------------вот тут должна быть проверка, что до события 2 часа минимум-------------------
+                LocalDateTime testDateTime = LocalDateTime.now().plusHours(2);
+                if (event.getEventDate().isBefore(testDateTime)) {
+                    return null;
+                }
                 if (eventForPatch.getState().equals(EventState.PENDING.toString())) {
                     Event eventAfterPatch = patchOldEventToNew(eventForPatch, event);
                     eventRepository.save(eventAfterPatch);
@@ -96,8 +99,8 @@ public class EventService {
 
     public Event postEventPrivate(long userId, Event event) {
         event.setOwnerId(userId);
-        LocalDateTime testDateTime= LocalDateTime.now().plusHours(2);
-        if(event.getEventDate().isBefore(testDateTime)) {
+        LocalDateTime testDateTime = LocalDateTime.now().plusHours(2);
+        if (event.getEventDate().isBefore(testDateTime)) {
             return null;
         }
         event.setCreatedOn(LocalDateTime.now());

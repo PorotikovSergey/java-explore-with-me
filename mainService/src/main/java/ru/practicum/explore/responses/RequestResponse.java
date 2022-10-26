@@ -40,15 +40,11 @@ public class RequestResponse {
     }
 
     public ResponseEntity<Object> requestApprovePrivate(long userId, long eventId, long reqId) {
-        log.error("2");
         Request request = requestService.requestApprovePrivate(userId, eventId, reqId);
-        log.error("3");
         if(request == null) {
             return new ResponseEntity<>(new ApiError(), HttpStatus.NOT_FOUND);
         }
-        log.error("4");
         ParticipationRequestDto participationRequestDto = mapper.fromRequestToParticipationRequestDto(request);
-        log.error("5");
         return new ResponseEntity<>(participationRequestDto, HttpStatus.OK);
     }
 

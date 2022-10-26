@@ -56,6 +56,9 @@ public class RequestService {
                 req.setStatus(RequestStatus.REJECTED.toString());
             }
         }
+        if ((event.getParticipantLimit()>0) && (event.getParticipantLimit()== event.getConfirmedRequests())) {
+            return null;
+        }
         return request;
     }
 
@@ -109,6 +112,7 @@ public class RequestService {
         request.setRequester(userId);
         if (!event.isRequestModeration()) {
             request.setStatus(RequestStatus.CONFIRMED.toString());
+            event.setConfirmedRequests(event.getConfirmedRequests()+1);
         } else {
             request.setStatus(RequestStatus.PENDING.toString());
         }
@@ -120,6 +124,10 @@ public class RequestService {
         Request request = requestRepository.findRequestByIdAndRequester(requestId, userId);
         if(request==null) {
             return null;
+        }
+        Event event = eventRepository.findById(request.getEvent()).get();
+        if(request.getStatus().equals(RequestStatus.CONFIRMED.toString())) {
+            event.setConfirmedRequests(event.getConfirmedRequests()-1);
         }
         requestRepository.delete(request);
         request.setStatus(RequestStatus.CANCELED.toString());
