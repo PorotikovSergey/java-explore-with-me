@@ -9,9 +9,12 @@ import ru.practicum.explore.Mapper;
 import ru.practicum.explore.dto.EventFullDto;
 import ru.practicum.explore.dto.EventShortDto;
 import ru.practicum.explore.dto.NewEventDto;
+import ru.practicum.explore.exceptions.ValidationException;
 import ru.practicum.explore.model.*;
 import ru.practicum.explore.service.EventService;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -92,7 +95,7 @@ public class EventResponse {
 
     public ResponseEntity<Object> getFullEventByIdPrivate(long userId, long eventId) {
         Event event = eventService.getFullEventByIdPrivate(userId, eventId);
-        if(event==null) {
+        if (event == null) {
             return new ResponseEntity<>(new ApiError(), HttpStatus.NOT_FOUND);
         }
         EventFullDto eventFullDto = mapper.fromEventToFullDto(event);
@@ -101,7 +104,7 @@ public class EventResponse {
 
     public ResponseEntity<Object> cancelEventPrivate(long userId, long eventId) {
         Event event = eventService.cancelEventPrivate(userId, eventId);
-        if(event==null) {
+        if (event == null) {
             return new ResponseEntity<>(new ApiError(), HttpStatus.NOT_FOUND);
         }
         EventFullDto eventFullDto = mapper.fromEventToFullDto(event);
@@ -112,16 +115,50 @@ public class EventResponse {
                                                   String rangeStart, String rangeEnd, Boolean onlyAvailable,
                                                   String sort, Integer from, Integer size) {
 
-        FilterSearchedParams params = new FilterSearchedParams(categories, paid, onlyAvailable, rangeStart, rangeEnd, sort, text);
-        List<Event> list = eventService.getEventsPublic(params, from, size);
+        FilterSearchedParams params;
+        List<Event> list;
+        try {
+            params = new FilterSearchedParams(categories, paid, onlyAvailable, rangeStart, rangeEnd, sort, text);
+            list = eventService.getEventsPublic(params, from, size);
+        } catch (Exception e) {
+            ApiError apiError = new ApiError();
+            apiError.setStatus("ERROR_RESPONSE");
+            apiError.setReason("The response is bad");
+            apiError.setMessage("Rewrite your response.");
+            apiError.setTimestamp(LocalDateTime.now().toString());
+            return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
+        }
+        if (list.isEmpty()) {
+            ApiError apiError = new ApiError();
+            apiError.setStatus("NOT_FOUND");
+            apiError.setReason("The required objects were not found.");
+            apiError.setMessage("Events were not found.");
+            apiError.setTimestamp(LocalDateTime.now().toString());
+            return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
+        }
         List<EventShortDto> resultList = list.stream().map(mapper::fromEventToShortDto).collect(Collectors.toList());
         return new ResponseEntity<>(resultList, HttpStatus.OK);
     }
 
     public ResponseEntity<Object> getEventByIdPublic(long id) {
-        Event event = eventService.getEventByIdPublic(id);
+        Event event;
+        try {
+            event = eventService.getEventByIdPublic(id);
+        } catch (ValidationException e) {
+            ApiError apiError = new ApiError();
+            apiError.setStatus("FORBIDDEN");
+            apiError.setReason("Allowed only published events");
+            apiError.setMessage(e.getMessage());
+            apiError.setTimestamp(LocalDateTime.now().toString());
+            return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
+        }
         if (event == null) {
-            return new ResponseEntity<>(new ApiError(), HttpStatus.NOT_FOUND);
+            ApiError apiError = new ApiError();
+            apiError.setStatus("NOT_FOUND");
+            apiError.setReason("The required object was not found.");
+            apiError.setMessage("Event was not found.");
+            apiError.setTimestamp(LocalDateTime.now().toString());
+            return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
         }
         EventFullDto resultEventFullDto = mapper.fromEventToFullDto(event);
         return new ResponseEntity<>(resultEventFullDto, HttpStatus.OK);

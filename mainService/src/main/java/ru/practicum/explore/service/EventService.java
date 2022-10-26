@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.stereotype.Service;
+import ru.practicum.explore.exceptions.ValidationException;
 import ru.practicum.explore.model.AdminSearchedParams;
 import ru.practicum.explore.model.Event;
 import ru.practicum.explore.model.EventState;
@@ -55,6 +56,8 @@ public class EventService {
             Event backEvent = optional.get();
             if (backEvent.getPublishedOn() != null) {
                 return backEvent;
+            } else {
+                throw new ValidationException("Only published events can be got");
             }
         }
         return null;

@@ -12,6 +12,7 @@ import ru.practicum.explore.model.ApiError;
 import ru.practicum.explore.model.Category;
 import ru.practicum.explore.service.CategoryService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,7 +61,12 @@ public class CategoryResponse {
     public ResponseEntity<Object> getCategoriesPublic(Integer from, Integer size) {
         List<Category> list = categoryService.getCategoriesPublic(from, size);
         if(list.isEmpty()) {
-            return new ResponseEntity<>(new ApiError(), HttpStatus.NOT_FOUND);
+            ApiError apiError = new ApiError();
+            apiError.setStatus("NOT_FOUND");
+            apiError.setReason("The required objects were not found.");
+            apiError.setMessage("Categories were not found.");
+            apiError.setTimestamp(LocalDateTime.now().toString());
+            return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
         }
         List<CategoryDto> resultList = list.stream().map(mapper::fromCategoryToDto).collect(Collectors.toList());
         return new ResponseEntity<>(resultList, HttpStatus.OK);
@@ -69,7 +75,12 @@ public class CategoryResponse {
     public ResponseEntity<Object> getCategoryByIdPublic(long catId) {
         Category category = categoryService.getCategoryByIdPublic(catId);
         if(category == null) {
-            return new ResponseEntity<>(new ApiError(), HttpStatus.NOT_FOUND);
+            ApiError apiError = new ApiError();
+            apiError.setStatus("NOT_FOUND");
+            apiError.setReason("The required object was not found.");
+            apiError.setMessage("Category was not found.");
+            apiError.setTimestamp(LocalDateTime.now().toString());
+            return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
         }
         CategoryDto resultCategoryDto = mapper.fromCategoryToDto(category);
         return new ResponseEntity<>(resultCategoryDto, HttpStatus.OK);
