@@ -33,7 +33,6 @@ public class EventService {
 
     public List<Event> getEventsPublic(FilterSearchedParams params, Integer from, Integer size) {
         List<Event> textSearchedList = searchEventsByText(params.getText());
-        System.out.println(params);
         List<Event> afterParamsList = getFilteredEventsFromParams(textSearchedList, params);
         List<Event> afterPageableList = getPageableList(afterParamsList, from, size);
         return afterPageableList;
@@ -78,6 +77,7 @@ public class EventService {
                 if (eventForPatch.getState().equals(EventState.PUBLISHED.toString())) {
                     return null;
                 }
+//------------------вот тут должна быть проверка, что до события 2 часа минимум-------------------
                 if (eventForPatch.getState().equals(EventState.PENDING.toString())) {
                     Event eventAfterPatch = patchOldEventToNew(eventForPatch, event);
                     eventRepository.save(eventAfterPatch);
@@ -96,6 +96,10 @@ public class EventService {
 
     public Event postEventPrivate(long userId, Event event) {
         event.setOwnerId(userId);
+        LocalDateTime testDateTime= LocalDateTime.now().plusHours(2);
+        if(event.getEventDate().isBefore(testDateTime)) {
+            return null;
+        }
         event.setCreatedOn(LocalDateTime.now());
         locationService.addLocation(event.getLocation());
         event.setLocationId(event.getLocation().getId());
