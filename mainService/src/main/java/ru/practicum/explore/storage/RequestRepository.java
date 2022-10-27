@@ -8,13 +8,13 @@ import java.util.List;
 
 @Repository
 public interface RequestRepository extends JpaRepository<Request, Long> {
-    List<Request> findAllByEventAndOwnerId(long eventId, long ownerId);
+    List<Request> findAllByEventIdAndEventOwnerId(long eventId, long ownerId);
 
-    List<Request> findAllByEventIdAndOwnerId(long eventId, long ownerId);
+    List<Request> findAllByEventIdAndAndEventOwnerId(long eventId, long ownerId);
 
-    Request findRequestByEventAndOwnerIdAndId(long eventId, long ownerId, long id);
+//    Request findRequestByEventAndOwnerIdAndId(long eventId, long ownerId, long id);
 
-    Request findRequestByEventIdAndOwnerIdAndId(long eventId, long ownerId, long id);
+    Request findRequestByEventIdAndEventOwnerIdAndId(long eventId, long ownerId, long id);
 
     List<Request> findAllByRequester(long requesterId);
 

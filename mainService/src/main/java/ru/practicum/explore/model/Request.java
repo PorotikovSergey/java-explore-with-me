@@ -18,8 +18,12 @@ public class Request {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "event_owner_id")
-    private long ownerId;
+//    @Column(name = "event_owner_id")
+//    private long ownerId;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "event_owner", referencedColumnName = "id", nullable = false)
+    private User eventOwner;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "event", referencedColumnName = "id", nullable = false)

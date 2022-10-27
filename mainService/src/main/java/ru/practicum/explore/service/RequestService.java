@@ -27,11 +27,11 @@ public class RequestService {
     }
 
     public List<Request> getRequestsInfFOrEventPrivate(long userId, long eventId) {
-        return requestRepository.findAllByEventIdAndOwnerId(eventId, userId);
+        return requestRepository.findAllByEventIdAndEventOwnerId(eventId, userId);
     }
 
     public Request requestApprovePrivate(long userId, long eventId, long reqId) {
-        Request request = requestRepository.findRequestByEventIdAndOwnerIdAndId(eventId, userId, reqId);
+        Request request = requestRepository.findRequestByEventIdAndEventOwnerIdAndId(eventId, userId, reqId);
         if (request == null) {
             return null;
         }
@@ -51,7 +51,7 @@ public class RequestService {
         if ((event.getParticipantLimit() > 0) && (event.getParticipantLimit() == event.getConfirmedRequests() + 1)) {
             request.setStatus(RequestStatus.CONFIRMED.toString());
             event.setConfirmedRequests(event.getConfirmedRequests() + 1);
-            List<Request> list = requestRepository.findAllByEventIdAndOwnerId(eventId, userId);
+            List<Request> list = requestRepository.findAllByEventIdAndEventOwnerId(eventId, userId);
             for (Request req : list) {
                 req.setStatus(RequestStatus.REJECTED.toString());
             }
@@ -63,7 +63,7 @@ public class RequestService {
     }
 
     public Request requestRejectPrivate(long userId, long eventId, long reqId) {
-        Request request = requestRepository.findRequestByEventIdAndOwnerIdAndId(eventId, userId, reqId);
+        Request request = requestRepository.findRequestByEventIdAndEventOwnerIdAndId(eventId, userId, reqId);
         if (request == null) {
             return null;
         }
@@ -107,7 +107,7 @@ public class RequestService {
 
         request.setCreateOn(LocalDateTime.now());
 
-        request.setOwnerId(event.getOwner().getId());
+        request.setEventOwner(event.getOwner());
         request.setRequester(userId);
         if (!event.isRequestModeration()) {
             request.setStatus(RequestStatus.CONFIRMED.toString());
