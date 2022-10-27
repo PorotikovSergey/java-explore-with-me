@@ -22,11 +22,11 @@ public class Event {
     private String state = EventState.PENDING.toString();
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "owner_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "owner", referencedColumnName = "id", nullable = false)
     private User owner;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "category", referencedColumnName = "id", nullable = false)
     private Category category;
 
     @Column(name = "created_on")
@@ -36,7 +36,7 @@ public class Event {
     private LocalDateTime eventDate;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "location_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "location", referencedColumnName = "id", nullable = false)
     private Location location;
 
     @Column(name = "confirmed_requests")

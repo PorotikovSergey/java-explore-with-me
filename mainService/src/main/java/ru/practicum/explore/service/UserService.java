@@ -32,7 +32,7 @@ public class UserService {
 
     public User getUser(long id) {
         Optional<User> optional = userRepository.findById(id);
-        if(optional.isPresent()) {
+        if (optional.isPresent()) {
             return optional.get();
         }
         return null;

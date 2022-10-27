@@ -9,6 +9,7 @@ import ru.practicum.explore.storage.StatsRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,12 +32,20 @@ public class StatsService {
 
     public List<ViewStats> getStats(List<String> uris, boolean unique, String start, String end) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        LocalDateTime startTime = LocalDateTime.parse(start, formatter);
-        LocalDateTime endTime = LocalDateTime.parse(end, formatter);
+        DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
+        LocalDateTime startTime;
+        LocalDateTime endTime;
+
+        try {
+            startTime = LocalDateTime.parse(start, formatter);
+            endTime = LocalDateTime.parse(end, formatter);
+        } catch (DateTimeParseException e) {
+            startTime = LocalDateTime.parse(start, formatter1);
+            endTime = LocalDateTime.parse(end, formatter1);
+        }
 
         List<Hit> list = statsRepository.findAllByUriInAndAndTimestampBetween(uris, startTime, endTime);
-        List<ViewStats> resultList = list.stream().map(this::getViewStats).collect(Collectors.toList());
-        return resultList;
+        return list.stream().map(this::getViewStats).collect(Collectors.toList());
     }
 
     private ViewStats getViewStats(Hit hit) {
