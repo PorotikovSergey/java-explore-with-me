@@ -10,6 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class Mapper {
@@ -210,18 +211,9 @@ public class Mapper {
         compilationDto.setId(compilation.getId());
         compilationDto.setTitle(compilation.getTitle());
         compilationDto.setPinned(compilation.isPinned());
-        if (!compilation.getEvents().isBlank()) {
-            List<Long> ids = fromStringToListOfLongs(compilation.getEvents().trim());
-            for (Long id : ids) {
-                Event event;
-                if (id == 0) {
-                    event = new Event();
-                } else {
-                    event = eventService.getEventById(id);
-                }
-                EventShortDto eventShortDto = fromEventToShortDto(event);
-                compilationDto.getEvents().add(eventShortDto);
-            }
+        if (!compilation.getEventList().isEmpty()) {
+            List<EventShortDto> list = compilation.getEventList().stream().map(this::fromEventToShortDto).collect(Collectors.toList());
+            compilationDto.setEvents(list);
         } else {
             compilationDto.setEvents(Collections.emptyList());
         }
@@ -233,10 +225,10 @@ public class Mapper {
         compilation.setTitle(newCompilationDto.getTitle());
         compilation.setPinned(newCompilationDto.isPinned());
         if (!newCompilationDto.getEvents().isEmpty()) {
-            compilation.setEvents(fromListOfLongsToString(newCompilationDto.getEvents()));
+            compilation.setEventList(eventService.getAllByIds(newCompilationDto.getEvents()));
             compilation.setEventList(eventService.getAllByIds(newCompilationDto.getEvents()));
         } else {
-            compilation.setEvents("");
+            compilation.setEventList(new ArrayList<>());
         }
         return compilation;
     }

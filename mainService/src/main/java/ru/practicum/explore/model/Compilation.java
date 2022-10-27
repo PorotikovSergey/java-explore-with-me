@@ -15,8 +15,8 @@ import java.util.Set;
 @ToString
 public class Compilation {
 
-    @Column(name = "events")
-    private String events = "";
+//    @Column(name = "events")
+//    private String events = "";
 
     @ManyToMany(cascade = {CascadeType.ALL})
     @JoinTable(

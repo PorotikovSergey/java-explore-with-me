@@ -60,16 +60,9 @@ public class CompilationService {
         Optional<Event> optional2 = eventRepository.findById(eventId);
         if (optional.isPresent() && optional2.isPresent()) {
             Compilation compilation = optional.get();
-//            System.out.println(compilation);
-            System.out.println("список событий в подборке До удаления");
-            System.out.println(compilation.getEvents());
-            System.out.println(compilation.getEventList());
-            compilation.setEvents(compilation.getEvents().replace(Long.toString(eventId), ""));
+            compilation.getEventList().remove(optional2.get());
             compilation.getEventList().remove(optional2.get());
             compilationRepository.save(compilation);
-            System.out.println("список событий в подборке После удаления");
-            System.out.println(compilation.getEvents());
-            System.out.println(compilation.getEventList());
             return compilation;
         } else {
             return null;
@@ -81,7 +74,7 @@ public class CompilationService {
         Optional<Event> optional2 = eventRepository.findById(eventId);
         if (optional.isPresent() && optional2.isPresent()) {
             Compilation compilation = optional.get();
-            compilation.setEvents(compilation.getEvents() + " " + eventId);
+            compilation.getEventList().add(optional2.get());
             compilation.getEventList().add(optional2.get());
             compilationRepository.save(compilation);
             return compilation;
