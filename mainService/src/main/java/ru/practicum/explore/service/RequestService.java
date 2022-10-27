@@ -27,11 +27,11 @@ public class RequestService {
     }
 
     public List<Request> getRequestsInfFOrEventPrivate(long userId, long eventId) {
-        return requestRepository.findAllByEventAndOwnerId(eventId, userId);
+        return requestRepository.findAllByEventIdAndOwnerId(eventId, userId);
     }
 
     public Request requestApprovePrivate(long userId, long eventId, long reqId) {
-        Request request = requestRepository.findRequestByEventAndOwnerIdAndId(eventId, userId, reqId);
+        Request request = requestRepository.findRequestByEventIdAndOwnerIdAndId(eventId, userId, reqId);
         if (request == null) {
             return null;
         }
@@ -51,7 +51,7 @@ public class RequestService {
         if ((event.getParticipantLimit() > 0) && (event.getParticipantLimit() == event.getConfirmedRequests() + 1)) {
             request.setStatus(RequestStatus.CONFIRMED.toString());
             event.setConfirmedRequests(event.getConfirmedRequests() + 1);
-            List<Request> list = requestRepository.findAllByEventAndOwnerId(eventId, userId);
+            List<Request> list = requestRepository.findAllByEventIdAndOwnerId(eventId, userId);
             for (Request req : list) {
                 req.setStatus(RequestStatus.REJECTED.toString());
             }
@@ -63,7 +63,7 @@ public class RequestService {
     }
 
     public Request requestRejectPrivate(long userId, long eventId, long reqId) {
-        Request request = requestRepository.findRequestByEventAndOwnerIdAndId(eventId, userId, reqId);
+        Request request = requestRepository.findRequestByEventIdAndOwnerIdAndId(eventId, userId, reqId);
         if (request == null) {
             return null;
         }
@@ -83,7 +83,7 @@ public class RequestService {
     }
 
     public Request postRequest(long userId, long eventId) {
-        Request checkIfExistRequest = requestRepository.findRequestByEventAndRequester(eventId, userId);
+        Request checkIfExistRequest = requestRepository.findRequestByEventIdAndRequester(eventId, userId);
         if (checkIfExistRequest != null) {
             return null;
         }
@@ -97,13 +97,13 @@ public class RequestService {
         if (event.getPublishedOn() == null) {
             throw new ValidationException("Нельзя публиковать запрос на неопубликованное событие");
         }
-        List<Request> list = requestRepository.findAllByEvent(eventId);
+        List<Request> list = requestRepository.findAllByEventId(eventId);
         if (list.size() >= event.getParticipantLimit()) {
             throw new ValidationException("Нельзя публиковать запрос на событие с исчерпаным лимитом заявок");
         }
         Request request = new Request();
         request.setRequester(userId);
-        request.setEvent(eventId);
+        request.setEvent(eventRepository.findById(eventId).get());
 
         request.setCreateOn(LocalDateTime.now());
 
@@ -124,7 +124,7 @@ public class RequestService {
         if (request == null) {
             return null;
         }
-        Event event = eventRepository.findById(request.getEvent()).get();
+        Event event = eventRepository.findById(request.getEvent().getId()).get();
         if (request.getStatus().equals(RequestStatus.CONFIRMED.toString())) {
             event.setConfirmedRequests(event.getConfirmedRequests() - 1);
         }

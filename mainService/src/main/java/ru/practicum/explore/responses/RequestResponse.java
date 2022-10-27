@@ -35,15 +35,12 @@ public class RequestResponse {
         } catch (Exception e) {
             return new ResponseEntity<>(ForbiddenError.getForbidden("requests"), HttpStatus.FORBIDDEN);
         }
-
         if (list.isEmpty()) {
             return new ResponseEntity<>(NotFoundApiError.getNotFound("request"), HttpStatus.NOT_FOUND);
         }
-
         List<ParticipationRequestDto> resultList = list.stream()
                 .map(mapper::fromRequestToParticipationRequestDto)
                 .collect(Collectors.toList());
-
         return new ResponseEntity<>(resultList, HttpStatus.OK);
     }
 
@@ -107,7 +104,6 @@ public class RequestResponse {
         if (request == null) {
             return new ResponseEntity<>(NotFoundApiError.getNotFound("request"), HttpStatus.NOT_FOUND);
         }
-
         ParticipationRequestDto participationRequestDto = mapper.fromRequestToParticipationRequestDto(request);
         return new ResponseEntity<>(participationRequestDto, HttpStatus.OK);
     }

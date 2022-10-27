@@ -21,8 +21,9 @@ public class Request {
     @Column(name = "event_owner_id")
     private long ownerId;
 
-    @Column(name = "event")
-    private long event;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "event", referencedColumnName = "id", nullable = false)
+    private Event event;
 
     @Column(name = "requester")
     private long requester;

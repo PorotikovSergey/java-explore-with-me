@@ -247,7 +247,7 @@ public class Mapper {
         participationRequestDto.setId(request.getId());
         participationRequestDto.setRequester(request.getRequester());
         participationRequestDto.setStatus(request.getStatus());
-        participationRequestDto.setEvent(request.getEvent());
+        participationRequestDto.setEvent(request.getEvent().getId());
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
         LocalDateTime dateTime = request.getCreateOn();

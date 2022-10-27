@@ -75,6 +75,7 @@ public class PrivateController {
 
     @GetMapping("/events/{eventId}/requests")
     public ResponseEntity<Object> getRequestsInfForEvent(@PathVariable long userId, @PathVariable long eventId) {
+        log.error("==========1=======");
         try {
             return requestResponse.getRequestsInfFOrEventPrivate(userId, eventId);
         } catch (Exception e) {

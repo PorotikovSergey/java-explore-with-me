@@ -5,6 +5,7 @@ import ru.practicum.explore.dto.UserShortDto;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "events")
@@ -38,6 +39,9 @@ public class Event {
 
     @Column(name = "event_date")
     private LocalDateTime eventDate;
+
+    @OneToMany(mappedBy = "event")
+    private List<Request> requests;
 
     @Transient
     private UserShortDto initiator;
