@@ -35,7 +35,7 @@ public class EventService {
         List<Event> textSearchedList = searchEventsByText(params.getText());
         List<Event> afterParamsList = getFilteredEventsFromParams(textSearchedList, params);
         List<Event> afterPageableList = getPageableList(afterParamsList, from, size);
-        afterPageableList.forEach(event -> event.setViews(event.getViews()+1));
+        afterPageableList.forEach(event -> event.setViews(event.getViews() + 1));
         return afterPageableList;
     }
 
@@ -54,7 +54,7 @@ public class EventService {
         if (optional.isPresent()) {
             Event backEvent = optional.get();
             if (backEvent.getPublishedOn() != null) {
-                backEvent.setViews(backEvent.getViews()+1);
+                backEvent.setViews(backEvent.getViews() + 1);
                 return backEvent;
             } else {
                 throw new ValidationException("Only published events can be got");
@@ -256,7 +256,7 @@ public class EventService {
             list = list.stream().filter(s -> s.getEventDate().isAfter(start)).collect(Collectors.toList());
             list = list.stream().filter(s -> s.getEventDate().isBefore(end)).collect(Collectors.toList());
         }
-        if(params.getSort().equals("VIEWS")) {
+        if (params.getSort().equals("VIEWS")) {
             list = list.stream().sorted(Comparator.comparing(Event::getViews)).collect(Collectors.toList());
         } else {
             list = list.stream().sorted(Comparator.comparing(Event::getEventDate)).collect(Collectors.toList());
