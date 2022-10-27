@@ -40,7 +40,7 @@ public class FromMainToStatsClient {
         return prepareResponse(statsResponse);
     }
 
-    private <T> ResponseEntity<Object> getAndSendRequest(HttpMethod method, String path, List<String> uris, Boolean unique, String start, String end) {
+    private ResponseEntity<Object> getAndSendRequest(HttpMethod method, String path, List<String> uris, Boolean unique, String start, String end) {
         ResponseEntity<Object> statsResponse = rest.exchange(path, method, new HttpEntity<>(null, null), Object.class);
         return prepareResponse(statsResponse);
     }

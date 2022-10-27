@@ -72,11 +72,10 @@ public class Mapper {
 
         DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime dateTime2 = event.getPublishedOn();
-        if(dateTime2!=null) {
+        if (dateTime2 != null) {
             String formattedDateTime2 = dateTime2.format(formatter2);
             eventFullDto.setPublishedOn(formattedDateTime2);
         }
-//        eventFullDto.setPublishedOn(event.getPublishedOn().);
         eventFullDto.setViews(event.getViews());
 
         DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -211,11 +210,11 @@ public class Mapper {
         compilationDto.setId(compilation.getId());
         compilationDto.setTitle(compilation.getTitle());
         compilationDto.setPinned(compilation.isPinned());
-        if(!compilation.getEvents().isBlank()) {
+        if (!compilation.getEvents().isBlank()) {
             List<Long> ids = fromStringToListOfLongs(compilation.getEvents().trim());
             for (Long id : ids) {
                 Event event;
-                if(id==0) {
+                if (id == 0) {
                     event = new Event();
                 } else {
                     event = eventService.getEventById(id);
@@ -233,7 +232,7 @@ public class Mapper {
         Compilation compilation = new Compilation();
         compilation.setTitle(newCompilationDto.getTitle());
         compilation.setPinned(newCompilationDto.isPinned());
-        if(!newCompilationDto.getEvents().isEmpty()) {
+        if (!newCompilationDto.getEvents().isEmpty()) {
             compilation.setEvents(fromListOfLongsToString(newCompilationDto.getEvents()));
         } else {
             compilation.setEvents("");
@@ -258,7 +257,6 @@ public class Mapper {
 
         return participationRequestDto;
     }
-
 
 
 //-----------------------------------------------------------------------------------------

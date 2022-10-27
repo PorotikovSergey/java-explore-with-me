@@ -11,11 +11,9 @@ import ru.practicum.explore.model.EventState;
 import ru.practicum.explore.model.FilterSearchedParams;
 import ru.practicum.explore.storage.EventRepository;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -37,6 +35,7 @@ public class EventService {
         List<Event> textSearchedList = searchEventsByText(params.getText());
         List<Event> afterParamsList = getFilteredEventsFromParams(textSearchedList, params);
         List<Event> afterPageableList = getPageableList(afterParamsList, from, size);
+        afterPageableList.forEach(event -> event.setViews(event.getViews()+1));
         return afterPageableList;
     }
 
@@ -55,6 +54,7 @@ public class EventService {
         if (optional.isPresent()) {
             Event backEvent = optional.get();
             if (backEvent.getPublishedOn() != null) {
+                backEvent.setViews(backEvent.getViews()+1);
                 return backEvent;
             } else {
                 throw new ValidationException("Only published events can be got");
@@ -79,11 +79,11 @@ public class EventService {
             Event eventForPatch = optional.get();
             if (eventForPatch.getOwnerId() == userId) {
                 if (eventForPatch.getState().equals(EventState.PUBLISHED.toString())) {
-                    return null;
+                    throw new ValidationException("Нельзя изменять опубликованное событие");
                 }
                 LocalDateTime testDateTime = LocalDateTime.now().plusHours(2);
                 if (event.getEventDate().isBefore(testDateTime)) {
-                    return null;
+                    throw new ValidationException("Нельзя изменять событие за 2 часа до");
                 }
                 if (eventForPatch.getState().equals(EventState.PENDING.toString())) {
                     Event eventAfterPatch = patchOldEventToNew(eventForPatch, event);
@@ -96,7 +96,7 @@ public class EventService {
                     return eventAfterPatch;
                 }
             }
-            return null;
+            throw new ValidationException("Нельзя изменять чужое событие");
         }
         return null;
     }
@@ -105,7 +105,7 @@ public class EventService {
         event.setOwnerId(userId);
         LocalDateTime testDateTime = LocalDateTime.now().plusHours(2);
         if (event.getEventDate().isBefore(testDateTime)) {
-            return null;
+            throw new ValidationException("Нельзя постить событие за 2 часа до");
         }
         event.setCreatedOn(LocalDateTime.now());
         locationService.addLocation(event.getLocation());
@@ -162,10 +162,10 @@ public class EventService {
             event.setPublishedOn(LocalDateTime.now());
             LocalDateTime testDateTime = LocalDateTime.now().plusHours(1);
             if (event.getEventDate().isBefore(testDateTime)) {
-                return null;
+                throw new ValidationException("Нельзя публиковать событие за 1 час до");
             }
             if (!event.getState().equals(EventState.PENDING.toString())) {
-                return null;
+                throw new ValidationException("Нельзя публиковать событие не в статусе PENDING");
             }
             event.setState(EventState.PUBLISHED.toString());
             eventRepository.save(event);
@@ -179,7 +179,7 @@ public class EventService {
         if (optional.isPresent()) {
             Event event = optional.get();
             if ((event.getPublishedOn() != null)) {
-                return null;
+                throw new ValidationException("Нельзя отменять опубликованное событие");
             }
             event.setState(EventState.CANCELED.toString());
             eventRepository.save(event);
@@ -198,9 +198,6 @@ public class EventService {
         if (!newEvent.getDescription().isBlank()) {
             oldEvent.setDescription(newEvent.getDescription());
         }
-//        if (!newEvent.getEventDate().isBlank()) {
-//            oldEvent.setEventDate(newEvent.getEventDate());
-//        }
         if (newEvent.getPaid() != null) {
             oldEvent.setPaid(newEvent.getPaid());
         }

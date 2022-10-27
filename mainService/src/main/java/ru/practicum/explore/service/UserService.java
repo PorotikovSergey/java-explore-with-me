@@ -14,6 +14,7 @@ import java.util.Optional;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+
     @Autowired
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -37,7 +38,7 @@ public class UserService {
 
     public User deleteUserAdmin(long userId) {
         Optional<User> optional = userRepository.findById(userId);
-        if(optional.isPresent()) {
+        if (optional.isPresent()) {
             User user = optional.get();
             userRepository.deleteById(userId);
             return user;

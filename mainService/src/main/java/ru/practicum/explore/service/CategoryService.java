@@ -9,6 +9,7 @@ import ru.practicum.explore.model.Event;
 import ru.practicum.explore.storage.CategoryRepository;
 import ru.practicum.explore.storage.EventRepository;
 
+import javax.xml.bind.ValidationException;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,7 +34,7 @@ public class CategoryService {
 
     public Category getCategoryByIdPublic(long catId) {
         Optional<Category> optional = categoryRepository.findById(catId);
-        if(optional.isPresent()) {
+        if (optional.isPresent()) {
             Category category = optional.get();
             return category;
         } else {
@@ -43,7 +44,7 @@ public class CategoryService {
 
     public Category patchCategoryAdmin(Category category) {
         Optional<Category> optional = categoryRepository.findById(category.getId());
-        if(optional.isPresent()) {
+        if (optional.isPresent()) {
             Category categoryForPatch = optional.get();
             categoryForPatch.setName(category.getName());
             categoryRepository.save(categoryForPatch);
@@ -57,13 +58,13 @@ public class CategoryService {
         return category;
     }
 
-    public Category deleteCategoryAdmin(long catId) {
+    public Category deleteCategoryAdmin(long catId) throws ValidationException {
         List<Event> list = eventRepository.findAllByCategoryId(catId);
-        if(!list.isEmpty()) {
-            return null;
+        if (!list.isEmpty()) {
+            throw new ValidationException("Нельзя удалять категорию если есть связанные с ней события");
         }
         Optional<Category> optional = categoryRepository.findById(catId);
-        if(optional.isPresent()) {
+        if (optional.isPresent()) {
             Category category = optional.get();
             categoryRepository.deleteById(catId);
             return category;

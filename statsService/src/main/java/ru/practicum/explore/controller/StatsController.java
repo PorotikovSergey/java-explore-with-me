@@ -33,13 +33,13 @@ public class StatsController {
 
     @GetMapping("/stats")
     public ResponseEntity<Object> getStats(@RequestParam(name = "uris")
-                                    List<String> uris,
-                                    @RequestParam(name = "unique", defaultValue = "false")
-                                    boolean unique,
-                                    @RequestParam(name = "start")
-                                    String start,
-                                    @RequestParam(name = "end")
-                                    String end) {
+                                           List<String> uris,
+                                           @RequestParam(name = "unique", defaultValue = "false")
+                                           boolean unique,
+                                           @RequestParam(name = "start")
+                                           String start,
+                                           @RequestParam(name = "end")
+                                           String end) {
         ResponseEntity<Object> responseEntity = new ResponseEntity<>(statsService.getStats(uris, unique, start, end), HttpStatus.OK);
         return responseEntity;
     }

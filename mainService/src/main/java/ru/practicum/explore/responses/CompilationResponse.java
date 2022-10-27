@@ -6,14 +6,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.practicum.explore.Mapper;
+import ru.practicum.explore.apierrors.ForbiddenError;
+import ru.practicum.explore.apierrors.NotFoundApiError;
 import ru.practicum.explore.dto.CompilationDto;
 import ru.practicum.explore.dto.NewCompilationDto;
-import ru.practicum.explore.exceptions.ValidationException;
-import ru.practicum.explore.model.ApiError;
 import ru.practicum.explore.model.Compilation;
 import ru.practicum.explore.service.CompilationService;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,60 +31,93 @@ public class CompilationResponse {
 
     public ResponseEntity<Object> postCompilationAdmin(NewCompilationDto newCompilationDto) {
         Compilation compilation = mapper.fromNewDtoToCompilation(newCompilationDto);
-        Compilation backCompilation = compilationService.postCompilationAdmin(compilation);
-        if (backCompilation == null) {
-            return new ResponseEntity<>(new ApiError(), HttpStatus.NOT_FOUND);
+        Compilation backCompilation;
+        try {
+            backCompilation = compilationService.postCompilationAdmin(compilation);
+        } catch (Exception e) {
+            return new ResponseEntity<>(ForbiddenError.getForbidden("compilation"), HttpStatus.FORBIDDEN);
         }
+
+        if (backCompilation == null) {
+            return new ResponseEntity<>(NotFoundApiError.getNotFound("compilation"), HttpStatus.NOT_FOUND);
+        }
+
         CompilationDto resultCompilationDto = mapper.fromCompilationToDto(backCompilation);
         return new ResponseEntity<>(resultCompilationDto, HttpStatus.OK);
     }
 
     public ResponseEntity<Object> deleteCompilationAdmin(long compId) {
-        Compilation backCompilation = compilationService.deleteCompilationAdmin(compId);
-        if (backCompilation == null) {
-            return new ResponseEntity<>(new ApiError(), HttpStatus.NOT_FOUND);
+        Compilation backCompilation;
+        try {
+            backCompilation = compilationService.deleteCompilationAdmin(compId);
+        } catch (Exception e) {
+            return new ResponseEntity<>(ForbiddenError.getForbidden("compilation"), HttpStatus.FORBIDDEN);
         }
+
+        if (backCompilation == null) {
+            return new ResponseEntity<>(NotFoundApiError.getNotFound("compilation"), HttpStatus.NOT_FOUND);
+        }
+
         CompilationDto compilationDto = mapper.fromCompilationToDto(backCompilation);
         return new ResponseEntity<>(compilationDto, HttpStatus.OK);
     }
 
     public ResponseEntity<Object> deleteEventFromCompilationAdmin(long compId, long eventId) {
-        Compilation compilation = compilationService.deleteEventFromCompilationAdmin(compId, eventId);
-        if (compilation != null) {
-            CompilationDto compilationDto = mapper.fromCompilationToDto(compilation);
-            return new ResponseEntity<>(compilationDto, HttpStatus.OK);
+        Compilation compilation;
+        try {
+            compilation = compilationService.deleteEventFromCompilationAdmin(compId, eventId);
+        } catch (Exception e) {
+            return new ResponseEntity<>(ForbiddenError.getForbidden("compilation"), HttpStatus.FORBIDDEN);
         }
-        return new ResponseEntity<>(new ApiError(), HttpStatus.NOT_FOUND);
+
+        if (compilation == null) {
+            return new ResponseEntity<>(NotFoundApiError.getNotFound("compilation"), HttpStatus.NOT_FOUND);
+        }
+
+        CompilationDto compilationDto = mapper.fromCompilationToDto(compilation);
+        return new ResponseEntity<>(compilationDto, HttpStatus.OK);
     }
 
     public ResponseEntity<Object> addEventToCompilationAdmin(long compId, long eventId) {
-        Compilation compilation = compilationService.addEventToCompilationAdmin(compId, eventId);
-        if (compilation != null) {
-            CompilationDto compilationDto = mapper.fromCompilationToDto(compilation);
-            return new ResponseEntity<>(compilationDto, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(new ApiError(), HttpStatus.NOT_FOUND);
+        Compilation compilation;
+        try {
+            compilation = compilationService.addEventToCompilationAdmin(compId, eventId);
+        } catch (Exception e) {
+            return new ResponseEntity<>(ForbiddenError.getForbidden("compilations"), HttpStatus.FORBIDDEN);
         }
+
+        if (compilation == null) {
+            return new ResponseEntity<>(NotFoundApiError.getNotFound("compilation"), HttpStatus.NOT_FOUND);
+        }
+
+        CompilationDto compilationDto = mapper.fromCompilationToDto(compilation);
+        return new ResponseEntity<>(compilationDto, HttpStatus.OK);
     }
 
     public ResponseEntity<Object> unpinCompilationAdmin(long compId) {
-        Compilation compilation = compilationService.unpinCompilationAdmin(compId);
-        if (compilation != null) {
-            CompilationDto compilationDto = mapper.fromCompilationToDto(compilation);
-            return new ResponseEntity<>(compilationDto, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(new ApiError(), HttpStatus.NOT_FOUND);
+        Compilation compilation;
+        try {
+            compilation = compilationService.unpinCompilationAdmin(compId);
+        } catch (Exception e) {
+            return new ResponseEntity<>(ForbiddenError.getForbidden("compilation"), HttpStatus.FORBIDDEN);
         }
+
+        if (compilation == null) {
+            return new ResponseEntity<>(NotFoundApiError.getNotFound("compilation"), HttpStatus.NOT_FOUND);
+        }
+
+        CompilationDto compilationDto = mapper.fromCompilationToDto(compilation);
+        return new ResponseEntity<>(compilationDto, HttpStatus.OK);
     }
 
     public ResponseEntity<Object> pinCompilationAdmin(long compId) {
         Compilation compilation = compilationService.pinCompilationAdmin(compId);
-        if (compilation != null) {
-            CompilationDto compilationDto = mapper.fromCompilationToDto(compilation);
-            return new ResponseEntity<>(compilationDto, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(new ApiError(), HttpStatus.NOT_FOUND);
+        if (compilation == null) {
+            return new ResponseEntity<>(NotFoundApiError.getNotFound("compilation"), HttpStatus.NOT_FOUND);
+
         }
+        CompilationDto compilationDto = mapper.fromCompilationToDto(compilation);
+        return new ResponseEntity<>(compilationDto, HttpStatus.OK);
     }
 
     public ResponseEntity<Object> getCompilationsPublic(Boolean pinned, Integer from, Integer size) {
@@ -93,35 +125,29 @@ public class CompilationResponse {
         try {
             list = compilationService.getCompilationsPublic(pinned, from, size);
         } catch (Exception e) {
-            ApiError apiError = new ApiError();
-            apiError.setStatus("ERROR_RESPONSE");
-            apiError.setReason("The response is bad");
-            apiError.setMessage("Rewrite your response.");
-            apiError.setTimestamp(LocalDateTime.now().toString());
-            return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(ForbiddenError.getForbidden("compilations"), HttpStatus.FORBIDDEN);
         }
+
         if (list.isEmpty()) {
-            ApiError apiError = new ApiError();
-            apiError.setStatus("NOT_FOUND");
-            apiError.setReason("The required objects were not found.");
-            apiError.setMessage("Compilations were not found.");
-            apiError.setTimestamp(LocalDateTime.now().toString());
-            return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(NotFoundApiError.getNotFound("compilations"), HttpStatus.NOT_FOUND);
         }
+
         List<CompilationDto> resultList = list.stream().map(mapper::fromCompilationToDto).collect(Collectors.toList());
         return new ResponseEntity<>(resultList, HttpStatus.OK);
     }
 
     public ResponseEntity<Object> getCompilationByIdPublic(long compId) {
-        Compilation compilation = compilationService.getCompilationByIdPublic(compId);
-        if (compilation == null) {
-            ApiError apiError = new ApiError();
-            apiError.setStatus("NOT_FOUND");
-            apiError.setReason("The required object was not found.");
-            apiError.setMessage("Compilation was not found.");
-            apiError.setTimestamp(LocalDateTime.now().toString());
-            return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
+        Compilation compilation;
+        try {
+            compilation = compilationService.getCompilationByIdPublic(compId);
+        } catch (Exception e) {
+            return new ResponseEntity<>(ForbiddenError.getForbidden("compilation"), HttpStatus.FORBIDDEN);
         }
+
+        if (compilation == null) {
+            return new ResponseEntity<>(NotFoundApiError.getNotFound("compilation"), HttpStatus.NOT_FOUND);
+        }
+
         CompilationDto compilationDto = mapper.fromCompilationToDto(compilation);
         return new ResponseEntity<>(compilationDto, HttpStatus.OK);
     }

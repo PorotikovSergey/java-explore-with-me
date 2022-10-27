@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.explore.model.ApiError;
+import ru.practicum.explore.apierrors.ServerApiError;
 import ru.practicum.explore.model.EndpointHit;
 import ru.practicum.explore.model.FromMainToStatsClient;
 import ru.practicum.explore.responses.CategoryResponse;
@@ -55,24 +55,27 @@ public class PublicController {
                                             Boolean onlyAvailable,
                                             @RequestParam(name = "sort", defaultValue = "EVENT_DATE")
                                             String sort) {
-        EndpointHit hit = new EndpointHit(0, request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
-        fromMainToStatsClient.postHit(hit);
+
         try {
+            EndpointHit hit = new EndpointHit(0, request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
+            fromMainToStatsClient.postHit(hit);
+
             return eventResponse.getEventsPublic(text, categories, paid, rangeStart,
                     rangeEnd, onlyAvailable, sort, from, size);
         } catch (Exception e) {
-            return new ResponseEntity<>(getServerApiError(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ServerApiError.getServerError(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping("/events/{id}")
     public ResponseEntity<Object> getEventById(HttpServletRequest request, @PathVariable long id) {
-        EndpointHit hit = new EndpointHit(0, request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
-        fromMainToStatsClient.postHit(hit);
         try {
+            EndpointHit hit = new EndpointHit(0, request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
+            fromMainToStatsClient.postHit(hit);
+
             return eventResponse.getEventByIdPublic(id);
         } catch (Exception e) {
-            return new ResponseEntity<>(getServerApiError(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ServerApiError.getServerError(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -86,7 +89,7 @@ public class PublicController {
         try {
             return compilationResponse.getCompilationsPublic(pinned, from, size);
         } catch (Exception e) {
-            return new ResponseEntity<>(getServerApiError(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ServerApiError.getServerError(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -95,7 +98,7 @@ public class PublicController {
         try {
             return compilationResponse.getCompilationByIdPublic(compId);
         } catch (Exception e) {
-            return new ResponseEntity<>(getServerApiError(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ServerApiError.getServerError(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -107,7 +110,7 @@ public class PublicController {
         try {
             return categoryResponse.getCategoriesPublic(from, size);
         } catch (Exception e) {
-            return new ResponseEntity<>(getServerApiError(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ServerApiError.getServerError(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -116,18 +119,7 @@ public class PublicController {
         try {
             return categoryResponse.getCategoryByIdPublic(catId);
         } catch (Exception e) {
-            return new ResponseEntity<>(getServerApiError(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ServerApiError.getServerError(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
-
-    private ApiError getServerApiError() {
-        ApiError apiError = new ApiError();
-        apiError.setStatus("INTERNAL_SERVER_ERROR");
-        apiError.setReason("Error occurred");
-        apiError.setMessage("could not execute statement; SQL [n/a]; constraint [uq_category_name]; " +
-                "nested exception is org.hibernate.exception.ConstraintViolationException: " +
-                "could not execute statement");
-        apiError.setTimestamp(LocalDateTime.now().toString());
-        return apiError;
     }
 }

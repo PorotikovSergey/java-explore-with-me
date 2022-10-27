@@ -3,6 +3,7 @@ package ru.practicum.explore.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.practicum.explore.exceptions.ValidationException;
 import ru.practicum.explore.model.Event;
 import ru.practicum.explore.model.Request;
 import ru.practicum.explore.model.RequestStatus;
@@ -56,7 +57,7 @@ public class RequestService {
                 req.setStatus(RequestStatus.REJECTED.toString());
             }
         }
-        if ((event.getParticipantLimit()>0) && (event.getParticipantLimit()== event.getConfirmedRequests())) {
+        if ((event.getParticipantLimit() > 0) && (event.getParticipantLimit() == event.getConfirmedRequests())) {
             return null;
         }
         return request;
@@ -93,14 +94,14 @@ public class RequestService {
             return null;
         }
         if (event.getOwnerId() == userId) {
-            return null;
+            throw new ValidationException("Нельзя публиковать запрос на своё же событие");
         }
-        if (event.getPublishedOn()==null) {
-            return null;
+        if (event.getPublishedOn() == null) {
+            throw new ValidationException("Нельзя публиковать запрос на неопубликованное событие");
         }
         List<Request> list = requestRepository.findAllByEvent(eventId);
         if (list.size() >= event.getParticipantLimit()) {
-            return null;
+            throw new ValidationException("Нельзя публиковать запрос на событие с исчерпаным лимитом заявок");
         }
         Request request = new Request();
         request.setRequester(userId);
@@ -112,7 +113,7 @@ public class RequestService {
         request.setRequester(userId);
         if (!event.isRequestModeration()) {
             request.setStatus(RequestStatus.CONFIRMED.toString());
-            event.setConfirmedRequests(event.getConfirmedRequests()+1);
+            event.setConfirmedRequests(event.getConfirmedRequests() + 1);
         } else {
             request.setStatus(RequestStatus.PENDING.toString());
         }
@@ -122,12 +123,12 @@ public class RequestService {
 
     public Request cancelRequest(long userId, long requestId) {
         Request request = requestRepository.findRequestByIdAndRequester(requestId, userId);
-        if(request==null) {
+        if (request == null) {
             return null;
         }
         Event event = eventRepository.findById(request.getEvent()).get();
-        if(request.getStatus().equals(RequestStatus.CONFIRMED.toString())) {
-            event.setConfirmedRequests(event.getConfirmedRequests()-1);
+        if (request.getStatus().equals(RequestStatus.CONFIRMED.toString())) {
+            event.setConfirmedRequests(event.getConfirmedRequests() - 1);
         }
         requestRepository.delete(request);
         request.setStatus(RequestStatus.CANCELED.toString());

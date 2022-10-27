@@ -14,7 +14,7 @@ import javax.persistence.*;
 public class Compilation {
 
     @Column(name = "events")
-    private String events="";
+    private String events = "";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

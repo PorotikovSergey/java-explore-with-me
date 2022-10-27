@@ -27,7 +27,7 @@ public class CompilationService {
 
     public List<Compilation> getCompilationsPublic(Boolean pinned, Integer from, Integer size) {
         List<Compilation> list = compilationRepository.findAllByPinned(pinned);
-        List<Compilation> afterPageableList =getPageableList(list, from, size);
+        List<Compilation> afterPageableList = getPageableList(list, from, size);
         return afterPageableList;
     }
 
@@ -75,7 +75,7 @@ public class CompilationService {
         Optional<Event> optional2 = eventRepository.findById(eventId);
         if (optional.isPresent() && optional2.isPresent()) {
             Compilation compilation = optional.get();
-            compilation.setEvents(compilation.getEvents()+" "+eventId);
+            compilation.setEvents(compilation.getEvents() + " " + eventId);
             compilationRepository.save(compilation);
             return compilation;
         } else {

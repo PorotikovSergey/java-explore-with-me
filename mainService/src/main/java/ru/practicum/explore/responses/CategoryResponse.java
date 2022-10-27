@@ -6,13 +6,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.practicum.explore.Mapper;
+import ru.practicum.explore.apierrors.ForbiddenError;
+import ru.practicum.explore.apierrors.NotFoundApiError;
 import ru.practicum.explore.dto.CategoryDto;
 import ru.practicum.explore.dto.NewCategoryDto;
-import ru.practicum.explore.model.ApiError;
 import ru.practicum.explore.model.Category;
 import ru.practicum.explore.service.CategoryService;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,57 +31,81 @@ public class CategoryResponse {
 
     public ResponseEntity<Object> patchCategoryAdmin(CategoryDto categoryDto) {
         Category category = mapper.fromDtoToCategory(categoryDto);
-        Category backCategory = categoryService.patchCategoryAdmin(category);
-        if(backCategory==null) {
-            return new ResponseEntity<>(new ApiError(), HttpStatus.NOT_FOUND);
+        Category backCategory;
+        try {
+            backCategory = categoryService.patchCategoryAdmin(category);
+        } catch (Exception e) {
+            return new ResponseEntity<>(ForbiddenError.getForbidden("category"), HttpStatus.FORBIDDEN);
         }
+
+        if (backCategory == null) {
+            return new ResponseEntity<>(NotFoundApiError.getNotFound("category"), HttpStatus.NOT_FOUND);
+        }
+
         CategoryDto resultCategoryDto = mapper.fromCategoryToDto(backCategory);
         return new ResponseEntity<>(resultCategoryDto, HttpStatus.OK);
     }
 
     public ResponseEntity<Object> postCategoryAdmin(NewCategoryDto newCategoryDto) {
         Category category = mapper.fromNewDtoToCategory(newCategoryDto);
-        Category backCategory = categoryService.postCategoryAdmin(category);
-        if(backCategory==null) {
-            return new ResponseEntity<>(new ApiError(), HttpStatus.NOT_FOUND);
+        Category backCategory;
+        try {
+            backCategory = categoryService.postCategoryAdmin(category);
+        } catch (Exception e) {
+            return new ResponseEntity<>(ForbiddenError.getForbidden("category"), HttpStatus.FORBIDDEN);
         }
+
+        if (backCategory == null) {
+            return new ResponseEntity<>(NotFoundApiError.getNotFound("category"), HttpStatus.NOT_FOUND);
+        }
+
         CategoryDto resultCategoryDto = mapper.fromCategoryToDto(backCategory);
         return new ResponseEntity<>(resultCategoryDto, HttpStatus.OK);
     }
 
     public ResponseEntity<Object> deleteCategoryAdmin(long catId) {
-        Category backCategory = categoryService.deleteCategoryAdmin(catId);
-        if(backCategory==null) {
-            return new ResponseEntity<>(new ApiError(), HttpStatus.NOT_FOUND);
+        Category backCategory;
+        try {
+            backCategory = categoryService.deleteCategoryAdmin(catId);
+        } catch (Exception e) {
+            return new ResponseEntity<>(ForbiddenError.getForbidden("category"), HttpStatus.FORBIDDEN);
+        }
+
+        if (backCategory == null) {
+            return new ResponseEntity<>(NotFoundApiError.getNotFound("category"), HttpStatus.NOT_FOUND);
         }
         CategoryDto resultCategoryDto = mapper.fromCategoryToDto(backCategory);
         return new ResponseEntity<>(resultCategoryDto, HttpStatus.OK);
     }
 
     public ResponseEntity<Object> getCategoriesPublic(Integer from, Integer size) {
-        List<Category> list = categoryService.getCategoriesPublic(from, size);
-        if(list.isEmpty()) {
-            ApiError apiError = new ApiError();
-            apiError.setStatus("NOT_FOUND");
-            apiError.setReason("The required objects were not found.");
-            apiError.setMessage("Categories were not found.");
-            apiError.setTimestamp(LocalDateTime.now().toString());
-            return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
+        List<Category> list;
+        try {
+            list = categoryService.getCategoriesPublic(from, size);
+        } catch (Exception e) {
+            return new ResponseEntity<>(ForbiddenError.getForbidden("categories"), HttpStatus.FORBIDDEN);
         }
+
+        if (list.isEmpty()) {
+            return new ResponseEntity<>(NotFoundApiError.getNotFound("categories"), HttpStatus.NOT_FOUND);
+        }
+
         List<CategoryDto> resultList = list.stream().map(mapper::fromCategoryToDto).collect(Collectors.toList());
         return new ResponseEntity<>(resultList, HttpStatus.OK);
     }
 
     public ResponseEntity<Object> getCategoryByIdPublic(long catId) {
-        Category category = categoryService.getCategoryByIdPublic(catId);
-        if(category == null) {
-            ApiError apiError = new ApiError();
-            apiError.setStatus("NOT_FOUND");
-            apiError.setReason("The required object was not found.");
-            apiError.setMessage("Category was not found.");
-            apiError.setTimestamp(LocalDateTime.now().toString());
-            return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
+        Category category;
+        try {
+            category = categoryService.getCategoryByIdPublic(catId);
+        } catch (Exception e) {
+            return new ResponseEntity<>(ForbiddenError.getForbidden("category"), HttpStatus.FORBIDDEN);
         }
+
+        if (category == null) {
+            return new ResponseEntity<>(NotFoundApiError.getNotFound("category"), HttpStatus.NOT_FOUND);
+        }
+
         CategoryDto resultCategoryDto = mapper.fromCategoryToDto(category);
         return new ResponseEntity<>(resultCategoryDto, HttpStatus.OK);
     }
