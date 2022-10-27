@@ -50,7 +50,8 @@ CREATE TABLE IF NOT EXISTS participant_requests (
                                                     status VARCHAR NOT NULL,
                                                     CONSTRAINT pk_request PRIMARY KEY (id),
                                                     CONSTRAINT event_of_request FOREIGN KEY(event) REFERENCES events(id),
-                                                    CONSTRAINT eventowner FOREIGN KEY(event_owner) REFERENCES users(id)
+                                                    CONSTRAINT event_owner FOREIGN KEY(event_owner) REFERENCES users(id),
+                                                    CONSTRAINT requester_of_request FOREIGN KEY(requester) REFERENCES users(id)
 );
 
 

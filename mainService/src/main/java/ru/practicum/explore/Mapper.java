@@ -245,7 +245,7 @@ public class Mapper {
     public ParticipationRequestDto fromRequestToParticipationRequestDto(Request request) {
         ParticipationRequestDto participationRequestDto = new ParticipationRequestDto();
         participationRequestDto.setId(request.getId());
-        participationRequestDto.setRequester(request.getRequester());
+        participationRequestDto.setRequester(request.getRequester().getId());
         participationRequestDto.setStatus(request.getStatus());
         participationRequestDto.setEvent(request.getEvent().getId());
 

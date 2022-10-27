@@ -9,6 +9,7 @@ import ru.practicum.explore.model.Request;
 import ru.practicum.explore.model.RequestStatus;
 import ru.practicum.explore.storage.EventRepository;
 import ru.practicum.explore.storage.RequestRepository;
+import ru.practicum.explore.storage.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,10 +21,13 @@ public class RequestService {
     private final RequestRepository requestRepository;
     private final EventRepository eventRepository;
 
+    private final UserRepository userRepository;
+
     @Autowired
-    public RequestService(RequestRepository requestRepository, EventRepository eventRepository) {
+    public RequestService(RequestRepository requestRepository, EventRepository eventRepository, UserRepository userRepository) {
         this.requestRepository = requestRepository;
         this.eventRepository = eventRepository;
+        this.userRepository = userRepository;
     }
 
     public List<Request> getRequestsInfFOrEventPrivate(long userId, long eventId) {
@@ -79,11 +83,11 @@ public class RequestService {
     }
 
     public List<Request> getRequestsPrivate(long userId) {
-        return requestRepository.findAllByRequester(userId);
+        return requestRepository.findAllByRequesterId(userId);
     }
 
     public Request postRequest(long userId, long eventId) {
-        Request checkIfExistRequest = requestRepository.findRequestByEventIdAndRequester(eventId, userId);
+        Request checkIfExistRequest = requestRepository.findRequestByEventIdAndRequesterId(eventId, userId);
         if (checkIfExistRequest != null) {
             return null;
         }
@@ -102,13 +106,12 @@ public class RequestService {
             throw new ValidationException("Нельзя публиковать запрос на событие с исчерпаным лимитом заявок");
         }
         Request request = new Request();
-        request.setRequester(userId);
-        request.setEvent(eventRepository.findById(eventId).get());
+        request.setRequester(userRepository.getReferenceById(userId));
+        request.setEvent(eventRepository.getReferenceById(eventId));
 
         request.setCreateOn(LocalDateTime.now());
 
         request.setEventOwner(event.getOwner());
-        request.setRequester(userId);
         if (!event.isRequestModeration()) {
             request.setStatus(RequestStatus.CONFIRMED.toString());
             event.setConfirmedRequests(event.getConfirmedRequests() + 1);
@@ -120,7 +123,7 @@ public class RequestService {
     }
 
     public Request cancelRequest(long userId, long requestId) {
-        Request request = requestRepository.findRequestByIdAndRequester(requestId, userId);
+        Request request = requestRepository.findRequestByIdAndRequesterId(requestId, userId);
         if (request == null) {
             return null;
         }
