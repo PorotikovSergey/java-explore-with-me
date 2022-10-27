@@ -37,7 +37,8 @@ CREATE TABLE IF NOT EXISTS events (
                                       views BIGINT,
                                       CONSTRAINT pk_event PRIMARY KEY (id),
                                       CONSTRAINT owner_of_event FOREIGN KEY(owner_id) REFERENCES users(id),
-                                      CONSTRAINT category_of_event FOREIGN KEY(category_id) REFERENCES categories(id)
+                                      CONSTRAINT category_of_event FOREIGN KEY(category_id) REFERENCES categories(id),
+                                      CONSTRAINT location_of_event FOREIGN KEY(location_id) REFERENCES location(id)
 );
 
 CREATE TABLE IF NOT EXISTS participant_requests (

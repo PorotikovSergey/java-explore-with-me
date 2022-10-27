@@ -6,10 +6,7 @@ import org.springframework.beans.support.PagedListHolder;
 import org.springframework.stereotype.Service;
 import ru.practicum.explore.exceptions.NotFoundException;
 import ru.practicum.explore.exceptions.ValidationException;
-import ru.practicum.explore.model.AdminSearchedParams;
-import ru.practicum.explore.model.Event;
-import ru.practicum.explore.model.EventState;
-import ru.practicum.explore.model.FilterSearchedParams;
+import ru.practicum.explore.model.*;
 import ru.practicum.explore.storage.EventRepository;
 import ru.practicum.explore.storage.UserRepository;
 
@@ -107,8 +104,8 @@ public class EventService {
             throw new ValidationException("Нельзя постить событие за 2 часа до");
         }
         event.setCreatedOn(LocalDateTime.now());
-        locationService.addLocation(event.getLocation());
-        event.setLocationId(event.getLocation().getId());
+        Location location = locationService.addLocation(event.getLocation());
+        event.setLocation(location);
         eventRepository.save(event);
         Optional<Event> optional = eventRepository.findById(event.getId());
         if (optional.isPresent()) {

@@ -23,7 +23,4 @@ public class User {
 
     @Column(name = "email")
     private String email;
-
-    @OneToMany(mappedBy = "owner")
-    private List<Event> events;
 }

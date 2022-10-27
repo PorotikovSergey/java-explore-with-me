@@ -1,11 +1,9 @@
 package ru.practicum.explore.model;
 
 import lombok.*;
-import ru.practicum.explore.dto.UserShortDto;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "events")
@@ -31,26 +29,18 @@ public class Event {
     @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false)
     private Category category;
 
-    @Column(name = "confirmed_requests")
-    private long confirmedRequests;
-
     @Column(name = "created_on")
     private LocalDateTime createdOn;
 
     @Column(name = "event_date")
     private LocalDateTime eventDate;
 
-    @OneToMany(mappedBy = "event")
-    private List<Request> requests;
-
-    @Transient
-    private UserShortDto initiator;
-
-    @Transient
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "location_id", referencedColumnName = "id", nullable = false)
     private Location location;
 
-    @Column(name = "location_id")
-    private long locationId;
+    @Column(name = "confirmed_requests")
+    private long confirmedRequests;
 
     @Column(name = "paid")
     private Boolean paid;

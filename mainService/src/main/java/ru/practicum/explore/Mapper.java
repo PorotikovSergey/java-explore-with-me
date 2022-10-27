@@ -89,7 +89,7 @@ public class Mapper {
         User initiator = userService.getUser(event.getOwner().getId());
         UserDto initiatorDto = fromUserToDto(initiator);
         eventFullDto.setInitiator(initiatorDto);
-        Location location = locationService.getLocation(event.getLocationId());
+        Location location = locationService.getLocation(event.getLocation().getId());
         eventFullDto.setLocation(location);
         eventFullDto.setPaid(event.getPaid());
         eventFullDto.setConfirmedRequests(event.getConfirmedRequests());
