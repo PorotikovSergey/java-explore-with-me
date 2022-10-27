@@ -34,11 +34,9 @@ public class CompilationService {
     public Compilation getCompilationByIdPublic(long compId) {
         Optional<Compilation> optional = compilationRepository.findById(compId);
         if (optional.isPresent()) {
-            Compilation compilation = optional.get();
-            return compilation;
-        } else {
-            return null;
+            return optional.get();
         }
+        return null;
     }
 
     public Compilation postCompilationAdmin(Compilation compilation) {

@@ -27,8 +27,7 @@ public class RequestService {
     }
 
     public List<Request> getRequestsInfFOrEventPrivate(long userId, long eventId) {
-        List<Request> list = requestRepository.findAllByEventAndOwnerId(eventId, userId);
-        return list;
+        return requestRepository.findAllByEventAndOwnerId(eventId, userId);
     }
 
     public Request requestApprovePrivate(long userId, long eventId, long reqId) {
@@ -80,8 +79,7 @@ public class RequestService {
     }
 
     public List<Request> getRequestsPrivate(long userId) {
-        List<Request> list = requestRepository.findAllByRequester(userId);
-        return list;
+        return requestRepository.findAllByRequester(userId);
     }
 
     public Request postRequest(long userId, long eventId) {
@@ -93,7 +91,7 @@ public class RequestService {
         if (event == null) {
             return null;
         }
-        if (event.getOwnerId() == userId) {
+        if (event.getOwner().getId() == userId) {
             throw new ValidationException("Нельзя публиковать запрос на своё же событие");
         }
         if (event.getPublishedOn() == null) {
@@ -109,7 +107,7 @@ public class RequestService {
 
         request.setCreateOn(LocalDateTime.now());
 
-        request.setOwnerId(event.getOwnerId());
+        request.setOwnerId(event.getOwner().getId());
         request.setRequester(userId);
         if (!event.isRequestModeration()) {
             request.setStatus(RequestStatus.CONFIRMED.toString());

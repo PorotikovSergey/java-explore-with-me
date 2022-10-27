@@ -3,6 +3,7 @@ package ru.practicum.explore.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -22,4 +23,7 @@ public class User {
 
     @Column(name = "email")
     private String email;
+
+    @OneToMany(mappedBy = "owner")
+    private List<Event> events;
 }

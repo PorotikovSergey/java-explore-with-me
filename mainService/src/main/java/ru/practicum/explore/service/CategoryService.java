@@ -28,18 +28,15 @@ public class CategoryService {
 
     public List<Category> getCategoriesPublic(Integer from, Integer size) {
         List<Category> list = categoryRepository.findAll();
-        List<Category> afterPageableList = getPageableList(list, from, size);
-        return afterPageableList;
+        return getPageableList(list, from, size);
     }
 
     public Category getCategoryByIdPublic(long catId) {
         Optional<Category> optional = categoryRepository.findById(catId);
         if (optional.isPresent()) {
-            Category category = optional.get();
-            return category;
-        } else {
-            return null;
+            return optional.get();
         }
+        return null;
     }
 
     public Category patchCategoryAdmin(Category category) {

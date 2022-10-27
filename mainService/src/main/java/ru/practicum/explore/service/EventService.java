@@ -4,12 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.stereotype.Service;
+import ru.practicum.explore.exceptions.NotFoundException;
 import ru.practicum.explore.exceptions.ValidationException;
 import ru.practicum.explore.model.AdminSearchedParams;
 import ru.practicum.explore.model.Event;
 import ru.practicum.explore.model.EventState;
 import ru.practicum.explore.model.FilterSearchedParams;
 import ru.practicum.explore.storage.EventRepository;
+import ru.practicum.explore.storage.UserRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -25,10 +27,13 @@ public class EventService {
     private final EventRepository eventRepository;
     private final LocationService locationService;
 
+    private final UserRepository userRepository;
+
     @Autowired
-    public EventService(EventRepository eventRepository, LocationService locationService) {
+    public EventService(EventRepository eventRepository, LocationService locationService, UserRepository userRepository) {
         this.eventRepository = eventRepository;
         this.locationService = locationService;
+        this.userRepository = userRepository;
     }
 
     public List<Event> getEventsPublic(FilterSearchedParams params, Integer from, Integer size) {
@@ -39,14 +44,9 @@ public class EventService {
         return afterPageableList;
     }
 
-    public List<Event> getALL() {
-        return eventRepository.findAll();
-    }
-
     public List<Event> getEventsPrivate(long userId, Integer from, Integer size) {
         List<Event> list = eventRepository.findAllByOwnerId(userId);
-        List<Event> afterPageableList = getPageableList(list, from, size);
-        return afterPageableList;
+        return getPageableList(list, from, size);
     }
 
     public Event getEventByIdPublic(long id) {
@@ -66,8 +66,7 @@ public class EventService {
     public Event getEventById(long id) {
         Optional<Event> optional = eventRepository.findById(id);
         if (optional.isPresent()) {
-            Event backEvent = optional.get();
-            return backEvent;
+            return optional.get();
         }
         return null;
     }
@@ -77,7 +76,7 @@ public class EventService {
         Optional<Event> optional = eventRepository.findById(event.getId());
         if (optional.isPresent()) {
             Event eventForPatch = optional.get();
-            if (eventForPatch.getOwnerId() == userId) {
+            if (eventForPatch.getOwner().getId() == userId) {
                 if (eventForPatch.getState().equals(EventState.PUBLISHED.toString())) {
                     throw new ValidationException("Нельзя изменять опубликованное событие");
                 }
@@ -102,7 +101,7 @@ public class EventService {
     }
 
     public Event postEventPrivate(long userId, Event event) {
-        event.setOwnerId(userId);
+        event.setOwner(userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Такого юзера нет")));
         LocalDateTime testDateTime = LocalDateTime.now().plusHours(2);
         if (event.getEventDate().isBefore(testDateTime)) {
             throw new ValidationException("Нельзя постить событие за 2 часа до");
@@ -192,8 +191,8 @@ public class EventService {
         if (!newEvent.getAnnotation().isBlank()) {
             oldEvent.setAnnotation(newEvent.getAnnotation());
         }
-        if (newEvent.getCategoryId() != 0) {
-            oldEvent.setCategoryId(newEvent.getCategoryId());
+        if (newEvent.getCategory().getId() != 0) {
+            oldEvent.setCategory(newEvent.getCategory());
         }
         if (!newEvent.getDescription().isBlank()) {
             oldEvent.setDescription(newEvent.getDescription());
@@ -218,12 +217,12 @@ public class EventService {
         }
         if (!params.getUsers().isEmpty()) {
             for (Long user : params.getUsers()) {
-                list = list.stream().filter(s -> s.getOwnerId() == user).collect(Collectors.toList());
+                list = list.stream().filter(s -> s.getOwner().getId() == user).collect(Collectors.toList());
             }
         }
         if (!params.getCategories().isEmpty()) {
             for (Long category : params.getCategories()) {
-                list = list.stream().filter(s -> s.getCategoryId() == category).collect(Collectors.toList());
+                list = list.stream().filter(s -> s.getCategory().getId() == category).collect(Collectors.toList());
             }
         }
         if (!params.getStates().isEmpty()) {
@@ -244,7 +243,7 @@ public class EventService {
         }
         if (!params.getCategories().isEmpty()) {
             for (Long category : params.getCategories()) {
-                list = list.stream().filter(s -> s.getCategoryId() == category).collect(Collectors.toList());
+                list = list.stream().filter(s -> s.getCategory().getId() == category).collect(Collectors.toList());
             }
         }
         if (params.getRangeStart() == null) {

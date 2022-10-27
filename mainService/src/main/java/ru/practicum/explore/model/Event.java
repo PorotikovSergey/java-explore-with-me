@@ -22,11 +22,13 @@ public class Event {
     @Column(name = "state")
     private String state = EventState.PENDING.toString();
 
-    @Column(name = "owner_id")
-    private long ownerId;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "owner_id", referencedColumnName = "id", nullable = false)
+    private User owner;
 
-    @Column(name = "category_id")
-    private long categoryId;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false)
+    private Category category;
 
     @Column(name = "confirmed_requests")
     private long confirmedRequests;

@@ -22,8 +22,7 @@ public class UserService {
 
     public List<User> getUsersAdmin(List<Long> ids, Integer from, Integer size) {
         List<User> list = userRepository.findAllById(ids);
-        List<User> afterPageableList = getPageableList(list, from, size);
-        return afterPageableList;
+        return getPageableList(list, from, size);
     }
 
     public User addUserAdmin(User user) {
@@ -32,8 +31,11 @@ public class UserService {
     }
 
     public User getUser(long id) {
-        User user = userRepository.findById(id).get();
-        return user;
+        Optional<User> optional = userRepository.findById(id);
+        if(optional.isPresent()) {
+            return optional.get();
+        }
+        return null;
     }
 
     public User deleteUserAdmin(long userId) {

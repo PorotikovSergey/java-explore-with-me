@@ -29,7 +29,9 @@ CREATE TABLE IF NOT EXISTS events (
                                       published_on TIMESTAMP,
                                       request_moderation BOOLEAN,
                                       views BIGINT,
-                                      CONSTRAINT pk_event PRIMARY KEY (id)
+                                      CONSTRAINT pk_event PRIMARY KEY (id),
+                                      CONSTRAINT owner_of_event FOREIGN KEY(owner_id) REFERENCES users(id),
+                                      CONSTRAINT category_of_event FOREIGN KEY(category_id) REFERENCES categories(id)
 );
 
 CREATE TABLE IF NOT EXISTS participant_requests (

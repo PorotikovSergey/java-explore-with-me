@@ -83,10 +83,10 @@ public class Mapper {
         String formattedDateTime1 = dateTime1.format(formatter1);
         eventFullDto.setCreatedOn(formattedDateTime1);
 
-        Category category = categoryService.getCategoryByIdPublic(event.getCategoryId());
+        Category category = categoryService.getCategoryByIdPublic(event.getCategory().getId());
         CategoryDto categoryDto = fromCategoryToDto(category);
         eventFullDto.setCategory(categoryDto);
-        User initiator = userService.getUser(event.getOwnerId());
+        User initiator = userService.getUser(event.getOwner().getId());
         UserDto initiatorDto = fromUserToDto(initiator);
         eventFullDto.setInitiator(initiatorDto);
         Location location = locationService.getLocation(event.getLocationId());
@@ -102,7 +102,7 @@ public class Mapper {
         eventShortDto.setTitle(event.getTitle());
         eventShortDto.setAnnotation(event.getAnnotation());
 
-        Category category = categoryService.getCategoryByIdPublic(event.getCategoryId());
+        Category category = categoryService.getCategoryByIdPublic(event.getCategory().getId());
         CategoryDto categoryDto = fromCategoryToDto(category);
         eventShortDto.setCategory(categoryDto);
 
@@ -113,7 +113,7 @@ public class Mapper {
         String formattedDateTime = dateTime.format(formatter);
         eventShortDto.setEventDate(formattedDateTime);
 
-        User user = userService.getUser(event.getOwnerId());
+        User user = userService.getUser(event.getOwner().getId());
         UserShortDto initiator = fromUserToShortDto(user);
         eventShortDto.setInitiator(initiator);
 
@@ -124,7 +124,7 @@ public class Mapper {
     public Event fromUpdateEventRequestToEvent(UpdateEventRequest updateEventRequest) {
         Event event = new Event();
         event.setAnnotation(updateEventRequest.getAnnotation());
-        event.setCategoryId(updateEventRequest.getCategory());
+        event.setCategory(categoryService.getCategoryByIdPublic(updateEventRequest.getCategory()));
         event.setDescription(updateEventRequest.getDescription());
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -140,7 +140,7 @@ public class Mapper {
     public Event fromAdminUpdateEventRequestToEvent(AdminUpdateEventRequest adminUpdateEventRequest) {
         Event event = new Event();
         event.setAnnotation(adminUpdateEventRequest.getAnnotation());
-        event.setCategoryId(adminUpdateEventRequest.getCategory());
+        event.setCategory(categoryService.getCategoryByIdPublic(adminUpdateEventRequest.getCategory()));
         event.setDescription(adminUpdateEventRequest.getDescription());
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -159,7 +159,7 @@ public class Mapper {
         event.setTitle(newEventDto.getTitle());
         event.setAnnotation(newEventDto.getAnnotation());
         event.setDescription(newEventDto.getDescription());
-        event.setCategoryId(newEventDto.getCategory());
+        event.setCategory(categoryService.getCategoryByIdPublic(newEventDto.getCategory()));
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         event.setEventDate(LocalDateTime.parse(newEventDto.getEventDate(), formatter));
