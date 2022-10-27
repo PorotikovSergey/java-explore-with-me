@@ -7,7 +7,6 @@ import ru.practicum.explore.model.Hit;
 import ru.practicum.explore.model.ViewStats;
 import ru.practicum.explore.storage.StatsRepository;
 
-import java.sql.SQLOutput;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -37,8 +36,8 @@ public class StatsService {
         LocalDateTime startTime;
         LocalDateTime endTime;
 
-        System.out.println(start+"       "+end);
-        
+        System.out.println(start + "       " + end);
+
         try {
             startTime = LocalDateTime.parse(start, formatter);
             endTime = LocalDateTime.parse(end, formatter);

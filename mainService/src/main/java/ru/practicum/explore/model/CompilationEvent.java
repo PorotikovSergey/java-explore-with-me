@@ -20,6 +20,6 @@ public class CompilationEvent {
     @Column(name = "compilation_id")
     Long compilationId;
 
-    @Column(name ="event_id")
+    @Column(name = "event_id")
     Long eventId;
 }

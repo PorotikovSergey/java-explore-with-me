@@ -4,7 +4,6 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "compilations")
@@ -14,9 +13,6 @@ import java.util.Set;
 @NoArgsConstructor
 @ToString
 public class Compilation {
-
-//    @Column(name = "events")
-//    private String events = "";
 
     @ManyToMany(cascade = {CascadeType.ALL})
     @JoinTable(
