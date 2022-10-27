@@ -59,7 +59,11 @@ public class PublicController {
         try {
             EndpointHit hit = new EndpointHit(0, request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
             fromMainToStatsClient.postHit(hit);
+        } catch (Exception e) {
+            log.error("Почему-то запрос в статистику не сработал");
+        }
 
+        try {
             return eventResponse.getEventsPublic(text, categories, paid, rangeStart,
                     rangeEnd, onlyAvailable, sort, from, size);
         } catch (Exception e) {
@@ -72,7 +76,11 @@ public class PublicController {
         try {
             EndpointHit hit = new EndpointHit(0, request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
             fromMainToStatsClient.postHit(hit);
-
+        } catch (Exception e) {
+            log.error("Почему-то запрос в статистику не сработал");
+        }
+        
+        try {
             return eventResponse.getEventByIdPublic(id);
         } catch (Exception e) {
             return new ResponseEntity<>(ServerApiError.getServerError(), HttpStatus.INTERNAL_SERVER_ERROR);
