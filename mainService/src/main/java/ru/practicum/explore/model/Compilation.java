@@ -3,6 +3,7 @@ package ru.practicum.explore.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -17,12 +18,13 @@ public class Compilation {
     @Column(name = "events")
     private String events = "";
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.ALL})
     @JoinTable(
             name = "compilation_event",
             joinColumns = @JoinColumn(name = "compilation_id"),
             inverseJoinColumns = @JoinColumn(name = "event_id"))
-    Set<Event> eventSet;
+    @ToString.Exclude
+    List<Event> eventList;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

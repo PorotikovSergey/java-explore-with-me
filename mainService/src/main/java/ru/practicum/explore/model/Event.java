@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -19,8 +20,8 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @ManyToMany(mappedBy = "eventSet")
-    Set<Compilation> compilationSet;
+    @ManyToMany(mappedBy = "eventList")
+    List<Compilation> compilationList;
 
     @Column(name = "state")
     private String state = EventState.PENDING.toString();

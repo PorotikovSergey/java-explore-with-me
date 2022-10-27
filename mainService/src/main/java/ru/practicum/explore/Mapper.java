@@ -234,6 +234,7 @@ public class Mapper {
         compilation.setPinned(newCompilationDto.isPinned());
         if (!newCompilationDto.getEvents().isEmpty()) {
             compilation.setEvents(fromListOfLongsToString(newCompilationDto.getEvents()));
+            compilation.setEventList(eventService.getAllByIds(newCompilationDto.getEvents()));
         } else {
             compilation.setEvents("");
         }
