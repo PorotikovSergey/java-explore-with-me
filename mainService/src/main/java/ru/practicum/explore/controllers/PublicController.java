@@ -79,7 +79,6 @@ public class PublicController {
         } catch (Exception e) {
             log.error("Почему-то запрос в статистику не сработал");
         }
-        
         try {
             return eventResponse.getEventByIdPublic(id);
         } catch (Exception e) {
