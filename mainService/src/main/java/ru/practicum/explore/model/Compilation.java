@@ -3,6 +3,7 @@ package ru.practicum.explore.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Table(name = "compilations")
@@ -15,6 +16,13 @@ public class Compilation {
 
     @Column(name = "events")
     private String events = "";
+
+    @ManyToMany
+    @JoinTable(
+            name = "compilation_event",
+            joinColumns = @JoinColumn(name = "compilation_id"),
+            inverseJoinColumns = @JoinColumn(name = "event_id"))
+    Set<Event> eventSet;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
