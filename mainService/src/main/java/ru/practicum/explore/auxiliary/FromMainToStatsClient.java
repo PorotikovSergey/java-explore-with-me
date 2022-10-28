@@ -1,4 +1,4 @@
-package ru.practicum.explore.model;
+package ru.practicum.explore.auxiliary;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

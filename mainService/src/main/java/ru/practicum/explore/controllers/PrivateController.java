@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explore.apierrors.ServerApiError;
 import ru.practicum.explore.dto.NewEventDto;
-import ru.practicum.explore.model.UpdateEventRequest;
+import ru.practicum.explore.dto.UpdateEventRequest;
 import ru.practicum.explore.responses.EventResponse;
 import ru.practicum.explore.responses.RequestResponse;
 

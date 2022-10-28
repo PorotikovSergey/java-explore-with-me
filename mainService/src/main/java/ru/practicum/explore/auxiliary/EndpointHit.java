@@ -1,4 +1,4 @@
-package ru.practicum.explore.model;
+package ru.practicum.explore.auxiliary;
 
 import lombok.*;
 

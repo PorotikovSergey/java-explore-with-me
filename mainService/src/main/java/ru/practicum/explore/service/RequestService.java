@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.explore.exceptions.ValidationException;
 import ru.practicum.explore.model.Event;
 import ru.practicum.explore.model.Request;
-import ru.practicum.explore.model.RequestStatus;
+import ru.practicum.explore.auxiliary.RequestStatus;
 import ru.practicum.explore.storage.EventRepository;
 import ru.practicum.explore.storage.RequestRepository;
 import ru.practicum.explore.storage.UserRepository;

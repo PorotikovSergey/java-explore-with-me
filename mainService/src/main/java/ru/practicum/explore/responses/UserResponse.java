@@ -9,7 +9,7 @@ import ru.practicum.explore.Mapper;
 import ru.practicum.explore.apierrors.ForbiddenError;
 import ru.practicum.explore.apierrors.NotFoundApiError;
 import ru.practicum.explore.dto.UserDto;
-import ru.practicum.explore.model.NewUserRequest;
+import ru.practicum.explore.dto.NewUserRequest;
 import ru.practicum.explore.model.User;
 import ru.practicum.explore.service.UserService;
 

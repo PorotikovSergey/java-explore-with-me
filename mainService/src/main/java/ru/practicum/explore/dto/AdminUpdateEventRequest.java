@@ -1,6 +1,7 @@
-package ru.practicum.explore.model;
+package ru.practicum.explore.dto;
 
 import lombok.*;
+import ru.practicum.explore.model.Location;
 
 @Getter
 @Setter
