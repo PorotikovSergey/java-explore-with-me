@@ -1,47 +1,47 @@
 version: '3.8'
 services:
-  stats-server:
-    build: statsService
-    image: statsservice-image
-    container_name: exploreWithMe-stats
-    ports:
-      - "9090:9090"
-    depends_on:
-      - stats-db
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/exploreStats
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=iamroot
+    stats-service:
+      build: statsService
+      image: statsservice-image
+      container_name: exploreWithMe-stats
+      ports:
+        - "9090:9090"
+      depends_on:
+        - stats-db
+      environment:
+        - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/exploreStats
+        - SPRING_DATASOURCE_USERNAME=root
+        - SPRING_DATASOURCE_PASSWORD=iamroot
 
-  stats-db:
-    image: postgres:14-alpine
-    container_name: statsDB-postgres
-    ports:
-      - "6541:5432"
-    environment:
-      - POSTGRES_DB=exploreStats
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=iamroot
+    stats-db:
+      image: postgres:14-alpine
+      container_name: statsDB-postgres
+      ports:
+        - "6541:5432"
+      environment:
+        - POSTGRES_DB=exploreStats
+        - POSTGRES_USER=root
+        - POSTGRES_PASSWORD=iamroot
 
-  ewm-service:
-    build: mainService
-    image: mainservice-image
-    container_name: exploreWithMe-service
-    ports:
-      - "8080:8080"
-    depends_on:
-      - ewm-db
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/exploreMain
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=iamroot
+    ewm-service:
+      build: mainService
+      image: mainservice-image
+      container_name: exploreWithMe-service
+      ports:
+        - "8080:8080"
+      depends_on:
+        - ewm-db
+      environment:
+        - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/exploreMain
+        - SPRING_DATASOURCE_USERNAME=root
+        - SPRING_DATASOURCE_PASSWORD=iamroot
 
-  ewm-db:
-    image: postgres:14-alpine
-    container_name: mainDB-postgres
-    ports:
-      - "6542:5432"
-    environment:
-      - POSTGRES_DB=exploreMain
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=iamroot
+    ewm-db:
+      image: postgres:14-alpine
+      container_name: mainDB-postgres
+      ports:
+        - "6542:5432"
+      environment:
+        - POSTGRES_DB=exploreMain
+        - POSTGRES_USER=root
+        - POSTGRES_PASSWORD=iamroot
