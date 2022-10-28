@@ -9,7 +9,5 @@ import java.util.List;
 
 @Repository
 public interface StatsRepository extends JpaRepository<Hit, Long> {
-    List<Hit> findAllByUriIn(List<String> uris);
-
-    List<Hit> findAllByUriInAndAndTimestampBetween(List<String> uris, LocalDateTime start, LocalDateTime end);
+    List<Hit> findAllByUriInAndTimestampBetween(List<String> uris, LocalDateTime start, LocalDateTime end);
 }

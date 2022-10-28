@@ -10,7 +10,7 @@ import ru.practicum.explore.storage.StatsRepository;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -26,17 +26,14 @@ public class StatsService {
 
     public Hit postHit(Hit hit) {
         statsRepository.save(hit);
-        Hit backHit = statsRepository.findById(hit.getId()).get();
-        return backHit;
+        return hit;
     }
 
-    public List<ViewStats> getStats(List<String> uris, boolean unique, String start, String end) {
+    public Collection<ViewStats> getStats(List<String> uris, boolean unique, String start, String end) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
         LocalDateTime startTime;
         LocalDateTime endTime;
-
-        System.out.println(start + "       " + end);
 
         try {
             startTime = LocalDateTime.parse(start, formatter);
@@ -46,14 +43,35 @@ public class StatsService {
             endTime = LocalDateTime.parse(end, formatter1);
         }
 
-        List<Hit> list = statsRepository.findAllByUriInAndAndTimestampBetween(uris, startTime, endTime);
-        return list.stream().map(this::getViewStats).collect(Collectors.toList());
+        List<Hit> list = statsRepository.findAllByUriInAndTimestampBetween(uris, startTime, endTime);
+
+        if (unique) {
+            List<ViewStats> viewStatsList = getViewStatsWithHit(list);
+            List<ViewStats> resultList = viewStatsList.stream().filter(v -> v.getHits() == 1).collect(Collectors.toList());
+            return resultList;
+        } else {
+            List<ViewStats> resultList = getViewStatsWithHit(list);
+            return resultList;
+        }
     }
 
-    private ViewStats getViewStats(Hit hit) {
+    private ViewStats fromHitToStat(Hit hit) {
         ViewStats viewStats = new ViewStats();
         viewStats.setApp(hit.getApp());
         viewStats.setUri(hit.getUri());
         return viewStats;
+    }
+
+    private List<ViewStats> getViewStatsWithHit(List<Hit> list) {
+        List<ViewStats> viewStatsList = new ArrayList<>();
+        for (Hit hit : list) {
+            viewStatsList.add(fromHitToStat(hit));
+        }
+        Set<ViewStats> viewStatsSet = new HashSet<>(viewStatsList);
+        for (ViewStats stat : viewStatsSet) {
+            int hits = Collections.frequency(list, stat);
+            stat.setHits(hits);
+        }
+        return new ArrayList<>(viewStatsSet);
     }
 }
