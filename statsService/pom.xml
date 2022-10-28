@@ -12,7 +12,7 @@
     <artifactId>statsService</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
-    <name>Stats Service</name>
+    <name>statsService</name>
 
     <dependencies>
         <dependency>

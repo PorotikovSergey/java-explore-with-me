@@ -12,7 +12,7 @@
     <artifactId>mainService</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
-    <name>Main Service</name>
+    <name>mainService</name>
 
     <dependencies>
         <dependency>
