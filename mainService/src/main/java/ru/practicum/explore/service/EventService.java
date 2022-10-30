@@ -1,5 +1,6 @@
 package ru.practicum.explore.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.support.PagedListHolder;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class EventService {
 
     private final EventRepository eventRepository;
@@ -29,12 +31,6 @@ public class EventService {
 
     private final UserRepository userRepository;
 
-    @Autowired
-    public EventService(EventRepository eventRepository, LocationService locationService, UserRepository userRepository) {
-        this.eventRepository = eventRepository;
-        this.locationService = locationService;
-        this.userRepository = userRepository;
-    }
 
     public List<Event> getEventsPublic(FilterSearchedParams params, Integer from, Integer size) {
         List<Event> textSearchedList = searchEventsByText(params.getText());

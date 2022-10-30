@@ -1,5 +1,6 @@
 package ru.practicum.explore.controllers;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,16 +14,11 @@ import ru.practicum.explore.responses.RequestResponse;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/users/{userId}")
 public class PrivateController {
     private final EventResponse eventResponse;
     private final RequestResponse requestResponse;
-
-    @Autowired
-    public PrivateController(EventResponse eventResponse, RequestResponse requestResponse) {
-        this.eventResponse = eventResponse;
-        this.requestResponse = requestResponse;
-    }
 
     @GetMapping("/events")
     public ResponseEntity<Object> getEvents(@PathVariable long userId,

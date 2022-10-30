@@ -1,5 +1,6 @@
 package ru.practicum.explore.responses;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,16 +19,11 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class CategoryResponse {
 
     private final CategoryService categoryService;
     private final Mapper mapper;
-
-    @Autowired
-    public CategoryResponse(CategoryService categoryService, Mapper mapper) {
-        this.categoryService = categoryService;
-        this.mapper = mapper;
-    }
 
     public ResponseEntity<Object> patchCategoryAdmin(CategoryDto categoryDto) {
         Category category = mapper.fromDtoToCategory(categoryDto);

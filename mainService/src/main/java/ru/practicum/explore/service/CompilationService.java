@@ -1,5 +1,6 @@
 package ru.practicum.explore.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.support.PagedListHolder;
@@ -14,16 +15,11 @@ import java.util.Optional;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class CompilationService {
 
     private final CompilationRepository compilationRepository;
     private final EventRepository eventRepository;
-
-    @Autowired
-    public CompilationService(CompilationRepository compilationRepository, EventRepository eventRepository) {
-        this.compilationRepository = compilationRepository;
-        this.eventRepository = eventRepository;
-    }
 
     public List<Compilation> getCompilationsPublic(Boolean pinned, Integer from, Integer size) {
         List<Compilation> list = compilationRepository.findAllByPinned(pinned);

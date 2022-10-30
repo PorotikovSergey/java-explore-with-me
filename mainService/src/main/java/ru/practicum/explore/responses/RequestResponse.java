@@ -1,5 +1,6 @@
 package ru.practicum.explore.responses;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,16 +18,11 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class RequestResponse {
 
     private final RequestService requestService;
     private final Mapper mapper;
-
-    @Autowired
-    public RequestResponse(RequestService requestService, Mapper mapper) {
-        this.requestService = requestService;
-        this.mapper = mapper;
-    }
 
     public ResponseEntity<Object> getRequestsInfFOrEventPrivate(long userId, long eventId) {
         List<Request> list;

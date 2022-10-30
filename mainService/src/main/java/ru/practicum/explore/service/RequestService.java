@@ -1,5 +1,6 @@
 package ru.practicum.explore.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,19 +17,13 @@ import java.util.List;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class RequestService {
 
     private final RequestRepository requestRepository;
     private final EventRepository eventRepository;
 
     private final UserRepository userRepository;
-
-    @Autowired
-    public RequestService(RequestRepository requestRepository, EventRepository eventRepository, UserRepository userRepository) {
-        this.requestRepository = requestRepository;
-        this.eventRepository = eventRepository;
-        this.userRepository = userRepository;
-    }
 
     public List<Request> getRequestsInfFOrEventPrivate(long userId, long eventId) {
         return requestRepository.findAllByEventIdAndEventOwnerId(eventId, userId);

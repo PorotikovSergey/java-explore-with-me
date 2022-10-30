@@ -1,5 +1,6 @@
 package ru.practicum.explore.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,14 +11,10 @@ import java.util.Optional;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class LocationService {
 
     private final LocationRepository locationRepository;
-
-    @Autowired
-    public LocationService(LocationRepository locationRepository) {
-        this.locationRepository = locationRepository;
-    }
 
     public Location getLocation(long id) {
         Optional<Location> optional = locationRepository.findById(id);

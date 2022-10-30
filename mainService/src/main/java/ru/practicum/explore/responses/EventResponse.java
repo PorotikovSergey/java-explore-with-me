@@ -1,5 +1,6 @@
 package ru.practicum.explore.responses;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,16 +19,11 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class EventResponse {
 
     private final EventService eventService;
     private final Mapper mapper;
-
-    @Autowired
-    public EventResponse(EventService eventService, Mapper mapper) {
-        this.eventService = eventService;
-        this.mapper = mapper;
-    }
 
     public ResponseEntity<Object> getEventsAdmin(List<Long> users, List<String> states, List<Long> categories,
                                                  String rangeStart, String rangeEnd, Integer from, Integer size) {

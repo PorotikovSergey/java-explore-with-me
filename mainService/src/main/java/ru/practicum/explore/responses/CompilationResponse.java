@@ -1,5 +1,6 @@
 package ru.practicum.explore.responses;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,16 +19,11 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class CompilationResponse {
 
     private final CompilationService compilationService;
     private final Mapper mapper;
-
-    @Autowired
-    public CompilationResponse(CompilationService compilationService, Mapper mapper) {
-        this.compilationService = compilationService;
-        this.mapper = mapper;
-    }
 
     public ResponseEntity<Object> postCompilationAdmin(NewCompilationDto newCompilationDto) {
         Compilation compilation = mapper.fromNewDtoToCompilation(newCompilationDto);

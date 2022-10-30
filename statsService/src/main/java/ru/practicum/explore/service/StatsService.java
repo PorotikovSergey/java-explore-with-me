@@ -1,7 +1,7 @@
 package ru.practicum.explore.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.explore.model.Hit;
 import ru.practicum.explore.model.ViewStats;
@@ -15,14 +15,10 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class StatsService {
 
     private final StatsRepository statsRepository;
-
-    @Autowired
-    public StatsService(StatsRepository statsRepository) {
-        this.statsRepository = statsRepository;
-    }
 
     public Hit postHit(Hit hit) {
         statsRepository.save(hit);

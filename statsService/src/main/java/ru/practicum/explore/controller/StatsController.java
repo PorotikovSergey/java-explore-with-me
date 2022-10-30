@@ -1,5 +1,6 @@
 package ru.practicum.explore.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,14 +16,10 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping()
+@RequiredArgsConstructor
 public class StatsController {
 
     private final StatsService statsService;
-
-    @Autowired
-    public StatsController(StatsService statsService) {
-        this.statsService = statsService;
-    }
 
     @PostMapping("/hit")
     public ResponseEntity<Object> postHit(@RequestBody EndpointHit endpointHit) {

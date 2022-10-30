@@ -1,5 +1,6 @@
 package ru.practicum.explore.controllers;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,21 +20,13 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping
+@RequiredArgsConstructor
 public class PublicController {
 
     private final EventResponse eventResponse;
     private final CategoryResponse categoryResponse;
     private final CompilationResponse compilationResponse;
     private final FromMainToStatsClient fromMainToStatsClient;
-
-    @Autowired
-    public PublicController(EventResponse eventResponse, CategoryResponse categoryResponse,
-                            CompilationResponse compilationResponse, FromMainToStatsClient fromMainToStatsClient) {
-        this.eventResponse = eventResponse;
-        this.categoryResponse = categoryResponse;
-        this.compilationResponse = compilationResponse;
-        this.fromMainToStatsClient = fromMainToStatsClient;
-    }
 
     @GetMapping("/events")
     public ResponseEntity<Object> getEvents(HttpServletRequest request,
