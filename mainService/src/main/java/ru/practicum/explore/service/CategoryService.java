@@ -5,12 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.stereotype.Service;
 import ru.practicum.explore.exceptions.NotFoundException;
+import ru.practicum.explore.exceptions.ValidationException;
 import ru.practicum.explore.model.Category;
 import ru.practicum.explore.model.Event;
 import ru.practicum.explore.storage.CategoryRepository;
 import ru.practicum.explore.storage.EventRepository;
 
-import javax.xml.bind.ValidationException;
 import java.util.List;
 
 @Slf4j
@@ -44,7 +44,7 @@ public class CategoryService {
         return category;
     }
 
-    public Category deleteCategoryAdmin(long catId) throws ValidationException {
+    public Category deleteCategoryAdmin(long catId) {
         List<Event> list = eventRepository.findAllByCategoryId(catId);
         if (!list.isEmpty()) {
             throw new ValidationException("Нельзя удалять категорию если есть связанные с ней события");

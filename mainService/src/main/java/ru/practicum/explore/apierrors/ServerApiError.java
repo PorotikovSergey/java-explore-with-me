@@ -4,13 +4,11 @@ import java.time.LocalDateTime;
 
 public class ServerApiError extends ApiError {
 
-    public static ApiError getServerError() {
+    public static ApiError getServerError(String message) {
         ApiError apiError = new ApiError();
         apiError.setStatus("INTERNAL_SERVER_ERROR");
         apiError.setReason("Error occurred");
-        apiError.setMessage("could not execute statement; SQL [n/a]; constraint [uq_category_name]; " +
-                "nested exception is org.hibernate.exception.ConstraintViolationException: " +
-                "could not execute statement");
+        apiError.setMessage(message);
         apiError.setTimestamp(LocalDateTime.now().toString());
         return apiError;
     }

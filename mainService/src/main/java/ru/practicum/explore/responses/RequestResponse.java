@@ -2,12 +2,11 @@ package ru.practicum.explore.responses;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.practicum.explore.Mapper;
-import ru.practicum.explore.apierrors.ForbiddenError;
+import ru.practicum.explore.apierrors.ForbiddenApiError;
 import ru.practicum.explore.apierrors.NotFoundApiError;
 import ru.practicum.explore.dto.ParticipationRequestDto;
 import ru.practicum.explore.exceptions.NotFoundException;
@@ -30,7 +29,7 @@ public class RequestResponse {
         try {
             list = requestService.getRequestsInfFOrEventPrivate(userId, eventId);
         } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenError.getForbidden("requests"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(ForbiddenApiError.getForbidden("requests"), HttpStatus.FORBIDDEN);
         }
 
         if (list.isEmpty()) {
@@ -51,12 +50,9 @@ public class RequestResponse {
         } catch (NotFoundException e) {
             return new ResponseEntity<>(NotFoundApiError.getNotFound("request"), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenError.getForbidden("request"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(ForbiddenApiError.getForbidden("request"), HttpStatus.FORBIDDEN);
         }
-//
-//        if (request == null) {
-//            return new ResponseEntity<>(NotFoundApiError.getNotFound("request"), HttpStatus.NOT_FOUND);
-//        }
+
         ParticipationRequestDto participationRequestDto = mapper.fromRequestToParticipationRequestDto(request);
         return new ResponseEntity<>(participationRequestDto, HttpStatus.OK);
     }
@@ -68,12 +64,8 @@ public class RequestResponse {
         } catch (NotFoundException e) {
             return new ResponseEntity<>(NotFoundApiError.getNotFound("request"), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenError.getForbidden("request"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(ForbiddenApiError.getForbidden("request"), HttpStatus.FORBIDDEN);
         }
-//
-//        if (request == null) {
-//            return new ResponseEntity<>(NotFoundApiError.getNotFound("request"), HttpStatus.NOT_FOUND);
-//        }
 
         ParticipationRequestDto participationRequestDto = mapper.fromRequestToParticipationRequestDto(request);
         return new ResponseEntity<>(participationRequestDto, HttpStatus.OK);
@@ -84,7 +76,7 @@ public class RequestResponse {
         try {
             list = requestService.getRequestsPrivate(userId);
         } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenError.getForbidden("request"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(ForbiddenApiError.getForbidden("request"), HttpStatus.FORBIDDEN);
         }
 
         if (list.isEmpty()) {
@@ -105,12 +97,9 @@ public class RequestResponse {
         } catch (NotFoundException e) {
             return new ResponseEntity<>(NotFoundApiError.getNotFound("request"), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenError.getForbidden("request"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(ForbiddenApiError.getForbidden("request"), HttpStatus.FORBIDDEN);
         }
-//
-//        if (request == null) {
-//            return new ResponseEntity<>(NotFoundApiError.getNotFound("request"), HttpStatus.NOT_FOUND);
-//        }
+
         ParticipationRequestDto participationRequestDto = mapper.fromRequestToParticipationRequestDto(request);
         return new ResponseEntity<>(participationRequestDto, HttpStatus.OK);
     }
@@ -122,12 +111,9 @@ public class RequestResponse {
         } catch (NotFoundException e) {
             return new ResponseEntity<>(NotFoundApiError.getNotFound("request"), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenError.getForbidden("request"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(ForbiddenApiError.getForbidden("request"), HttpStatus.FORBIDDEN);
         }
-//
-//        if (request == null) {
-//            return new ResponseEntity<>(NotFoundApiError.getNotFound("request"), HttpStatus.NOT_FOUND);
-//        }
+
 
         ParticipationRequestDto participationRequestDto = mapper.fromRequestToParticipationRequestDto(request);
         return new ResponseEntity<>(participationRequestDto, HttpStatus.OK);

@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.practicum.explore.Mapper;
-import ru.practicum.explore.apierrors.ForbiddenError;
+import ru.practicum.explore.apierrors.ForbiddenApiError;
 import ru.practicum.explore.apierrors.NotFoundApiError;
 import ru.practicum.explore.dto.UserDto;
 import ru.practicum.explore.dto.NewUserRequest;
@@ -31,7 +31,7 @@ public class UserResponse {
         try {
             list = userService.getUsersAdmin(ids, from, size);
         } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenError.getForbidden("users"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(ForbiddenApiError.getForbidden("users"), HttpStatus.FORBIDDEN);
         }
 
         if (list.isEmpty()) {
@@ -50,7 +50,7 @@ public class UserResponse {
         } catch (NotFoundException e) {
             return new ResponseEntity<>(NotFoundApiError.getNotFound("user"), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenError.getForbidden("user"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(ForbiddenApiError.getForbidden("user"), HttpStatus.FORBIDDEN);
         }
 
         UserDto userDto = mapper.fromUserToDto(backUser);
@@ -64,7 +64,7 @@ public class UserResponse {
         } catch (NotFoundException e) {
             return new ResponseEntity<>(NotFoundApiError.getNotFound("user"), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenError.getForbidden("user"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(ForbiddenApiError.getForbidden("user"), HttpStatus.FORBIDDEN);
         }
 
         UserDto userDto = mapper.fromUserToDto(backUser);

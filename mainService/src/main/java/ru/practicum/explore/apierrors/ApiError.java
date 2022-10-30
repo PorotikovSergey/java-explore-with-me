@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 public class ApiError {
-    private List<String> errors;
+//    private List<String> errors;
     private String message;
     private String reason;
     private String status;

@@ -2,16 +2,14 @@ package ru.practicum.explore.responses;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.practicum.explore.Mapper;
-import ru.practicum.explore.apierrors.ForbiddenError;
+import ru.practicum.explore.apierrors.ForbiddenApiError;
 import ru.practicum.explore.apierrors.NotFoundApiError;
 import ru.practicum.explore.dto.*;
 import ru.practicum.explore.exceptions.NotFoundException;
-import ru.practicum.explore.exceptions.ValidationException;
 import ru.practicum.explore.model.*;
 import ru.practicum.explore.service.EventService;
 
@@ -33,7 +31,7 @@ public class EventResponse {
         try {
             list = eventService.getEventsAdmin(params, from, size);
         } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenError.getForbidden("events"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(ForbiddenApiError.getForbidden("events"), HttpStatus.FORBIDDEN);
         }
 
         if (list.isEmpty()) {
@@ -52,7 +50,7 @@ public class EventResponse {
         }  catch (NotFoundException e) {
             return new ResponseEntity<>(NotFoundApiError.getNotFound("event"), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenError.getForbidden("event"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(ForbiddenApiError.getForbidden("event"), HttpStatus.FORBIDDEN);
         }
 
         EventFullDto eventFullDto = mapper.fromEventToFullDto(backEvent);
@@ -66,7 +64,7 @@ public class EventResponse {
         } catch (NotFoundException e) {
             return new ResponseEntity<>(NotFoundApiError.getNotFound("event"), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenError.getForbidden("event"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(ForbiddenApiError.getForbidden("event"), HttpStatus.FORBIDDEN);
         }
 
         EventFullDto eventFullDto = mapper.fromEventToFullDto(backEvent);
@@ -80,7 +78,7 @@ public class EventResponse {
         } catch (NotFoundException e) {
             return new ResponseEntity<>(NotFoundApiError.getNotFound("event"), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenError.getForbidden("event"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(ForbiddenApiError.getForbidden("event"), HttpStatus.FORBIDDEN);
         }
 
         EventFullDto eventFullDto = mapper.fromEventToFullDto(backEvent);
@@ -92,7 +90,7 @@ public class EventResponse {
         try {
             list = eventService.getEventsPrivate(userId, from, size);
         } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenError.getForbidden("events"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(ForbiddenApiError.getForbidden("events"), HttpStatus.FORBIDDEN);
         }
 
         if (list.isEmpty()) {
@@ -111,7 +109,7 @@ public class EventResponse {
         }  catch (NotFoundException e) {
             return new ResponseEntity<>(NotFoundApiError.getNotFound("event"), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenError.getForbidden("event"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(ForbiddenApiError.getForbidden("event"), HttpStatus.FORBIDDEN);
         }
 
         EventFullDto eventFullDto = mapper.fromEventToFullDto(backEvent);
@@ -126,7 +124,7 @@ public class EventResponse {
         } catch (NotFoundException e) {
             return new ResponseEntity<>(NotFoundApiError.getNotFound("event"), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenError.getForbidden("event"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(ForbiddenApiError.getForbidden("event"), HttpStatus.FORBIDDEN);
         }
 
         EventFullDto eventFullDto = mapper.fromEventToFullDto(backEvent);
@@ -140,7 +138,7 @@ public class EventResponse {
         } catch (NotFoundException e) {
             return new ResponseEntity<>(NotFoundApiError.getNotFound("event"), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenError.getForbidden("event"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(ForbiddenApiError.getForbidden("event"), HttpStatus.FORBIDDEN);
         }
 
         EventFullDto eventFullDto = mapper.fromEventToFullDto(event);
@@ -154,7 +152,7 @@ public class EventResponse {
         }  catch (NotFoundException e) {
             return new ResponseEntity<>(NotFoundApiError.getNotFound("event"), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenError.getForbidden("event"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(ForbiddenApiError.getForbidden("event"), HttpStatus.FORBIDDEN);
         }
 
         EventFullDto eventFullDto = mapper.fromEventToFullDto(event);
@@ -171,7 +169,7 @@ public class EventResponse {
             params = new FilterSearchedParams(categories, paid, onlyAvailable, rangeStart, rangeEnd, sort, text);
             list = eventService.getEventsPublic(params, from, size);
         } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenError.getForbidden("events"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(ForbiddenApiError.getForbidden("events"), HttpStatus.FORBIDDEN);
         }
 
         if (list.isEmpty()) {
@@ -189,7 +187,7 @@ public class EventResponse {
         } catch (NotFoundException e) {
             return new ResponseEntity<>(NotFoundApiError.getNotFound("event"), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenError.getForbidden("event"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(ForbiddenApiError.getForbidden("event"), HttpStatus.FORBIDDEN);
         }
 
         EventFullDto resultEventFullDto = mapper.fromEventToFullDto(event);

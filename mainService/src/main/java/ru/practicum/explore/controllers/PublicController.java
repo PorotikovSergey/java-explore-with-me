@@ -56,12 +56,9 @@ public class PublicController {
             log.error("Почему-то запрос в статистику не сработал");
         }
 
-        try {
-            return eventResponse.getEventsPublic(text, categories, paid, rangeStart,
-                    rangeEnd, onlyAvailable, sort, from, size);
-        } catch (Exception e) {
-            return new ResponseEntity<>(ServerApiError.getServerError(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return eventResponse.getEventsPublic(text, categories, paid, rangeStart,
+                rangeEnd, onlyAvailable, sort, from, size);
+
     }
 
     @GetMapping("/events/{id}")
@@ -72,11 +69,9 @@ public class PublicController {
         } catch (Exception e) {
             log.error("Почему-то запрос в статистику не сработал");
         }
-        try {
-            return eventResponse.getEventByIdPublic(id);
-        } catch (Exception e) {
-            return new ResponseEntity<>(ServerApiError.getServerError(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+
+        return eventResponse.getEventByIdPublic(id);
+
     }
 
     @GetMapping("/compilations")
@@ -86,20 +81,16 @@ public class PublicController {
                                                   Integer size,
                                                   @RequestParam(name = "pinned", defaultValue = "false")
                                                   Boolean pinned) {
-        try {
-            return compilationResponse.getCompilationsPublic(pinned, from, size);
-        } catch (Exception e) {
-            return new ResponseEntity<>(ServerApiError.getServerError(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+
+        return compilationResponse.getCompilationsPublic(pinned, from, size);
+
     }
 
     @GetMapping("/compilations/{compId}")
     public ResponseEntity<Object> getCompilationById(@PathVariable long compId) {
-        try {
-            return compilationResponse.getCompilationByIdPublic(compId);
-        } catch (Exception e) {
-            return new ResponseEntity<>(ServerApiError.getServerError(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+
+        return compilationResponse.getCompilationByIdPublic(compId);
+
     }
 
     @GetMapping("/categories")
@@ -107,19 +98,15 @@ public class PublicController {
                                                 Integer from,
                                                 @RequestParam(name = "size", defaultValue = "10")
                                                 Integer size) {
-        try {
-            return categoryResponse.getCategoriesPublic(from, size);
-        } catch (Exception e) {
-            return new ResponseEntity<>(ServerApiError.getServerError(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+
+        return categoryResponse.getCategoriesPublic(from, size);
+
     }
 
     @GetMapping("/categories/{catId}")
     public ResponseEntity<Object> getCategoryById(@PathVariable long catId) {
-        try {
-            return categoryResponse.getCategoryByIdPublic(catId);
-        } catch (Exception e) {
-            return new ResponseEntity<>(ServerApiError.getServerError(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+
+        return categoryResponse.getCategoryByIdPublic(catId);
+
     }
 }

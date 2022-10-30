@@ -29,7 +29,7 @@ public class PrivateController {
         try {
             return eventResponse.getEventsPrivate(userId, from, size);
         } catch (Exception e) {
-            return new ResponseEntity<>(ServerApiError.getServerError(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ServerApiError.getServerError(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -38,7 +38,7 @@ public class PrivateController {
         try {
             return eventResponse.patchEventPrivate(userId, updateEventRequest);
         } catch (Exception e) {
-            return new ResponseEntity<>(ServerApiError.getServerError(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ServerApiError.getServerError(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -47,7 +47,7 @@ public class PrivateController {
         try {
             return eventResponse.postEventPrivate(userId, newEventDto);
         } catch (Exception e) {
-            return new ResponseEntity<>(ServerApiError.getServerError(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ServerApiError.getServerError(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -56,7 +56,7 @@ public class PrivateController {
         try {
             return eventResponse.getFullEventByIdPrivate(userId, eventId);
         } catch (Exception e) {
-            return new ResponseEntity<>(ServerApiError.getServerError(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ServerApiError.getServerError(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -65,7 +65,7 @@ public class PrivateController {
         try {
             return eventResponse.cancelEventPrivate(userId, eventId);
         } catch (Exception e) {
-            return new ResponseEntity<>(ServerApiError.getServerError(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ServerApiError.getServerError(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -74,7 +74,7 @@ public class PrivateController {
         try {
             return requestResponse.getRequestsInfFOrEventPrivate(userId, eventId);
         } catch (Exception e) {
-            return new ResponseEntity<>(ServerApiError.getServerError(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ServerApiError.getServerError(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -83,7 +83,7 @@ public class PrivateController {
         try {
             return requestResponse.requestApprovePrivate(userId, eventId, reqId);
         } catch (Exception e) {
-            return new ResponseEntity<>(ServerApiError.getServerError(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ServerApiError.getServerError(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -92,7 +92,7 @@ public class PrivateController {
         try {
             return requestResponse.requestRejectPrivate(userId, eventId, reqId);
         } catch (Exception e) {
-            return new ResponseEntity<>(ServerApiError.getServerError(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ServerApiError.getServerError(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -101,7 +101,7 @@ public class PrivateController {
         try {
             return requestResponse.getRequestsPrivate(userId);
         } catch (Exception e) {
-            return new ResponseEntity<>(ServerApiError.getServerError(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ServerApiError.getServerError(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -112,7 +112,7 @@ public class PrivateController {
         try {
             return requestResponse.postRequest(userId, eventId);
         } catch (Exception e) {
-            return new ResponseEntity<>(ServerApiError.getServerError(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ServerApiError.getServerError(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -121,7 +121,7 @@ public class PrivateController {
         try {
             return requestResponse.cancelRequest(userId, requestId);
         } catch (Exception e) {
-            return new ResponseEntity<>(ServerApiError.getServerError(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ServerApiError.getServerError(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

@@ -24,6 +24,7 @@ public class StatsController {
     @PostMapping("/hit")
     public ResponseEntity<Object> postHit(@RequestBody EndpointHit endpointHit) {
         Hit hit = Mapper.fromEndpointHitToHit(endpointHit);
+
         ResponseEntity<Object> responseEntity = new ResponseEntity<>(statsService.postHit(hit), HttpStatus.OK);
         return responseEntity;
     }
