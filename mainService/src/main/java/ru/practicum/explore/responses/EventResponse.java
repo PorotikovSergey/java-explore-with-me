@@ -119,7 +119,7 @@ public class EventResponse {
                                                   String sort, Integer from, Integer size, HttpServletRequest request) {
 
         try {
-            Hit hit = new Hit(0, request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now());
+            Hit hit = new Hit(0, request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
             fromMainToStatsClient.postHit(hit);
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -139,7 +139,7 @@ public class EventResponse {
     public ResponseEntity<Object> getEventByIdPublic(HttpServletRequest request, long id) {
 
         try {
-            Hit hit = new Hit(0, request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now());
+            Hit hit = new Hit(0, request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
             fromMainToStatsClient.postHit(hit);
         } catch (Exception e) {
             log.error(e.getMessage());

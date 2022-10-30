@@ -45,7 +45,6 @@ public class PublicController {
 
         return eventResponse.getEventsPublic(text, categories, paid, rangeStart,
                 rangeEnd, onlyAvailable, sort, from, size, request);
-
     }
 
     @GetMapping("/events/{id}")

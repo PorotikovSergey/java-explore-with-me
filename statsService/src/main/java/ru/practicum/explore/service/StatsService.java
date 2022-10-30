@@ -21,33 +21,20 @@ public class StatsService {
     private final StatsRepository statsRepository;
 
     public Hit postHit(Hit hit) {
-        log.info("сохраняем хит "+hit);
+        log.info("сохраняем хит " + hit);
         statsRepository.save(hit);
-        log.info("возвращаем хит "+hit);
+        log.info("возвращаем хит " + hit);
         return hit;
     }
 
     public Collection<ViewStats> getStats(List<String> uris, boolean unique, String start, String end) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
-        LocalDateTime startTime;
-        LocalDateTime endTime;
-
-        try {
-            startTime = LocalDateTime.parse(start, formatter);
-            endTime = LocalDateTime.parse(end, formatter);
-        } catch (DateTimeParseException e) {
-            startTime = LocalDateTime.parse(start, formatter1);
-            endTime = LocalDateTime.parse(end, formatter1);
-        }
-
-        List<Hit> list = statsRepository.findAllByUriInAndTimestampBetween(uris, startTime, endTime);
 
         if (unique) {
-            List<ViewStats> viewStatsList = getViewStatsWithHit(list);
-            List<ViewStats> resultList = viewStatsList.stream().filter(v -> v.getHits() == 1).collect(Collectors.toList());
+            List<Hit> listUnique = statsRepository.findDistinctByUriInAndTimestampBetween(uris, start, end);
+            List<ViewStats>resultList = getViewStatsWithHit(listUnique);
             return resultList;
         } else {
+            List<Hit> list = statsRepository.findAllByUriInAndTimestampBetween(uris, start, end);
             List<ViewStats> resultList = getViewStatsWithHit(list);
             return resultList;
         }
