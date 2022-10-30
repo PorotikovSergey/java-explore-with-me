@@ -7,11 +7,7 @@ import ru.practicum.explore.model.Hit;
 import ru.practicum.explore.model.ViewStats;
 import ru.practicum.explore.storage.StatsRepository;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -21,9 +17,7 @@ public class StatsService {
     private final StatsRepository statsRepository;
 
     public Hit postHit(Hit hit) {
-        log.info("сохраняем хит " + hit);
         statsRepository.save(hit);
-        log.info("возвращаем хит " + hit);
         return hit;
     }
 
@@ -31,12 +25,10 @@ public class StatsService {
 
         if (unique) {
             List<Hit> listUnique = statsRepository.findDistinctByUriInAndTimestampBetween(uris, start, end);
-            List<ViewStats>resultList = getViewStatsWithHit(listUnique);
-            return resultList;
+            return getViewStatsWithHit(listUnique);
         } else {
             List<Hit> list = statsRepository.findAllByUriInAndTimestampBetween(uris, start, end);
-            List<ViewStats> resultList = getViewStatsWithHit(list);
-            return resultList;
+            return getViewStatsWithHit(list);
         }
     }
 

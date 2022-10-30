@@ -3,7 +3,6 @@ package ru.practicum.explore.model;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "hits")
@@ -13,7 +12,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @ToString
 public class Hit {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class CategoryResponse {
-
     private final CategoryService categoryService;
     private final Mapper mapper;
 

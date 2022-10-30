@@ -191,13 +191,6 @@ public class Mapper {
         return category;
     }
 
-    public NewCategoryDto fromCategoryToNewDto(Category category) {
-        NewCategoryDto newCategoryDto = new NewCategoryDto();
-        newCategoryDto.setId(category.getId());
-        newCategoryDto.setName(category.getName());
-        return newCategoryDto;
-    }
-
     public Category fromNewDtoToCategory(NewCategoryDto newCategoryDto) {
         Category category = new Category();
         category.setName(newCategoryDto.getName());
@@ -250,26 +243,4 @@ public class Mapper {
 
         return participationRequestDto;
     }
-
-
-//-----------------------------------------------------------------------------------------
-
-    private String fromListOfLongsToString(List<Long> list) {
-        StringBuilder sb = new StringBuilder();
-        for (Long number : list) {
-            sb.append(number);
-            sb.append(" ");
-        }
-        return sb.toString();
-    }
-
-    private List<Long> fromStringToListOfLongs(String str) {
-        List<Long> list = new ArrayList<>();
-        String[] array = str.split(" ");
-        for (String letter : array) {
-            list.add(Long.parseLong(letter));
-        }
-        return list;
-    }
-
 }

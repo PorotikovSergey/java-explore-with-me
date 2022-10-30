@@ -6,11 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.practicum.explore.Mapper;
-import ru.practicum.explore.apierrors.ForbiddenApiError;
-import ru.practicum.explore.apierrors.NotFoundApiError;
 import ru.practicum.explore.dto.UserDto;
 import ru.practicum.explore.dto.NewUserRequest;
-import ru.practicum.explore.exceptions.NotFoundException;
 import ru.practicum.explore.model.User;
 import ru.practicum.explore.service.UserService;
 
@@ -22,7 +19,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class UserResponse {
-
     private final UserService userService;
     private final Mapper mapper;
 
@@ -48,12 +44,8 @@ public class UserResponse {
         return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
 
-    public ResponseEntity<Object> deleteUserAdmin(long userId) {
-
-        User backUser = userService.deleteUserAdmin(userId);
-
-        UserDto userDto = mapper.fromUserToDto(backUser);
-        return new ResponseEntity<>(userDto, HttpStatus.OK);
+    public void deleteUserAdmin(long userId) {
+        userService.deleteUserAdmin(userId);
     }
 }
 

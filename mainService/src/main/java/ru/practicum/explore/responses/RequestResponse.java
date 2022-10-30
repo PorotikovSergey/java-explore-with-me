@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class RequestResponse {
-
     private final RequestService requestService;
     private final Mapper mapper;
 

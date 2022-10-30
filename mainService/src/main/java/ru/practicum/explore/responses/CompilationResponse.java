@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class CompilationResponse {
-
     private final CompilationService compilationService;
     private final Mapper mapper;
 

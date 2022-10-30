@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.practicum.explore.Mapper;
-import ru.practicum.explore.apierrors.NotFoundApiError;
 import ru.practicum.explore.auxiliary.FromMainToStatsClient;
 import ru.practicum.explore.auxiliary.Hit;
 import ru.practicum.explore.dto.*;
@@ -23,7 +22,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class EventResponse {
-
     private final EventService eventService;
     private final Mapper mapper;
 
@@ -36,7 +34,7 @@ public class EventResponse {
         List<Event> list = eventService.getEventsAdmin(params, from, size);
 
         if (list.isEmpty()) {
-            return new ResponseEntity<>(NotFoundApiError.getNotFound("events"), HttpStatus.NOT_FOUND);
+            throw new NotFoundException("Список событий по данным критериям пуст");
         }
 
         List<EventFullDto> resultList = list.stream().map(mapper::fromEventToFullDto).collect(Collectors.toList());

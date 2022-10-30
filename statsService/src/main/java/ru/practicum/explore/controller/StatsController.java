@@ -2,9 +2,6 @@ package ru.practicum.explore.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Marker;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explore.model.Hit;
 import ru.practicum.explore.model.ViewStats;
@@ -23,19 +20,18 @@ public class StatsController {
 
     @PostMapping("/hit")
     public Hit postHit(@RequestBody Hit hit) {
-        log.info("Этот хит в контроллере статиcтики "+ hit.toString());
         return statsService.postHit(hit);
     }
 
     @GetMapping("/stats")
     public Collection<ViewStats> getStats(@RequestParam(name = "uris")
-                                           List<String> uris,
+                                          List<String> uris,
                                           @RequestParam(name = "unique", defaultValue = "false")
-                                           boolean unique,
+                                          boolean unique,
                                           @RequestParam(name = "start")
-                                           String start,
+                                          String start,
                                           @RequestParam(name = "end")
-                                           String end) {
+                                          String end) {
         return statsService.getStats(uris, unique, start, end);
     }
 

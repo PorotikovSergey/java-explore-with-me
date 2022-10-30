@@ -20,11 +20,10 @@ public class FromMainToStatsClient {
 
     @Autowired
     public FromMainToStatsClient(@Value("${stats-service.url}") String serverUrl, RestTemplateBuilder builder) {
-
-                this.rest = builder
-                        .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl))
-                        .requestFactory(HttpComponentsClientHttpRequestFactory::new)
-                        .build();
+        this.rest = builder
+                .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl))
+                .requestFactory(HttpComponentsClientHttpRequestFactory::new)
+                .build();
 
     }
 

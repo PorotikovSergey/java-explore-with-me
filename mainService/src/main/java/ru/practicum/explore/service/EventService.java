@@ -2,7 +2,6 @@ package ru.practicum.explore.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.stereotype.Service;
 import ru.practicum.explore.auxiliary.EventState;
@@ -18,14 +17,12 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class EventService {
-
     private static final String EVENT_NOT_FOUND = "События по данному id нет в базе";
 
     private final EventRepository eventRepository;
@@ -57,11 +54,6 @@ public class EventService {
         } else {
             throw new ValidationException("Only published events can be got");
         }
-    }
-
-    public Event getEventById(long id) {
-        return eventRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(EVENT_NOT_FOUND));
     }
 
     public List<Event> getAllByIds(List<Long> ids) {
@@ -132,8 +124,7 @@ public class EventService {
     public List<Event> getEventsAdmin(AdminSearchedParams params, Integer from, Integer size) {
         List<Event> list = eventRepository.findAll();
         List<Event> resultList = getEventsFromParams(list, params);
-        List<Event> afterPageableList = getPageableList(resultList, from, size);
-        return afterPageableList;
+        return getPageableList(resultList, from, size);
     }
 
     public Event putEventAdmin(long eventId, Event event) {

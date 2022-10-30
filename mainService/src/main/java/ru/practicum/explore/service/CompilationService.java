@@ -2,12 +2,8 @@ package ru.practicum.explore.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.support.PagedListHolder;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import ru.practicum.explore.apierrors.NotFoundApiError;
 import ru.practicum.explore.exceptions.NotFoundException;
 import ru.practicum.explore.model.Compilation;
 import ru.practicum.explore.model.Event;
@@ -15,7 +11,6 @@ import ru.practicum.explore.storage.CompilationRepository;
 import ru.practicum.explore.storage.EventRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -29,8 +24,7 @@ public class CompilationService {
 
     public List<Compilation> getCompilationsPublic(Boolean pinned, Integer from, Integer size) {
         List<Compilation> list = compilationRepository.findAllByPinned(pinned);
-        List<Compilation> afterPageableList = getPageableList(list, from, size);
-        return afterPageableList;
+        return getPageableList(list, from, size);
     }
 
     public Compilation getCompilationByIdPublic(long compId) {

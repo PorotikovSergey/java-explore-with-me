@@ -2,7 +2,6 @@ package ru.practicum.explore.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.stereotype.Service;
 import ru.practicum.explore.exceptions.NotFoundException;
@@ -10,7 +9,6 @@ import ru.practicum.explore.model.User;
 import ru.practicum.explore.storage.UserRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -34,11 +32,10 @@ public class UserService {
                 .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
     }
 
-    public User deleteUserAdmin(long userId) {
+    public void deleteUserAdmin(long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
         userRepository.deleteById(userId);
-        return user;
     }
 
     private List<User> getPageableList(List<User> list, int from, int size) {
