@@ -26,6 +26,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class EventService {
 
+    private static final String EVENT_NOT_FOUND = "События по данному id нет в базе";
+
     private final EventRepository eventRepository;
     private final LocationService locationService;
 
@@ -46,82 +48,74 @@ public class EventService {
     }
 
     public Event getEventByIdPublic(long id) {
-        Optional<Event> optional = eventRepository.findById(id);
-        if (optional.isPresent()) {
-            Event backEvent = optional.get();
-            if (backEvent.getPublishedOn() != null) {
-                backEvent.setViews(backEvent.getViews() + 1);
-                return backEvent;
-            } else {
-                throw new ValidationException("Only published events can be got");
-            }
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(EVENT_NOT_FOUND));
+
+        if (event.getPublishedOn() != null) {
+            event.setViews(event.getViews() + 1);
+            return event;
+        } else {
+            throw new ValidationException("Only published events can be got");
         }
-        return null;
     }
 
     public Event getEventById(long id) {
-        Optional<Event> optional = eventRepository.findById(id);
-        if (optional.isPresent()) {
-            return optional.get();
-        }
-        return null;
+        return eventRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(EVENT_NOT_FOUND));
     }
 
     public List<Event> getAllByIds(List<Long> ids) {
         return eventRepository.findAllById(ids);
     }
 
-
     public Event patchEventPrivate(long userId, Event event) {
-        Optional<Event> optional = eventRepository.findById(event.getId());
-        if (optional.isPresent()) {
-            Event eventForPatch = optional.get();
-            if (eventForPatch.getOwner().getId() == userId) {
-                if (eventForPatch.getState().equals(EventState.PUBLISHED.toString())) {
-                    throw new ValidationException("Нельзя изменять опубликованное событие");
-                }
-                LocalDateTime testDateTime = LocalDateTime.now().plusHours(2);
-                if (event.getEventDate().isBefore(testDateTime)) {
-                    throw new ValidationException("Нельзя изменять событие за 2 часа до");
-                }
-                if (eventForPatch.getState().equals(EventState.PENDING.toString())) {
-                    Event eventAfterPatch = patchOldEventToNew(eventForPatch, event);
-                    eventRepository.save(eventAfterPatch);
-                    return eventAfterPatch;
-                } else {
-                    Event eventAfterPatch = patchOldEventToNew(eventForPatch, event);
-                    eventAfterPatch.setState(EventState.PENDING.toString());
-                    eventRepository.save(eventAfterPatch);
-                    return eventAfterPatch;
-                }
-            }
+        Event eventForPatch = eventRepository.findById(event.getId())
+                .orElseThrow(() -> new NotFoundException(EVENT_NOT_FOUND));
+
+        if (eventForPatch.getOwner().getId() != userId) {
             throw new ValidationException("Нельзя изменять чужое событие");
         }
-        return null;
+
+        if (eventForPatch.getState().equals(EventState.PUBLISHED.toString())) {
+            throw new ValidationException("Нельзя изменять опубликованное событие");
+        }
+
+        LocalDateTime testDateTime = LocalDateTime.now().plusHours(2);
+        if (event.getEventDate().isBefore(testDateTime)) {
+            throw new ValidationException("Нельзя изменять событие за 2 часа до");
+        }
+
+        if (eventForPatch.getState().equals(EventState.PENDING.toString())) {
+            Event eventAfterPatch = patchOldEventToNew(eventForPatch, event);
+            eventRepository.save(eventAfterPatch);
+            return eventAfterPatch;
+        } else {
+            Event eventAfterPatch = patchOldEventToNew(eventForPatch, event);
+            eventAfterPatch.setState(EventState.PENDING.toString());
+            eventRepository.save(eventAfterPatch);
+            return eventAfterPatch;
+        }
     }
 
     public Event postEventPrivate(long userId, Event event) {
-        event.setOwner(userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Такого юзера нет")));
+        event.setOwner(userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Такого юзера нет")));
+
         LocalDateTime testDateTime = LocalDateTime.now().plusHours(2);
         if (event.getEventDate().isBefore(testDateTime)) {
             throw new ValidationException("Нельзя постить событие за 2 часа до");
         }
+
         event.setCreatedOn(LocalDateTime.now());
         Location location = locationService.addLocation(event.getLocation());
         event.setLocation(location);
         eventRepository.save(event);
-        Optional<Event> optional = eventRepository.findById(event.getId());
-        if (optional.isPresent()) {
-            Event backEvent = optional.get();
-            return backEvent;
-        } else {
-            return null;
-        }
+
+        return event;
     }
 
     public Event getFullEventByIdPrivate(long userId, long eventId) {
-        Event event = eventRepository.findEventByIdAndOwnerId(eventId, userId);
-        return event;
+        return eventRepository.findEventByIdAndOwnerId(eventId, userId);
     }
 
 
@@ -132,7 +126,7 @@ public class EventService {
             eventRepository.save(event);
             return event;
         }
-        return null;
+        throw new NotFoundException(EVENT_NOT_FOUND);
     }
 
 
@@ -144,47 +138,45 @@ public class EventService {
     }
 
     public Event putEventAdmin(long eventId, Event event) {
-        Optional<Event> optional = eventRepository.findById(eventId);
-        if (optional.isPresent()) {
-            Event oldEvent = optional.get();
-            Event eventAfterPatch = patchOldEventToNew(oldEvent, event);
-            eventRepository.save(eventAfterPatch);
-            return eventAfterPatch;
-        }
-        return null;
+        Event oldEvent = eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException(EVENT_NOT_FOUND));
+
+        Event eventAfterPatch = patchOldEventToNew(oldEvent, event);
+        eventRepository.save(eventAfterPatch);
+        return eventAfterPatch;
     }
 
     public Event publishEventAdmin(long eventId) {
-        Optional<Event> optional = eventRepository.findById(eventId);
-        if (optional.isPresent()) {
-            Event event = optional.get();
-            event.setPublishedOn(LocalDateTime.now());
-            LocalDateTime testDateTime = LocalDateTime.now().plusHours(1);
-            if (event.getEventDate().isBefore(testDateTime)) {
-                throw new ValidationException("Нельзя публиковать событие за 1 час до");
-            }
-            if (!event.getState().equals(EventState.PENDING.toString())) {
-                throw new ValidationException("Нельзя публиковать событие не в статусе PENDING");
-            }
-            event.setState(EventState.PUBLISHED.toString());
-            eventRepository.save(event);
-            return event;
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException(EVENT_NOT_FOUND));
+
+        event.setPublishedOn(LocalDateTime.now());
+        LocalDateTime testDateTime = LocalDateTime.now().plusHours(1);
+
+        if (event.getEventDate().isBefore(testDateTime)) {
+            throw new ValidationException("Нельзя публиковать событие за 1 час до");
         }
-        return null;
+
+        if (!event.getState().equals(EventState.PENDING.toString())) {
+            throw new ValidationException("Нельзя публиковать событие не в статусе PENDING");
+        }
+
+        event.setState(EventState.PUBLISHED.toString());
+        eventRepository.save(event);
+        return event;
     }
 
     public Event rejectEventAdmin(long eventId) {
-        Optional<Event> optional = eventRepository.findById(eventId);
-        if (optional.isPresent()) {
-            Event event = optional.get();
-            if ((event.getPublishedOn() != null)) {
-                throw new ValidationException("Нельзя отменять опубликованное событие");
-            }
-            event.setState(EventState.CANCELED.toString());
-            eventRepository.save(event);
-            return event;
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException(EVENT_NOT_FOUND));
+
+        if ((event.getPublishedOn() != null)) {
+            throw new ValidationException("Нельзя отменять опубликованное событие");
         }
-        return null;
+
+        event.setState(EventState.CANCELED.toString());
+        eventRepository.save(event);
+        return event;
     }
 
     private Event patchOldEventToNew(Event oldEvent, Event newEvent) {

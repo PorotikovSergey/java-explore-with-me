@@ -11,9 +11,11 @@ import ru.practicum.explore.apierrors.ForbiddenError;
 import ru.practicum.explore.apierrors.NotFoundApiError;
 import ru.practicum.explore.dto.CategoryDto;
 import ru.practicum.explore.dto.NewCategoryDto;
+import ru.practicum.explore.exceptions.NotFoundException;
 import ru.practicum.explore.model.Category;
 import ru.practicum.explore.service.CategoryService;
 
+import javax.xml.bind.ValidationException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,12 +32,10 @@ public class CategoryResponse {
         Category backCategory;
         try {
             backCategory = categoryService.patchCategoryAdmin(category);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<>(NotFoundApiError.getNotFound("category"), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(ForbiddenError.getForbidden("category"), HttpStatus.FORBIDDEN);
-        }
-
-        if (backCategory == null) {
-            return new ResponseEntity<>(NotFoundApiError.getNotFound("category"), HttpStatus.NOT_FOUND);
         }
 
         CategoryDto resultCategoryDto = mapper.fromCategoryToDto(backCategory);
@@ -51,10 +51,6 @@ public class CategoryResponse {
             return new ResponseEntity<>(ForbiddenError.getForbidden("category"), HttpStatus.FORBIDDEN);
         }
 
-        if (backCategory == null) {
-            return new ResponseEntity<>(NotFoundApiError.getNotFound("category"), HttpStatus.NOT_FOUND);
-        }
-
         CategoryDto resultCategoryDto = mapper.fromCategoryToDto(backCategory);
         return new ResponseEntity<>(resultCategoryDto, HttpStatus.OK);
     }
@@ -63,13 +59,12 @@ public class CategoryResponse {
         Category backCategory;
         try {
             backCategory = categoryService.deleteCategoryAdmin(catId);
-        } catch (Exception e) {
+        } catch (ValidationException e) {
             return new ResponseEntity<>(ForbiddenError.getForbidden("category"), HttpStatus.FORBIDDEN);
-        }
-
-        if (backCategory == null) {
+        } catch (NotFoundException e) {
             return new ResponseEntity<>(NotFoundApiError.getNotFound("category"), HttpStatus.NOT_FOUND);
         }
+
         CategoryDto resultCategoryDto = mapper.fromCategoryToDto(backCategory);
         return new ResponseEntity<>(resultCategoryDto, HttpStatus.OK);
     }
@@ -94,11 +89,7 @@ public class CategoryResponse {
         Category category;
         try {
             category = categoryService.getCategoryByIdPublic(catId);
-        } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenError.getForbidden("category"), HttpStatus.FORBIDDEN);
-        }
-
-        if (category == null) {
+        } catch (NotFoundException e) {
             return new ResponseEntity<>(NotFoundApiError.getNotFound("category"), HttpStatus.NOT_FOUND);
         }
 

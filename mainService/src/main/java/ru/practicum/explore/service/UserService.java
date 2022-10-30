@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.stereotype.Service;
+import ru.practicum.explore.exceptions.NotFoundException;
 import ru.practicum.explore.model.User;
 import ru.practicum.explore.storage.UserRepository;
 
@@ -15,6 +16,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+    private static final String USER_NOT_FOUND = "Юзера по данному id нет в базе";
     private final UserRepository userRepository;
 
     public List<User> getUsersAdmin(List<Long> ids, Integer from, Integer size) {
@@ -28,21 +30,15 @@ public class UserService {
     }
 
     public User getUser(long id) {
-        Optional<User> optional = userRepository.findById(id);
-        if (optional.isPresent()) {
-            return optional.get();
-        }
-        return null;
+        return userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
     }
 
     public User deleteUserAdmin(long userId) {
-        Optional<User> optional = userRepository.findById(userId);
-        if (optional.isPresent()) {
-            User user = optional.get();
-            userRepository.deleteById(userId);
-            return user;
-        }
-        return null;
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
+        userRepository.deleteById(userId);
+        return user;
     }
 
     private List<User> getPageableList(List<User> list, int from, int size) {

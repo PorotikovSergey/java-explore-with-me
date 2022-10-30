@@ -2,9 +2,9 @@ package ru.practicum.explore.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.stereotype.Service;
+import ru.practicum.explore.exceptions.NotFoundException;
 import ru.practicum.explore.model.Category;
 import ru.practicum.explore.model.Event;
 import ru.practicum.explore.storage.CategoryRepository;
@@ -12,13 +12,12 @@ import ru.practicum.explore.storage.EventRepository;
 
 import javax.xml.bind.ValidationException;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
-
+    private static final String CATEGORY_NOT_FOUND = "Категории по данному id нет в базе";
     private final CategoryRepository categoryRepository;
     private final EventRepository eventRepository;
 
@@ -28,22 +27,16 @@ public class CategoryService {
     }
 
     public Category getCategoryByIdPublic(long catId) {
-        Optional<Category> optional = categoryRepository.findById(catId);
-        if (optional.isPresent()) {
-            return optional.get();
-        }
-        return null;
+        return categoryRepository.findById(catId)
+                .orElseThrow(() -> new NotFoundException(CATEGORY_NOT_FOUND));
     }
 
     public Category patchCategoryAdmin(Category category) {
-        Optional<Category> optional = categoryRepository.findById(category.getId());
-        if (optional.isPresent()) {
-            Category categoryForPatch = optional.get();
-            categoryForPatch.setName(category.getName());
-            categoryRepository.save(categoryForPatch);
-            return categoryForPatch;
-        }
-        return null;
+        Category categoryForPatch = categoryRepository.findById(category.getId())
+                .orElseThrow(() -> new NotFoundException(CATEGORY_NOT_FOUND));
+        categoryForPatch.setName(category.getName());
+        categoryRepository.save(categoryForPatch);
+        return categoryForPatch;
     }
 
     public Category postCategoryAdmin(Category category) {
@@ -56,13 +49,10 @@ public class CategoryService {
         if (!list.isEmpty()) {
             throw new ValidationException("Нельзя удалять категорию если есть связанные с ней события");
         }
-        Optional<Category> optional = categoryRepository.findById(catId);
-        if (optional.isPresent()) {
-            Category category = optional.get();
-            categoryRepository.deleteById(catId);
-            return category;
-        }
-        return null;
+        Category category = categoryRepository.findById(catId)
+                .orElseThrow(() -> new NotFoundException(CATEGORY_NOT_FOUND));
+        categoryRepository.deleteById(catId);
+        return category;
     }
 
     private List<Category> getPageableList(List<Category> list, int from, int size) {

@@ -4,7 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.support.PagedListHolder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import ru.practicum.explore.apierrors.NotFoundApiError;
+import ru.practicum.explore.exceptions.NotFoundException;
 import ru.practicum.explore.model.Compilation;
 import ru.practicum.explore.model.Event;
 import ru.practicum.explore.storage.CompilationRepository;
@@ -17,6 +21,8 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class CompilationService {
+    private static final String COMPILATION_NOT_FOUND = "Подборки по данному id нет в базе";
+    private static final String EVENT_NOT_FOUND = "События по данному id нет в базе";
 
     private final CompilationRepository compilationRepository;
     private final EventRepository eventRepository;
@@ -28,11 +34,8 @@ public class CompilationService {
     }
 
     public Compilation getCompilationByIdPublic(long compId) {
-        Optional<Compilation> optional = compilationRepository.findById(compId);
-        if (optional.isPresent()) {
-            return optional.get();
-        }
-        return null;
+        return compilationRepository.findById(compId)
+                .orElseThrow(() -> new NotFoundException(COMPILATION_NOT_FOUND));
     }
 
     public Compilation postCompilationAdmin(Compilation compilation) {
@@ -41,67 +44,52 @@ public class CompilationService {
     }
 
     public Compilation deleteCompilationAdmin(long compId) {
-        Optional<Compilation> optional = compilationRepository.findById(compId);
-        if (optional.isPresent()) {
-            Compilation compilation = optional.get();
-            compilationRepository.deleteById(compId);
-            return compilation;
-        } else {
-            return null;
-        }
+        Compilation compilation = compilationRepository.findById(compId)
+                .orElseThrow(() -> new NotFoundException(COMPILATION_NOT_FOUND));
+
+        compilationRepository.deleteById(compId);
+        return compilation;
     }
 
     public Compilation deleteEventFromCompilationAdmin(long compId, long eventId) {
-        Optional<Compilation> optional = compilationRepository.findById(compId);
-        Optional<Event> optional2 = eventRepository.findById(eventId);
-        if (optional.isPresent() && optional2.isPresent()) {
-            Compilation compilation = optional.get();
-            compilation.getEventList().remove(optional2.get());
-            compilation.getEventList().remove(optional2.get());
-            compilationRepository.save(compilation);
-            return compilation;
-        } else {
-            return null;
-        }
+        Compilation compilation = compilationRepository.findById(compId)
+                .orElseThrow(() -> new NotFoundException(COMPILATION_NOT_FOUND));
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException(EVENT_NOT_FOUND));
+
+        compilation.getEventList().remove(event);
+        compilationRepository.save(compilation);
+        return compilation;
     }
 
     public Compilation addEventToCompilationAdmin(long compId, long eventId) {
-        Optional<Compilation> optional = compilationRepository.findById(compId);
-        Optional<Event> optional2 = eventRepository.findById(eventId);
-        if (optional.isPresent() && optional2.isPresent()) {
-            Compilation compilation = optional.get();
-            compilation.getEventList().add(optional2.get());
-            compilation.getEventList().add(optional2.get());
-            compilationRepository.save(compilation);
-            return compilation;
-        } else {
-            return null;
-        }
+        Compilation compilation = compilationRepository.findById(compId)
+                .orElseThrow(() -> new NotFoundException(COMPILATION_NOT_FOUND));
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException(EVENT_NOT_FOUND));
+
+        compilation.getEventList().add(event);
+        compilationRepository.save(compilation);
+        return compilation;
     }
 
     public Compilation unpinCompilationAdmin(long compId) {
-        Optional<Compilation> optional = compilationRepository.findById(compId);
-        if (optional.isPresent()) {
-            Compilation compilation = optional.get();
-            compilation.setPinned(false);
-            compilationRepository.save(compilation);
-            return compilation;
-        } else {
-            return null;
-        }
+        Compilation compilation = compilationRepository.findById(compId)
+                .orElseThrow(() -> new NotFoundException(COMPILATION_NOT_FOUND));
+
+        compilation.setPinned(false);
+        compilationRepository.save(compilation);
+        return compilation;
     }
 
     public Compilation pinCompilationAdmin(long compId) {
-        Optional<Compilation> optional = compilationRepository.findById(compId);
-        if (optional.isPresent()) {
-            Compilation compilation = optional.get();
-            compilation.setPinned(true);
-            compilationRepository.save(compilation);
-            return compilation;
-        } else {
-            return null;
-        }
-    }
+        Compilation compilation = compilationRepository.findById(compId)
+                .orElseThrow(() -> new NotFoundException(COMPILATION_NOT_FOUND));
+
+        compilation.setPinned(true);
+        compilationRepository.save(compilation);
+        return compilation;
+}
 
     private List<Compilation> getPageableList(List<Compilation> list, int from, int size) {
         PagedListHolder<Compilation> page = new PagedListHolder<>(list.subList(from, list.size()));

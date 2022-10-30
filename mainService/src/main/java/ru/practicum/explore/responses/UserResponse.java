@@ -2,7 +2,6 @@ package ru.practicum.explore.responses;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -11,6 +10,7 @@ import ru.practicum.explore.apierrors.ForbiddenError;
 import ru.practicum.explore.apierrors.NotFoundApiError;
 import ru.practicum.explore.dto.UserDto;
 import ru.practicum.explore.dto.NewUserRequest;
+import ru.practicum.explore.exceptions.NotFoundException;
 import ru.practicum.explore.model.User;
 import ru.practicum.explore.service.UserService;
 
@@ -47,13 +47,12 @@ public class UserResponse {
         User backUser;
         try {
             backUser = userService.addUserAdmin(user);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<>(NotFoundApiError.getNotFound("user"), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(ForbiddenError.getForbidden("user"), HttpStatus.FORBIDDEN);
         }
 
-        if (backUser == null) {
-            return new ResponseEntity<>(NotFoundApiError.getNotFound("user"), HttpStatus.NOT_FOUND);
-        }
         UserDto userDto = mapper.fromUserToDto(backUser);
         return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
@@ -62,12 +61,10 @@ public class UserResponse {
         User backUser;
         try {
             backUser = userService.deleteUserAdmin(userId);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<>(NotFoundApiError.getNotFound("user"), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(ForbiddenError.getForbidden("user"), HttpStatus.FORBIDDEN);
-        }
-
-        if (backUser == null) {
-            return new ResponseEntity<>(NotFoundApiError.getNotFound("user"), HttpStatus.NOT_FOUND);
         }
 
         UserDto userDto = mapper.fromUserToDto(backUser);
