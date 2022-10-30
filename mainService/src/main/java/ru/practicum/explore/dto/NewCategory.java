@@ -8,5 +8,5 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 public class NewCategory {
-    String name;
+    private String name;
 }

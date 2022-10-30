@@ -14,6 +14,8 @@ public class ViewStats {
     private String app;
     private String uri;
 
+    private long hits;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -27,5 +29,4 @@ public class ViewStats {
         return Objects.hash(app, uri);
     }
 
-    private long hits;
 }

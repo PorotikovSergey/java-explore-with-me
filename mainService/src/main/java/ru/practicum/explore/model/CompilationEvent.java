@@ -18,8 +18,8 @@ public class CompilationEvent {
     private long id;
 
     @Column(name = "compilation_id")
-    Long compilationId;
+    private Long compilationId;
 
     @Column(name = "event_id")
-    Long eventId;
+    private Long eventId;
 }

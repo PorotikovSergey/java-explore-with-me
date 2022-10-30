@@ -17,7 +17,7 @@ import java.util.List;
 @RequestMapping()
 public class StatsController {
 
-    public final StatsService statsService;
+    private final StatsService statsService;
     private final Mapper mapper;
 
     @Autowired
