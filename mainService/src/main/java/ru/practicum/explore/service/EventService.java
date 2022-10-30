@@ -110,7 +110,6 @@ public class EventService {
         Location location = locationService.addLocation(event.getLocation());
         event.setLocation(location);
         eventRepository.save(event);
-
         return event;
     }
 

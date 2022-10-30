@@ -59,12 +59,14 @@ public class RequestService {
             List<Request> list = requestRepository.findAllByEventIdAndEventOwnerId(eventId, userId);
             for (Request req : list) {
                 req.setStatus(RequestStatus.REJECTED.toString());
+                requestRepository.save(req);
             }
         }
 
         if ((event.getParticipantLimit() > 0) && (event.getParticipantLimit() == event.getConfirmedRequests())) {
             throw new ValidationException("Достигнут предел количества заявок");
         }
+        requestRepository.save(request);
         return request;
     }
 
