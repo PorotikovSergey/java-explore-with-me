@@ -37,15 +37,15 @@ public class CompilationService {
         return compilation;
     }
 
-    public Compilation deleteCompilationAdmin(long compId) {
-        Compilation compilation = compilationRepository.findById(compId)
-                .orElseThrow(() -> new NotFoundException(COMPILATION_NOT_FOUND));
-
-        compilationRepository.deleteById(compId);
-        return compilation;
+    public void deleteCompilationAdmin(long compId) {
+        try {
+            compilationRepository.deleteById(compId);
+        } catch (IllegalArgumentException e) {
+            throw new NotFoundException(COMPILATION_NOT_FOUND);
+        }
     }
 
-    public Compilation deleteEventFromCompilationAdmin(long compId, long eventId) {
+    public void deleteEventFromCompilationAdmin(long compId, long eventId) {
         Compilation compilation = compilationRepository.findById(compId)
                 .orElseThrow(() -> new NotFoundException(COMPILATION_NOT_FOUND));
         Event event = eventRepository.findById(eventId)
@@ -53,10 +53,9 @@ public class CompilationService {
 
         compilation.getEventList().remove(event);
         compilationRepository.save(compilation);
-        return compilation;
     }
 
-    public Compilation addEventToCompilationAdmin(long compId, long eventId) {
+    public void addEventToCompilationAdmin(long compId, long eventId) {
         Compilation compilation = compilationRepository.findById(compId)
                 .orElseThrow(() -> new NotFoundException(COMPILATION_NOT_FOUND));
         Event event = eventRepository.findById(eventId)
@@ -64,25 +63,22 @@ public class CompilationService {
 
         compilation.getEventList().add(event);
         compilationRepository.save(compilation);
-        return compilation;
     }
 
-    public Compilation unpinCompilationAdmin(long compId) {
+    public void unpinCompilationAdmin(long compId) {
         Compilation compilation = compilationRepository.findById(compId)
                 .orElseThrow(() -> new NotFoundException(COMPILATION_NOT_FOUND));
 
         compilation.setPinned(false);
         compilationRepository.save(compilation);
-        return compilation;
     }
 
-    public Compilation pinCompilationAdmin(long compId) {
+    public void pinCompilationAdmin(long compId) {
         Compilation compilation = compilationRepository.findById(compId)
                 .orElseThrow(() -> new NotFoundException(COMPILATION_NOT_FOUND));
 
         compilation.setPinned(true);
         compilationRepository.save(compilation);
-        return compilation;
 }
 
     private List<Compilation> getPageableList(List<Compilation> list, int from, int size) {

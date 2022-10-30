@@ -40,12 +40,8 @@ public class CategoryResponse {
         return new ResponseEntity<>(resultCategoryDto, HttpStatus.OK);
     }
 
-    public ResponseEntity<Object> deleteCategoryAdmin(long catId) {
-
-        Category backCategory = categoryService.deleteCategoryAdmin(catId);
-
-        CategoryDto resultCategoryDto = mapper.fromCategoryToDto(backCategory);
-        return new ResponseEntity<>(resultCategoryDto, HttpStatus.OK);
+    public void deleteCategoryAdmin(long catId) {
+        categoryService.deleteCategoryAdmin(catId);
     }
 
     public ResponseEntity<Object> getCategoriesPublic(Integer from, Integer size) {

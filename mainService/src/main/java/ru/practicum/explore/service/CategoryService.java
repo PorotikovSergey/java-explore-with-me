@@ -44,15 +44,17 @@ public class CategoryService {
         return category;
     }
 
-    public Category deleteCategoryAdmin(long catId) {
+    public void deleteCategoryAdmin(long catId) {
         List<Event> list = eventRepository.findAllByCategoryId(catId);
         if (!list.isEmpty()) {
             throw new ValidationException("Нельзя удалять категорию если есть связанные с ней события");
         }
-        Category category = categoryRepository.findById(catId)
-                .orElseThrow(() -> new NotFoundException(CATEGORY_NOT_FOUND));
-        categoryRepository.deleteById(catId);
-        return category;
+
+        try {
+            categoryRepository.deleteById(catId);
+        } catch (IllegalArgumentException e) {
+            throw new NotFoundException(CATEGORY_NOT_FOUND);
+        }
     }
 
     private List<Category> getPageableList(List<Category> list, int from, int size) {

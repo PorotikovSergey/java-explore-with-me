@@ -96,8 +96,8 @@ public class AdminController {
     }
 
     @DeleteMapping("/categories/{catId}")
-    public ResponseEntity<Object> deleteCategory(@PathVariable long catId) {
-        return categoryResponse.deleteCategoryAdmin(catId);
+    public void deleteCategory(@PathVariable long catId) {
+        categoryResponse.deleteCategoryAdmin(catId);
     }
 
     @PostMapping("/compilations")
@@ -106,27 +106,27 @@ public class AdminController {
     }
 
     @DeleteMapping("/compilations/{compId}")
-    public ResponseEntity<Object> deleteCompilation(@PathVariable long compId) {
-        return compilationResponse.deleteCompilationAdmin(compId);
+    public void deleteCompilation(@PathVariable long compId) {
+        compilationResponse.deleteCompilationAdmin(compId);
     }
 
     @DeleteMapping("/compilations/{compId}/events/{eventId}")
-    public ResponseEntity<Object> deleteEventFromCompilation(@PathVariable long compId, @PathVariable long eventId) {
-        return compilationResponse.deleteEventFromCompilationAdmin(compId, eventId);
+    public void deleteEventFromCompilation(@PathVariable long compId, @PathVariable long eventId) {
+        compilationResponse.deleteEventFromCompilationAdmin(compId, eventId);
     }
 
     @PatchMapping("/compilations/{compId}/events/{eventId}")
-    public ResponseEntity<Object> addEventToCompilation(@PathVariable long compId, @PathVariable long eventId) {
-        return compilationResponse.addEventToCompilationAdmin(compId, eventId);
+    public void addEventToCompilation(@PathVariable long compId, @PathVariable long eventId) {
+        compilationResponse.addEventToCompilationAdmin(compId, eventId);
     }
 
     @DeleteMapping("/compilations/{compId}/pin")
-    public ResponseEntity<Object> unpinCompilation(@PathVariable long compId) {
-        return compilationResponse.unpinCompilationAdmin(compId);
+    public void unpinCompilation(@PathVariable long compId) {
+        compilationResponse.unpinCompilationAdmin(compId);
     }
 
     @PatchMapping("/compilations/{compId}/pin")
-    public ResponseEntity<Object> pinEvent(@PathVariable long compId) {
-        return compilationResponse.pinCompilationAdmin(compId);
+    public void pinEvent(@PathVariable long compId) {
+        compilationResponse.pinCompilationAdmin(compId);
     }
 }
