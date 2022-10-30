@@ -18,17 +18,15 @@ import java.util.List;
 public class StatsController {
 
     private final StatsService statsService;
-    private final Mapper mapper;
 
     @Autowired
-    public StatsController(StatsService statsService, Mapper mapper) {
+    public StatsController(StatsService statsService) {
         this.statsService = statsService;
-        this.mapper = mapper;
     }
 
     @PostMapping("/hit")
     public ResponseEntity<Object> postHit(@RequestBody EndpointHit endpointHit) {
-        Hit hit = mapper.fromEndpointHitToHit(endpointHit);
+        Hit hit = Mapper.fromEndpointHitToHit(endpointHit);
         ResponseEntity<Object> responseEntity = new ResponseEntity<>(statsService.postHit(hit), HttpStatus.OK);
         return responseEntity;
     }

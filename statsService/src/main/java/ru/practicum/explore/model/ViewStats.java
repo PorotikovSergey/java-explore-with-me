@@ -28,5 +28,4 @@ public class ViewStats {
     public int hashCode() {
         return Objects.hash(app, uri);
     }
-
 }
