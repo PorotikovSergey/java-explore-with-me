@@ -21,7 +21,7 @@ public class Event {
     private long id;
 
     @ManyToMany(mappedBy = "eventList")
-    List<Compilation> compilationList;
+    private List<Compilation> compilationList;
 
     @Column(name = "state")
     private String state = EventState.PENDING.toString();
