@@ -27,45 +27,30 @@ public class UserResponse {
     private final Mapper mapper;
 
     public ResponseEntity<Object> getUsersAdmin(List<Long> ids, Integer from, Integer size) {
-        List<User> list;
-        try {
-            list = userService.getUsersAdmin(ids, from, size);
-        } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenApiError.getForbidden("users"), HttpStatus.FORBIDDEN);
-        }
+
+        List<User> list = userService.getUsersAdmin(ids, from, size);
 
         if (list.isEmpty()) {
             return new ResponseEntity<>(Collections.emptyList(), HttpStatus.OK);
             //вот тут нужно оставить так,так как для тестов нужна проверка на пустой лист,а не ApiError если юзеров нет
         }
+
         List<UserDto> resultList = list.stream().map(mapper::fromUserToDto).collect(Collectors.toList());
         return new ResponseEntity<>(resultList, HttpStatus.OK);
     }
 
     public ResponseEntity<Object> addUserAdmin(NewUserRequest newUserRequest) {
         User user = mapper.fromUserRequestToUser(newUserRequest);
-        User backUser;
-        try {
-            backUser = userService.addUserAdmin(user);
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(NotFoundApiError.getNotFound("user"), HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenApiError.getForbidden("user"), HttpStatus.FORBIDDEN);
-        }
+
+        User backUser = userService.addUserAdmin(user);
 
         UserDto userDto = mapper.fromUserToDto(backUser);
         return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
 
     public ResponseEntity<Object> deleteUserAdmin(long userId) {
-        User backUser;
-        try {
-            backUser = userService.deleteUserAdmin(userId);
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(NotFoundApiError.getNotFound("user"), HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenApiError.getForbidden("user"), HttpStatus.FORBIDDEN);
-        }
+
+        User backUser = userService.deleteUserAdmin(userId);
 
         UserDto userDto = mapper.fromUserToDto(backUser);
         return new ResponseEntity<>(userDto, HttpStatus.OK);

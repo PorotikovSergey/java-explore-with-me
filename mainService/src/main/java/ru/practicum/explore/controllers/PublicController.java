@@ -2,19 +2,13 @@ package ru.practicum.explore.controllers;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.explore.apierrors.ServerApiError;
-import ru.practicum.explore.auxiliary.EndpointHit;
-import ru.practicum.explore.auxiliary.FromMainToStatsClient;
 import ru.practicum.explore.responses.CategoryResponse;
 import ru.practicum.explore.responses.CompilationResponse;
 import ru.practicum.explore.responses.EventResponse;
 
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -26,7 +20,7 @@ public class PublicController {
     private final EventResponse eventResponse;
     private final CategoryResponse categoryResponse;
     private final CompilationResponse compilationResponse;
-    private final FromMainToStatsClient fromMainToStatsClient;
+
 
     @GetMapping("/events")
     public ResponseEntity<Object> getEvents(HttpServletRequest request,
@@ -49,28 +43,15 @@ public class PublicController {
                                             @RequestParam(name = "sort", defaultValue = "EVENT_DATE")
                                             String sort) {
 
-        try {
-            EndpointHit hit = new EndpointHit(0, request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
-            fromMainToStatsClient.postHit(hit);
-        } catch (Exception e) {
-            log.error("Почему-то запрос в статистику не сработал");
-        }
-
         return eventResponse.getEventsPublic(text, categories, paid, rangeStart,
-                rangeEnd, onlyAvailable, sort, from, size);
+                rangeEnd, onlyAvailable, sort, from, size, request);
 
     }
 
     @GetMapping("/events/{id}")
     public ResponseEntity<Object> getEventById(HttpServletRequest request, @PathVariable long id) {
-        try {
-            EndpointHit hit = new EndpointHit(0, request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
-            fromMainToStatsClient.postHit(hit);
-        } catch (Exception e) {
-            log.error("Почему-то запрос в статистику не сработал");
-        }
 
-        return eventResponse.getEventByIdPublic(id);
+        return eventResponse.getEventByIdPublic(request, id);
 
     }
 

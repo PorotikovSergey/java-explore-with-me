@@ -1,18 +1,22 @@
 package ru.practicum.explore.auxiliary;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.time.LocalDateTime;
 
-@Getter
-@Setter
+
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class EndpointHit {
+public class Hit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,5 +32,5 @@ public class EndpointHit {
     private String ip;
 
     @Column(name = "timestamp")
-    private String timestamp;
+    private LocalDateTime timestamp;
 }

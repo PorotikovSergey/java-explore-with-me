@@ -2,15 +2,15 @@ package ru.practicum.explore.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Marker;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.explore.Mapper;
-import ru.practicum.explore.model.EndpointHit;
 import ru.practicum.explore.model.Hit;
+import ru.practicum.explore.model.ViewStats;
 import ru.practicum.explore.service.StatsService;
 
+import java.util.Collection;
 import java.util.List;
 
 @Slf4j
@@ -22,24 +22,21 @@ public class StatsController {
     private final StatsService statsService;
 
     @PostMapping("/hit")
-    public ResponseEntity<Object> postHit(@RequestBody EndpointHit endpointHit) {
-        Hit hit = Mapper.fromEndpointHitToHit(endpointHit);
-
-        ResponseEntity<Object> responseEntity = new ResponseEntity<>(statsService.postHit(hit), HttpStatus.OK);
-        return responseEntity;
+    public Hit postHit(@RequestBody Hit hit) {
+        log.info("Этот хит в контроллере статиcтики "+ hit.toString());
+        return statsService.postHit(hit);
     }
 
     @GetMapping("/stats")
-    public ResponseEntity<Object> getStats(@RequestParam(name = "uris")
+    public Collection<ViewStats> getStats(@RequestParam(name = "uris")
                                            List<String> uris,
-                                           @RequestParam(name = "unique", defaultValue = "false")
+                                          @RequestParam(name = "unique", defaultValue = "false")
                                            boolean unique,
-                                           @RequestParam(name = "start")
+                                          @RequestParam(name = "start")
                                            String start,
-                                           @RequestParam(name = "end")
+                                          @RequestParam(name = "end")
                                            String end) {
-        ResponseEntity<Object> responseEntity = new ResponseEntity<>(statsService.getStats(uris, unique, start, end), HttpStatus.OK);
-        return responseEntity;
+        return statsService.getStats(uris, unique, start, end);
     }
 
 

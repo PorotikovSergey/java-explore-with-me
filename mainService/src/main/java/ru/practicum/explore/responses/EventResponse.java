@@ -6,13 +6,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.practicum.explore.Mapper;
-import ru.practicum.explore.apierrors.ForbiddenApiError;
 import ru.practicum.explore.apierrors.NotFoundApiError;
+import ru.practicum.explore.auxiliary.FromMainToStatsClient;
+import ru.practicum.explore.auxiliary.Hit;
 import ru.practicum.explore.dto.*;
 import ru.practicum.explore.exceptions.NotFoundException;
 import ru.practicum.explore.model.*;
 import ru.practicum.explore.service.EventService;
 
+import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,15 +27,13 @@ public class EventResponse {
     private final EventService eventService;
     private final Mapper mapper;
 
+    private final FromMainToStatsClient fromMainToStatsClient;
+
     public ResponseEntity<Object> getEventsAdmin(List<Long> users, List<String> states, List<Long> categories,
                                                  String rangeStart, String rangeEnd, Integer from, Integer size) {
         AdminSearchedParams params = new AdminSearchedParams(users, states, categories, rangeStart, rangeEnd);
-        List<Event> list;
-        try {
-            list = eventService.getEventsAdmin(params, from, size);
-        } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenApiError.getForbidden("events"), HttpStatus.FORBIDDEN);
-        }
+
+        List<Event> list = eventService.getEventsAdmin(params, from, size);
 
         if (list.isEmpty()) {
             return new ResponseEntity<>(NotFoundApiError.getNotFound("events"), HttpStatus.NOT_FOUND);
@@ -44,57 +45,35 @@ public class EventResponse {
 
     public ResponseEntity<Object> putEventAdmin(long eventId, AdminUpdateEventRequest adminUpdateEventRequest) {
         Event event = mapper.fromAdminUpdateEventRequestToEvent(adminUpdateEventRequest);
-        Event backEvent;
-        try {
-            backEvent = eventService.putEventAdmin(eventId, event);
-        }  catch (NotFoundException e) {
-            return new ResponseEntity<>(NotFoundApiError.getNotFound("event"), HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenApiError.getForbidden("event"), HttpStatus.FORBIDDEN);
-        }
+
+        Event backEvent = eventService.putEventAdmin(eventId, event);
 
         EventFullDto eventFullDto = mapper.fromEventToFullDto(backEvent);
         return new ResponseEntity<>(eventFullDto, HttpStatus.OK);
     }
 
     public ResponseEntity<Object> publishEventAdmin(long eventId) {
-        Event backEvent;
-        try {
-            backEvent = eventService.publishEventAdmin(eventId);
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(NotFoundApiError.getNotFound("event"), HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenApiError.getForbidden("event"), HttpStatus.FORBIDDEN);
-        }
+
+        Event backEvent = eventService.publishEventAdmin(eventId);
 
         EventFullDto eventFullDto = mapper.fromEventToFullDto(backEvent);
         return new ResponseEntity<>(eventFullDto, HttpStatus.OK);
     }
 
     public ResponseEntity<Object> rejectEventAdmin(long eventId) {
-        Event backEvent;
-        try {
-            backEvent = eventService.rejectEventAdmin(eventId);
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(NotFoundApiError.getNotFound("event"), HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenApiError.getForbidden("event"), HttpStatus.FORBIDDEN);
-        }
+
+        Event backEvent = eventService.rejectEventAdmin(eventId);
 
         EventFullDto eventFullDto = mapper.fromEventToFullDto(backEvent);
         return new ResponseEntity<>(eventFullDto, HttpStatus.OK);
     }
 
     public ResponseEntity<Object> getEventsPrivate(long userId, Integer from, Integer size) {
-        List<Event> list;
-        try {
-            list = eventService.getEventsPrivate(userId, from, size);
-        } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenApiError.getForbidden("events"), HttpStatus.FORBIDDEN);
-        }
+
+        List<Event> list = eventService.getEventsPrivate(userId, from, size);
 
         if (list.isEmpty()) {
-            return new ResponseEntity<>(NotFoundApiError.getNotFound("events"), HttpStatus.NOT_FOUND);
+            throw new NotFoundException("Список событий пуст");
         }
 
         List<EventShortDto> resultList = list.stream().map(mapper::fromEventToShortDto).collect(Collectors.toList());
@@ -103,14 +82,8 @@ public class EventResponse {
 
     public ResponseEntity<Object> patchEventPrivate(long userId, UpdateEventRequest updateEventRequest) {
         Event event = mapper.fromUpdateEventRequestToEvent(updateEventRequest);
-        Event backEvent;
-        try {
-            backEvent = eventService.patchEventPrivate(userId, event);
-        }  catch (NotFoundException e) {
-            return new ResponseEntity<>(NotFoundApiError.getNotFound("event"), HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenApiError.getForbidden("event"), HttpStatus.FORBIDDEN);
-        }
+
+        Event backEvent = eventService.patchEventPrivate(userId, event);
 
         EventFullDto eventFullDto = mapper.fromEventToFullDto(backEvent);
         return new ResponseEntity<>(eventFullDto, HttpStatus.OK);
@@ -118,42 +91,24 @@ public class EventResponse {
 
     public ResponseEntity<Object> postEventPrivate(long userId, NewEventDto newEventDto) {
         Event event = mapper.fromNewDtoToEvent(newEventDto);
-        Event backEvent;
-        try {
-            backEvent = eventService.postEventPrivate(userId, event);
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(NotFoundApiError.getNotFound("event"), HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenApiError.getForbidden("event"), HttpStatus.FORBIDDEN);
-        }
+
+        Event backEvent = eventService.postEventPrivate(userId, event);
 
         EventFullDto eventFullDto = mapper.fromEventToFullDto(backEvent);
         return new ResponseEntity<>(eventFullDto, HttpStatus.OK);
     }
 
     public ResponseEntity<Object> getFullEventByIdPrivate(long userId, long eventId) {
-        Event event;
-        try {
-            event = eventService.getFullEventByIdPrivate(userId, eventId);
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(NotFoundApiError.getNotFound("event"), HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenApiError.getForbidden("event"), HttpStatus.FORBIDDEN);
-        }
+
+        Event event = eventService.getFullEventByIdPrivate(userId, eventId);
 
         EventFullDto eventFullDto = mapper.fromEventToFullDto(event);
         return new ResponseEntity<>(eventFullDto, HttpStatus.OK);
     }
 
     public ResponseEntity<Object> cancelEventPrivate(long userId, long eventId) {
-        Event event;
-        try {
-            event = eventService.cancelEventPrivate(userId, eventId);
-        }  catch (NotFoundException e) {
-            return new ResponseEntity<>(NotFoundApiError.getNotFound("event"), HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenApiError.getForbidden("event"), HttpStatus.FORBIDDEN);
-        }
+
+        Event event = eventService.cancelEventPrivate(userId, eventId);
 
         EventFullDto eventFullDto = mapper.fromEventToFullDto(event);
         return new ResponseEntity<>(eventFullDto, HttpStatus.OK);
@@ -161,34 +116,36 @@ public class EventResponse {
 
     public ResponseEntity<Object> getEventsPublic(String text, List<Long> categories, Boolean paid,
                                                   String rangeStart, String rangeEnd, Boolean onlyAvailable,
-                                                  String sort, Integer from, Integer size) {
+                                                  String sort, Integer from, Integer size, HttpServletRequest request) {
 
-        FilterSearchedParams params;
-        List<Event> list;
         try {
-            params = new FilterSearchedParams(categories, paid, onlyAvailable, rangeStart, rangeEnd, sort, text);
-            list = eventService.getEventsPublic(params, from, size);
+            Hit hit = new Hit(0, request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now());
+            fromMainToStatsClient.postHit(hit);
         } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenApiError.getForbidden("events"), HttpStatus.FORBIDDEN);
+            log.error(e.getMessage());
         }
 
+        FilterSearchedParams params = new FilterSearchedParams(categories, paid, onlyAvailable, rangeStart, rangeEnd, sort, text);
+        List<Event> list = eventService.getEventsPublic(params, from, size);
+
         if (list.isEmpty()) {
-            return new ResponseEntity<>(NotFoundApiError.getNotFound("events"), HttpStatus.NOT_FOUND);
+            throw new NotFoundException("Список событий по данным параметрам пуст");
         }
 
         List<EventShortDto> resultList = list.stream().map(mapper::fromEventToShortDto).collect(Collectors.toList());
         return new ResponseEntity<>(resultList, HttpStatus.OK);
     }
 
-    public ResponseEntity<Object> getEventByIdPublic(long id) {
-        Event event;
+    public ResponseEntity<Object> getEventByIdPublic(HttpServletRequest request, long id) {
+
         try {
-            event = eventService.getEventByIdPublic(id);
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(NotFoundApiError.getNotFound("event"), HttpStatus.NOT_FOUND);
+            Hit hit = new Hit(0, request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now());
+            fromMainToStatsClient.postHit(hit);
         } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenApiError.getForbidden("event"), HttpStatus.FORBIDDEN);
+            log.error(e.getMessage());
         }
+
+        Event event = eventService.getEventByIdPublic(id);
 
         EventFullDto resultEventFullDto = mapper.fromEventToFullDto(event);
         return new ResponseEntity<>(resultEventFullDto, HttpStatus.OK);

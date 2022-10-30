@@ -21,7 +21,9 @@ public class StatsService {
     private final StatsRepository statsRepository;
 
     public Hit postHit(Hit hit) {
+        log.info("сохраняем хит "+hit);
         statsRepository.save(hit);
+        log.info("возвращаем хит "+hit);
         return hit;
     }
 

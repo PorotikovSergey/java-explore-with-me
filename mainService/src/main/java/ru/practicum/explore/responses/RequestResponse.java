@@ -6,8 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.practicum.explore.Mapper;
-import ru.practicum.explore.apierrors.ForbiddenApiError;
-import ru.practicum.explore.apierrors.NotFoundApiError;
 import ru.practicum.explore.dto.ParticipationRequestDto;
 import ru.practicum.explore.exceptions.NotFoundException;
 import ru.practicum.explore.model.Request;
@@ -25,15 +23,11 @@ public class RequestResponse {
     private final Mapper mapper;
 
     public ResponseEntity<Object> getRequestsInfFOrEventPrivate(long userId, long eventId) {
-        List<Request> list;
-        try {
-            list = requestService.getRequestsInfFOrEventPrivate(userId, eventId);
-        } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenApiError.getForbidden("requests"), HttpStatus.FORBIDDEN);
-        }
+
+        List<Request> list = requestService.getRequestsInfFOrEventPrivate(userId, eventId);
 
         if (list.isEmpty()) {
-            return new ResponseEntity<>(NotFoundApiError.getNotFound("request"), HttpStatus.NOT_FOUND);
+            throw new NotFoundException("Список запросов на мероприятие пуст");
         }
 
         List<ParticipationRequestDto> resultList = list.stream()
@@ -44,43 +38,27 @@ public class RequestResponse {
     }
 
     public ResponseEntity<Object> requestApprovePrivate(long userId, long eventId, long reqId) {
-        Request request;
-        try {
-            request = requestService.requestApprovePrivate(userId, eventId, reqId);
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(NotFoundApiError.getNotFound("request"), HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenApiError.getForbidden("request"), HttpStatus.FORBIDDEN);
-        }
+
+        Request request = requestService.requestApprovePrivate(userId, eventId, reqId);
 
         ParticipationRequestDto participationRequestDto = mapper.fromRequestToParticipationRequestDto(request);
         return new ResponseEntity<>(participationRequestDto, HttpStatus.OK);
     }
 
     public ResponseEntity<Object> requestRejectPrivate(long userId, long eventId, long reqId) {
-        Request request;
-        try {
-            request = requestService.requestRejectPrivate(userId, eventId, reqId);
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(NotFoundApiError.getNotFound("request"), HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenApiError.getForbidden("request"), HttpStatus.FORBIDDEN);
-        }
+
+        Request request = requestService.requestRejectPrivate(userId, eventId, reqId);
 
         ParticipationRequestDto participationRequestDto = mapper.fromRequestToParticipationRequestDto(request);
         return new ResponseEntity<>(participationRequestDto, HttpStatus.OK);
     }
 
     public ResponseEntity<Object> getRequestsPrivate(long userId) {
-        List<Request> list;
-        try {
-            list = requestService.getRequestsPrivate(userId);
-        } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenApiError.getForbidden("request"), HttpStatus.FORBIDDEN);
-        }
+
+        List<Request> list = requestService.getRequestsPrivate(userId);
 
         if (list.isEmpty()) {
-            return new ResponseEntity<>(NotFoundApiError.getNotFound("request"), HttpStatus.NOT_FOUND);
+            throw new NotFoundException("Список запросов пуст");
         }
 
         List<ParticipationRequestDto> resultList = list.stream()
@@ -91,29 +69,16 @@ public class RequestResponse {
     }
 
     public ResponseEntity<Object> postRequest(long userId, long eventId) {
-        Request request;
-        try {
-            request = requestService.postRequest(userId, eventId);
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(NotFoundApiError.getNotFound("request"), HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenApiError.getForbidden("request"), HttpStatus.FORBIDDEN);
-        }
+
+        Request request = requestService.postRequest(userId, eventId);
 
         ParticipationRequestDto participationRequestDto = mapper.fromRequestToParticipationRequestDto(request);
         return new ResponseEntity<>(participationRequestDto, HttpStatus.OK);
     }
 
     public ResponseEntity<Object> cancelRequest(long userId, long requestId) {
-        Request request;
-        try {
-            request = requestService.cancelRequest(userId, requestId);
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(NotFoundApiError.getNotFound("request"), HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(ForbiddenApiError.getForbidden("request"), HttpStatus.FORBIDDEN);
-        }
 
+        Request request = requestService.cancelRequest(userId, requestId);
 
         ParticipationRequestDto participationRequestDto = mapper.fromRequestToParticipationRequestDto(request);
         return new ResponseEntity<>(participationRequestDto, HttpStatus.OK);

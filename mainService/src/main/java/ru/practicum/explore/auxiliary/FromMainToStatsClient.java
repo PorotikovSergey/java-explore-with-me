@@ -1,6 +1,7 @@
 package ru.practicum.explore.auxiliary;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -10,9 +11,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@Slf4j
 public class FromMainToStatsClient {
 
     protected final RestTemplate rest;
@@ -27,8 +30,9 @@ public class FromMainToStatsClient {
 
     }
 
-    public ResponseEntity<Object> postHit(EndpointHit endpointHit) {
-        return postAndSendRequest(HttpMethod.POST, "/hit", endpointHit);
+    public ResponseEntity<Object> postHit(Hit hit) {
+        log.error("Почему-то запрос в статистику не сработал. Хит такой " + hit);
+        return postAndSendRequest(HttpMethod.POST, "/hit", hit);
     }
 
     public ResponseEntity<Object> getStats(List<String> uris, Boolean unique, String start, String end) {
