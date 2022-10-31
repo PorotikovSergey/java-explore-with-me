@@ -2,7 +2,8 @@ package ru.practicum.explore.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.support.PagedListHolder;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.explore.auxiliary.EventState;
 import ru.practicum.explore.dto.AdminSearchedParams;
@@ -32,16 +33,16 @@ public class EventService {
 
 
     public List<Event> getEventsPublic(FilterSearchedParams params, Integer from, Integer size) {
-        List<Event> textSearchedList = eventRepository.findAllByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCase(params.getText(), params.getText());
-        List<Event> afterParamsList = getFilteredEventsFromParams(textSearchedList, params);
-        List<Event> afterPageableList = getPageableList(afterParamsList, from, size);
-        afterPageableList.forEach(event -> event.setViews(event.getViews() + 1));
-        return afterPageableList;
+        Pageable pageable = PageRequest.of(from, size);
+        List<Event> textSearchedList = eventRepository
+                .findAllByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCase(params.getText()
+                        , params.getText(), pageable).getContent();
+        return getFilteredEventsFromParams(textSearchedList, params);
     }
 
     public List<Event> getEventsPrivate(long userId, Integer from, Integer size) {
-        List<Event> list = eventRepository.findAllByOwnerId(userId);
-        return getPageableList(list, from, size);
+        Pageable pageable = PageRequest.of(from, size);
+        return eventRepository.findAllByOwnerId(userId, pageable).getContent();
     }
 
     public Event getEventByIdPublic(long id) {
@@ -122,9 +123,9 @@ public class EventService {
 
 
     public List<Event> getEventsAdmin(AdminSearchedParams params, Integer from, Integer size) {
-        List<Event> list = eventRepository.findAll();
-        List<Event> resultList = getEventsFromParams(list, params);
-        return getPageableList(resultList, from, size);
+        Pageable pageable = PageRequest.of(from, size);
+        List<Event> list = eventRepository.findAll(pageable).getContent();
+        return getEventsFromParams(list, params);
     }
 
     public Event putEventAdmin(long eventId, Event event) {
@@ -243,12 +244,5 @@ public class EventService {
             list = list.stream().sorted(Comparator.comparing(Event::getEventDate)).collect(Collectors.toList());
         }
         return list;
-    }
-
-    private List<Event> getPageableList(List<Event> list, int from, int size) {
-        PagedListHolder<Event> page = new PagedListHolder<>(list.subList(from, list.size()));
-        page.setPageSize(size);
-        page.setPage(0);
-        return page.getPageList();
     }
 }

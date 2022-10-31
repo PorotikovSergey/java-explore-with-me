@@ -2,7 +2,8 @@ package ru.practicum.explore.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.support.PagedListHolder;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.explore.exceptions.NotFoundException;
 import ru.practicum.explore.model.Compilation;
@@ -23,8 +24,8 @@ public class CompilationService {
     private final EventRepository eventRepository;
 
     public List<Compilation> getCompilationsPublic(Boolean pinned, Integer from, Integer size) {
-        List<Compilation> list = compilationRepository.findAllByPinned(pinned);
-        return getPageableList(list, from, size);
+        Pageable pageable = PageRequest.of(from, size);
+        return compilationRepository.findAllByPinned(pinned, pageable).getContent();
     }
 
     public Compilation getCompilationByIdPublic(long compId) {
@@ -79,12 +80,5 @@ public class CompilationService {
 
         compilation.setPinned(true);
         compilationRepository.save(compilation);
-}
-
-    private List<Compilation> getPageableList(List<Compilation> list, int from, int size) {
-        PagedListHolder<Compilation> page = new PagedListHolder<>(list.subList(from, list.size()));
-        page.setPageSize(size);
-        page.setPage(0);
-        return page.getPageList();
     }
 }

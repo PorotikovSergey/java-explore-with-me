@@ -3,6 +3,8 @@ package ru.practicum.explore.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.support.PagedListHolder;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.explore.exceptions.NotFoundException;
 import ru.practicum.explore.exceptions.ValidationException;
@@ -22,8 +24,8 @@ public class CategoryService {
     private final EventRepository eventRepository;
 
     public List<Category> getCategoriesPublic(Integer from, Integer size) {
-        List<Category> list = categoryRepository.findAll();
-        return getPageableList(list, from, size);
+        Pageable pageable = PageRequest.of(from, size);
+        return categoryRepository.findAll(pageable).getContent();
     }
 
     public Category getCategoryByIdPublic(long catId) {
@@ -55,12 +57,5 @@ public class CategoryService {
         } catch (IllegalArgumentException e) {
             throw new NotFoundException(CATEGORY_NOT_FOUND);
         }
-    }
-
-    private List<Category> getPageableList(List<Category> list, int from, int size) {
-        PagedListHolder<Category> page = new PagedListHolder<>(list.subList(from, list.size()));
-        page.setPageSize(size);
-        page.setPage(0);
-        return page.getPageList();
     }
 }

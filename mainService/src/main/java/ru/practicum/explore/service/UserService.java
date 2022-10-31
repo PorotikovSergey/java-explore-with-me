@@ -2,7 +2,8 @@ package ru.practicum.explore.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.support.PagedListHolder;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.explore.exceptions.NotFoundException;
 import ru.practicum.explore.model.User;
@@ -18,8 +19,8 @@ public class UserService {
     private final UserRepository userRepository;
 
     public List<User> getUsersAdmin(List<Long> ids, Integer from, Integer size) {
-        List<User> list = userRepository.findAllById(ids);
-        return getPageableList(list, from, size);
+        Pageable pageable = PageRequest.of(from, size);
+        return userRepository.findAllByIdIn(ids, pageable).getContent();
     }
 
     public User addUserAdmin(User user) {
@@ -33,15 +34,11 @@ public class UserService {
     }
 
     public void deleteUserAdmin(long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
-        userRepository.deleteById(userId);
-    }
 
-    private List<User> getPageableList(List<User> list, int from, int size) {
-        PagedListHolder<User> page = new PagedListHolder<>(list.subList(from, list.size()));
-        page.setPageSize(size);
-        page.setPage(0);
-        return page.getPageList();
+        try {
+            userRepository.deleteById(userId);
+        } catch (IllegalArgumentException e) {
+            throw new NotFoundException(USER_NOT_FOUND);
+        }
     }
 }
