@@ -2,6 +2,7 @@ package ru.practicum.explore.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -15,10 +16,7 @@ import ru.practicum.explore.storage.EventRepository;
 import ru.practicum.explore.storage.UserRepository;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -28,16 +26,15 @@ public class EventService {
 
     private final EventRepository eventRepository;
     private final LocationService locationService;
-
     private final UserRepository userRepository;
-
 
     public List<Event> getEventsPublic(FilterSearchedParams params, Integer from, Integer size) {
         Pageable pageable = PageRequest.of(from, size);
-        List<Event> textSearchedList = eventRepository
-                .findAllByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCase(params.getText()
-                        , params.getText(), pageable).getContent();
-        return getFilteredEventsFromParams(textSearchedList, params);
+        Page<Event> textSearchedList = eventRepository
+                .findAllByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndCategoryIdInAndPaidAndPublishedOnNotNullAndEventDateBetween
+                        (params.getText(), params.getText(), params.getCategories(), params.getPaid(),
+                                params.getRangeStart(), params.getRangeEnd(), pageable);
+        return textSearchedList.getContent();
     }
 
     public List<Event> getEventsPrivate(long userId, Integer from, Integer size) {
@@ -124,8 +121,9 @@ public class EventService {
 
     public List<Event> getEventsAdmin(AdminSearchedParams params, Integer from, Integer size) {
         Pageable pageable = PageRequest.of(from, size);
-        List<Event> list = eventRepository.findAll(pageable).getContent();
-        return getEventsFromParams(list, params);
+        return eventRepository.findAllByOwnerIdInAndStateInAndCategoryIdInAndEventDateBetween
+                (params.getUsers(), params.getStates(), params.getCategories(),
+                        params.getRangeStart(), params.getRangeEnd(), pageable).getContent();
     }
 
     public Event putEventAdmin(long eventId, Event event) {
@@ -190,59 +188,5 @@ public class EventService {
             oldEvent.setTitle(newEvent.getTitle());
         }
         return oldEvent;
-    }
-
-    private List<Event> getEventsFromParams(List<Event> list, AdminSearchedParams params) {
-        if (!params.getStates().isEmpty()) {
-            for (String state : params.getStates()) {
-                list = list.stream().filter(s -> s.getState().equals(state)).collect(Collectors.toList());
-            }
-        }
-        if (!params.getUsers().isEmpty()) {
-            for (Long user : params.getUsers()) {
-                list = list.stream().filter(s -> s.getOwner().getId() == user).collect(Collectors.toList());
-            }
-        }
-        if (!params.getCategories().isEmpty()) {
-            for (Long category : params.getCategories()) {
-                list = list.stream().filter(s -> s.getCategory().getId() == category).collect(Collectors.toList());
-            }
-        }
-        if (!params.getStates().isEmpty()) {
-            for (String state : params.getStates()) {
-                list = list.stream().filter(s -> s.getState().equals(state)).collect(Collectors.toList());
-            }
-        }
-        return list;
-    }
-
-    private List<Event> getFilteredEventsFromParams(List<Event> list, FilterSearchedParams params) {
-        if (params.getOnlyAvailable()) {
-            list = list.stream().filter(s -> s.getPublishedOn() != null).collect(Collectors.toList());
-
-        }
-        if (params.getPaid() != null) {
-            list = list.stream().filter(s -> s.getPaid().equals(params.getPaid())).collect(Collectors.toList());
-        }
-        if (!params.getCategories().isEmpty()) {
-            for (Long category : params.getCategories()) {
-                list = list.stream().filter(s -> s.getCategory().getId() == category).collect(Collectors.toList());
-            }
-        }
-        if (params.getRangeStart() == null) {
-            list = list.stream().filter(s -> s.getEventDate().isAfter(LocalDateTime.now())).collect(Collectors.toList());
-        } else {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            LocalDateTime start = LocalDateTime.parse(params.getRangeStart(), formatter);
-            LocalDateTime end = LocalDateTime.parse(params.getRangeEnd(), formatter);
-            list = list.stream().filter(s -> s.getEventDate().isAfter(start)).collect(Collectors.toList());
-            list = list.stream().filter(s -> s.getEventDate().isBefore(end)).collect(Collectors.toList());
-        }
-        if (params.getSort().equals("VIEWS")) {
-            list = list.stream().sorted(Comparator.comparing(Event::getViews)).collect(Collectors.toList());
-        } else {
-            list = list.stream().sorted(Comparator.comparing(Event::getEventDate)).collect(Collectors.toList());
-        }
-        return list;
     }
 }

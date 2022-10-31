@@ -10,7 +10,5 @@ import java.util.List;
 
 @Repository
 public interface CompilationRepository extends JpaRepository<Compilation, Long> {
-    List<Compilation> findAllByPinned(boolean pinned);
-
     Page<Compilation> findAllByPinned(boolean pinned, Pageable pageable);
 }

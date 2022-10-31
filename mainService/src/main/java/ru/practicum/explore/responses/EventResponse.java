@@ -10,6 +10,7 @@ import ru.practicum.explore.auxiliary.FromMainToStatsClient;
 import ru.practicum.explore.auxiliary.Hit;
 import ru.practicum.explore.dto.*;
 import ru.practicum.explore.exceptions.NotFoundException;
+import ru.practicum.explore.exceptions.ServerException;
 import ru.practicum.explore.model.*;
 import ru.practicum.explore.service.EventService;
 
@@ -120,10 +121,12 @@ public class EventResponse {
             Hit hit = new Hit(0, request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
             fromMainToStatsClient.postHit(hit);
         } catch (Exception e) {
-            log.error(e.getMessage());
+            throw new ServerException("Запрос к сервису статистики не удался");
         }
 
-        FilterSearchedParams params = new FilterSearchedParams(categories, paid, onlyAvailable, rangeStart, rangeEnd, sort, text);
+        FilterSearchedParams params = new FilterSearchedParams(categories, paid, onlyAvailable,
+                rangeStart, rangeEnd, sort, text);
+
         List<Event> list = eventService.getEventsPublic(params, from, size);
 
         if (list.isEmpty()) {
@@ -140,7 +143,7 @@ public class EventResponse {
             Hit hit = new Hit(0, request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
             fromMainToStatsClient.postHit(hit);
         } catch (Exception e) {
-            log.error(e.getMessage());
+            throw new ServerException("Запрос к сервису статистики не удался");
         }
 
         Event event = eventService.getEventByIdPublic(id);

@@ -51,7 +51,6 @@ public class PublicController {
     public ResponseEntity<Object> getEventById(HttpServletRequest request, @PathVariable long id) {
 
         return eventResponse.getEventByIdPublic(request, id);
-
     }
 
     @GetMapping("/compilations")

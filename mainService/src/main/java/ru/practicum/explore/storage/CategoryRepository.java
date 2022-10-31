@@ -8,6 +8,5 @@ import ru.practicum.explore.model.Category;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
-
     Page<Category> findAll(Pageable pageable);
 }
