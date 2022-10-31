@@ -25,7 +25,7 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
             (List<Long> users, List<String> states, List<Long> categories,
              LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
 
-    Page<Event> findAllByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndCategoryIdInAndPaidAndPublishedOnNotNullAndEventDateBetween
+    Page<Event> findAllByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndCategoryIdInAndPaidAndPublishedOnNotNullAndEventDateBetweenOrderByEventDateAsc
             (String text, String text2, List<Long> categories, boolean paid,
              LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
 }

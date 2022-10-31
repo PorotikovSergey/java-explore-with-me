@@ -22,12 +22,17 @@ public class StatsService {
     }
 
     public Collection<ViewStats> getStats(List<String> uris, boolean unique, String start, String end) {
-
+        log.warn("3");
         if (unique) {
+            log.warn("4.1");
             List<Hit> listUnique = statsRepository.findDistinctByUriInAndTimestampBetween(uris, start, end);
+            log.warn("5.1");
             return getViewStatsWithHit(listUnique);
         } else {
+            log.warn("4.2");
             List<Hit> list = statsRepository.findAllByUriInAndTimestampBetween(uris, start, end);
+            log.warn("5.2");
+            System.out.println(list);
             return getViewStatsWithHit(list);
         }
     }

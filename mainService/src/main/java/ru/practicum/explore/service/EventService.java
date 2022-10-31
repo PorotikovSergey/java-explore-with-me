@@ -30,11 +30,11 @@ public class EventService {
 
     public List<Event> getEventsPublic(FilterSearchedParams params, Integer from, Integer size) {
         Pageable pageable = PageRequest.of(from, size);
-        Page<Event> textSearchedList = eventRepository
-                .findAllByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndCategoryIdInAndPaidAndPublishedOnNotNullAndEventDateBetween
+        Page<Event> list = eventRepository
+                .findAllByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndCategoryIdInAndPaidAndPublishedOnNotNullAndEventDateBetweenOrderByEventDateAsc
                         (params.getText(), params.getText(), params.getCategories(), params.getPaid(),
                                 params.getRangeStart(), params.getRangeEnd(), pageable);
-        return textSearchedList.getContent();
+        return list.getContent();
     }
 
     public List<Event> getEventsPrivate(long userId, Integer from, Integer size) {
@@ -47,7 +47,7 @@ public class EventService {
                 .orElseThrow(() -> new NotFoundException(EVENT_NOT_FOUND));
 
         if (event.getPublishedOn() != null) {
-            event.setViews(event.getViews() + 1);
+//            event.setViews(event.getViews() + 1);
             return event;
         } else {
             throw new ValidationException("Only published events can be got");

@@ -7,6 +7,7 @@ import ru.practicum.explore.model.Hit;
 import ru.practicum.explore.model.ViewStats;
 import ru.practicum.explore.service.StatsService;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -28,10 +29,12 @@ public class StatsController {
                                           List<String> uris,
                                           @RequestParam(name = "unique", defaultValue = "false")
                                           boolean unique,
-                                          @RequestParam(name = "start")
+                                          @RequestParam(name = "start", defaultValue = "1900-01-01 12:00:00")
                                           String start,
-                                          @RequestParam(name = "end")
+                                          @RequestParam(name = "end", defaultValue = "2100-01-01 12:00:00")
                                           String end) {
+        log.warn("=====1=======");
+        System.out.println(uris +"---"+ unique+"---"+ start+"---"+ end);
         return statsService.getStats(uris, unique, start, end);
     }
 

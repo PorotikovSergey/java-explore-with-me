@@ -1,5 +1,6 @@
 package ru.practicum.explore.controllers;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,21 +18,13 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/admin")
+@RequiredArgsConstructor
 public class AdminController {
 
     private final UserResponse userResponse;
     private final EventResponse eventResponse;
     private final CategoryResponse categoryResponse;
     private final CompilationResponse compilationResponse;
-
-    public AdminController(UserResponse userResponse, EventResponse eventResponse,
-                           CategoryResponse categoryResponse, CompilationResponse compilationResponse) {
-        this.userResponse = userResponse;
-        this.eventResponse = eventResponse;
-        this.categoryResponse = categoryResponse;
-        this.compilationResponse = compilationResponse;
-    }
-
 
     @GetMapping("/users")
     public ResponseEntity<Object> getUsers(@RequestParam(name = "ids")

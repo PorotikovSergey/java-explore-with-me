@@ -12,8 +12,12 @@ import ru.practicum.explore.exceptions.ServerException;
 import ru.practicum.explore.model.*;
 import ru.practicum.explore.service.EventService;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,7 +31,7 @@ public class EventResponse {
     private final FromMainToStatsClient fromMainToStatsClient;
 
     public List<EventFullDto> getEventsAdmin(List<Long> users, List<String> states, List<Long> categories,
-                                                 String rangeStart, String rangeEnd, Integer from, Integer size) {
+                                             String rangeStart, String rangeEnd, Integer from, Integer size) {
         AdminSearchedParams params = new AdminSearchedParams(users, states, categories, rangeStart, rangeEnd);
 
         List<Event> list = eventService.getEventsAdmin(params, from, size);
@@ -103,8 +107,8 @@ public class EventResponse {
     }
 
     public List<EventShortDto> getEventsPublic(String text, List<Long> categories, Boolean paid,
-                                                  String rangeStart, String rangeEnd, Boolean onlyAvailable,
-                                                  String sort, Integer from, Integer size, HttpServletRequest request) {
+                                               String rangeStart, String rangeEnd, Boolean onlyAvailable,
+                                               String sort, Integer from, Integer size, HttpServletRequest request) {
 
         try {
             Hit hit = new Hit(0, request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
@@ -123,15 +127,24 @@ public class EventResponse {
             throw new NotFoundException("Список событий по данным параметрам пуст");
         }
 
+
         return list.stream().map(mapper::fromEventToShortDto).collect(Collectors.toList());
     }
 
     public EventFullDto getEventByIdPublic(HttpServletRequest request, long id) {
+        Long countViews;
 
         try {
             Hit hit = new Hit(0, request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
-            fromMainToStatsClient.postHit(hit);
+            log.info("такой хит записался в бд статистики: " + fromMainToStatsClient.postHit(hit));
+
+            String uri = "/events/" + id;
+            List<String> uriList = new ArrayList<>();
+            uriList.add(uri);
+            ResponseEntity<Object> response = fromMainToStatsClient.getStats(uriList, false, "1900-01-01 12:00:00", "2100-01-01 12:00:00");
+            log.info("такая статситика вернулась " + response);
         } catch (Exception e) {
+            log.error(e.getMessage());
             throw new ServerException("Запрос к сервису статистики не удался");
         }
 
@@ -139,5 +152,4 @@ public class EventResponse {
 
         return mapper.fromEventToFullDto(event);
     }
-
 }
