@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class Mapper {
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private final EventService eventService;
     private final CategoryService categoryService;
@@ -60,10 +61,7 @@ public class Mapper {
         eventFullDto.setAnnotation(event.getAnnotation());
         eventFullDto.setDescription(event.getDescription());
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        LocalDateTime dateTime = event.getEventDate();
-        String formattedDateTime = dateTime.format(formatter);
-        eventFullDto.setEventDate(formattedDateTime);
+        eventFullDto.setEventDate(event.getEventDate().format(FORMATTER));
 
         eventFullDto.setLocation(event.getLocation());
         eventFullDto.setPaid(event.getPaid());
@@ -71,18 +69,12 @@ public class Mapper {
         eventFullDto.setRequestModeration(event.isRequestModeration());
         eventFullDto.setState(event.getState());
 
-        DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        LocalDateTime dateTime2 = event.getPublishedOn();
-        if (dateTime2 != null) {
-            String formattedDateTime2 = dateTime2.format(formatter2);
-            eventFullDto.setPublishedOn(formattedDateTime2);
+        if (event.getPublishedOn() != null) {
+            eventFullDto.setPublishedOn(event.getPublishedOn().format(FORMATTER));
         }
         eventFullDto.setViews(event.getViews());
 
-        DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        LocalDateTime dateTime1 = event.getCreatedOn();
-        String formattedDateTime1 = dateTime1.format(formatter1);
-        eventFullDto.setCreatedOn(formattedDateTime1);
+        eventFullDto.setCreatedOn(event.getCreatedOn().format(FORMATTER));
 
         Category category = categoryService.getCategoryByIdPublic(event.getCategory().getId());
         CategoryDto categoryDto = fromCategoryToDto(category);
@@ -109,10 +101,7 @@ public class Mapper {
 
         eventShortDto.setConfirmedRequests(event.getConfirmedRequests());
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        LocalDateTime dateTime = event.getEventDate();
-        String formattedDateTime = dateTime.format(formatter);
-        eventShortDto.setEventDate(formattedDateTime);
+        eventShortDto.setEventDate(event.getEventDate().format(FORMATTER));
 
         User user = userService.getUser(event.getOwner().getId());
         UserShortDto initiator = fromUserToShortDto(user);
@@ -128,8 +117,7 @@ public class Mapper {
         event.setCategory(categoryService.getCategoryByIdPublic(updateEventRequest.getCategory()));
         event.setDescription(updateEventRequest.getDescription());
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        event.setEventDate(LocalDateTime.parse(updateEventRequest.getEventDate(), formatter));
+        event.setEventDate(LocalDateTime.parse(updateEventRequest.getEventDate(), FORMATTER));
 
         event.setId(updateEventRequest.getEventId());
         event.setPaid(updateEventRequest.getPaid());
@@ -144,8 +132,7 @@ public class Mapper {
         event.setCategory(categoryService.getCategoryByIdPublic(adminUpdateEventRequest.getCategory()));
         event.setDescription(adminUpdateEventRequest.getDescription());
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        event.setEventDate(LocalDateTime.parse(adminUpdateEventRequest.getEventDate(), formatter));
+        event.setEventDate(LocalDateTime.parse(adminUpdateEventRequest.getEventDate(), FORMATTER));
 
         event.setPaid(adminUpdateEventRequest.getPaid());
         event.setParticipantLimit(adminUpdateEventRequest.getParticipantLimit());
@@ -162,8 +149,7 @@ public class Mapper {
         event.setDescription(newEventDto.getDescription());
         event.setCategory(categoryService.getCategoryByIdPublic(newEventDto.getCategory()));
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        event.setEventDate(LocalDateTime.parse(newEventDto.getEventDate(), formatter));
+        event.setEventDate(LocalDateTime.parse(newEventDto.getEventDate(), FORMATTER));
 
         Location location = new Location();
         location.setLat(newEventDto.getLocation().getLat());
@@ -235,9 +221,8 @@ public class Mapper {
         participationRequestDto.setStatus(request.getStatus());
         participationRequestDto.setEvent(request.getEvent().getId());
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
         LocalDateTime dateTime = request.getCreateOn();
-        String formattedDateTime = dateTime.format(formatter);
+        String formattedDateTime = dateTime.format(FORMATTER);
 
         participationRequestDto.setCreated(formattedDateTime);
 
