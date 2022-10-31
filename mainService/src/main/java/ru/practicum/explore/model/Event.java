@@ -1,7 +1,7 @@
 package ru.practicum.explore.model;
 
 import lombok.*;
-import ru.practicum.explore.auxiliary.EventState;
+import ru.practicum.explore.enums.EventState;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

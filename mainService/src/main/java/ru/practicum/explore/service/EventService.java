@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.practicum.explore.auxiliary.EventState;
+import ru.practicum.explore.enums.EventState;
 import ru.practicum.explore.dto.AdminSearchedParams;
 import ru.practicum.explore.dto.FilterSearchedParams;
 import ru.practicum.explore.exceptions.NotFoundException;

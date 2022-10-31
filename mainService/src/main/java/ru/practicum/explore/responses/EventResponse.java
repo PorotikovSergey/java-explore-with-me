@@ -5,9 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import ru.practicum.explore.Mapper;
-import ru.practicum.explore.auxiliary.FromMainToStatsClient;
-import ru.practicum.explore.auxiliary.Hit;
+import ru.practicum.explore.model.Hit;
 import ru.practicum.explore.dto.*;
 import ru.practicum.explore.exceptions.NotFoundException;
 import ru.practicum.explore.exceptions.ServerException;
@@ -28,7 +26,7 @@ public class EventResponse {
 
     private final FromMainToStatsClient fromMainToStatsClient;
 
-    public ResponseEntity<Object> getEventsAdmin(List<Long> users, List<String> states, List<Long> categories,
+    public List<EventFullDto> getEventsAdmin(List<Long> users, List<String> states, List<Long> categories,
                                                  String rangeStart, String rangeEnd, Integer from, Integer size) {
         AdminSearchedParams params = new AdminSearchedParams(users, states, categories, rangeStart, rangeEnd);
 
@@ -38,36 +36,32 @@ public class EventResponse {
             throw new NotFoundException("Список событий по данным критериям пуст");
         }
 
-        List<EventFullDto> resultList = list.stream().map(mapper::fromEventToFullDto).collect(Collectors.toList());
-        return new ResponseEntity<>(resultList, HttpStatus.OK);
+        return list.stream().map(mapper::fromEventToFullDto).collect(Collectors.toList());
     }
 
-    public ResponseEntity<Object> putEventAdmin(long eventId, AdminUpdateEventRequest adminUpdateEventRequest) {
+    public EventFullDto putEventAdmin(long eventId, AdminUpdateEventRequest adminUpdateEventRequest) {
         Event event = mapper.fromAdminUpdateEventRequestToEvent(adminUpdateEventRequest);
 
         Event backEvent = eventService.putEventAdmin(eventId, event);
 
-        EventFullDto eventFullDto = mapper.fromEventToFullDto(backEvent);
-        return new ResponseEntity<>(eventFullDto, HttpStatus.OK);
+        return mapper.fromEventToFullDto(backEvent);
     }
 
-    public ResponseEntity<Object> publishEventAdmin(long eventId) {
+    public EventFullDto publishEventAdmin(long eventId) {
 
         Event backEvent = eventService.publishEventAdmin(eventId);
 
-        EventFullDto eventFullDto = mapper.fromEventToFullDto(backEvent);
-        return new ResponseEntity<>(eventFullDto, HttpStatus.OK);
+        return mapper.fromEventToFullDto(backEvent);
     }
 
-    public ResponseEntity<Object> rejectEventAdmin(long eventId) {
+    public EventFullDto rejectEventAdmin(long eventId) {
 
         Event backEvent = eventService.rejectEventAdmin(eventId);
 
-        EventFullDto eventFullDto = mapper.fromEventToFullDto(backEvent);
-        return new ResponseEntity<>(eventFullDto, HttpStatus.OK);
+        return mapper.fromEventToFullDto(backEvent);
     }
 
-    public ResponseEntity<Object> getEventsPrivate(long userId, Integer from, Integer size) {
+    public List<EventShortDto> getEventsPrivate(long userId, Integer from, Integer size) {
 
         List<Event> list = eventService.getEventsPrivate(userId, from, size);
 
@@ -75,45 +69,40 @@ public class EventResponse {
             throw new NotFoundException("Список событий пуст");
         }
 
-        List<EventShortDto> resultList = list.stream().map(mapper::fromEventToShortDto).collect(Collectors.toList());
-        return new ResponseEntity<>(resultList, HttpStatus.OK);
+        return list.stream().map(mapper::fromEventToShortDto).collect(Collectors.toList());
     }
 
-    public ResponseEntity<Object> patchEventPrivate(long userId, UpdateEventRequest updateEventRequest) {
+    public EventFullDto patchEventPrivate(long userId, UpdateEventRequest updateEventRequest) {
         Event event = mapper.fromUpdateEventRequestToEvent(updateEventRequest);
 
         Event backEvent = eventService.patchEventPrivate(userId, event);
 
-        EventFullDto eventFullDto = mapper.fromEventToFullDto(backEvent);
-        return new ResponseEntity<>(eventFullDto, HttpStatus.OK);
+        return mapper.fromEventToFullDto(backEvent);
     }
 
-    public ResponseEntity<Object> postEventPrivate(long userId, NewEventDto newEventDto) {
+    public EventFullDto postEventPrivate(long userId, NewEventDto newEventDto) {
         Event event = mapper.fromNewDtoToEvent(newEventDto);
 
         Event backEvent = eventService.postEventPrivate(userId, event);
 
-        EventFullDto eventFullDto = mapper.fromEventToFullDto(backEvent);
-        return new ResponseEntity<>(eventFullDto, HttpStatus.OK);
+        return mapper.fromEventToFullDto(backEvent);
     }
 
-    public ResponseEntity<Object> getFullEventByIdPrivate(long userId, long eventId) {
+    public EventFullDto getFullEventByIdPrivate(long userId, long eventId) {
 
         Event event = eventService.getFullEventByIdPrivate(userId, eventId);
 
-        EventFullDto eventFullDto = mapper.fromEventToFullDto(event);
-        return new ResponseEntity<>(eventFullDto, HttpStatus.OK);
+        return mapper.fromEventToFullDto(event);
     }
 
-    public ResponseEntity<Object> cancelEventPrivate(long userId, long eventId) {
+    public EventFullDto cancelEventPrivate(long userId, long eventId) {
 
         Event event = eventService.cancelEventPrivate(userId, eventId);
 
-        EventFullDto eventFullDto = mapper.fromEventToFullDto(event);
-        return new ResponseEntity<>(eventFullDto, HttpStatus.OK);
+        return mapper.fromEventToFullDto(event);
     }
 
-    public ResponseEntity<Object> getEventsPublic(String text, List<Long> categories, Boolean paid,
+    public List<EventShortDto> getEventsPublic(String text, List<Long> categories, Boolean paid,
                                                   String rangeStart, String rangeEnd, Boolean onlyAvailable,
                                                   String sort, Integer from, Integer size, HttpServletRequest request) {
 
@@ -121,6 +110,7 @@ public class EventResponse {
             Hit hit = new Hit(0, request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
             fromMainToStatsClient.postHit(hit);
         } catch (Exception e) {
+            log.error(e.getMessage());
             throw new ServerException("Запрос к сервису статистики не удался");
         }
 
@@ -133,11 +123,10 @@ public class EventResponse {
             throw new NotFoundException("Список событий по данным параметрам пуст");
         }
 
-        List<EventShortDto> resultList = list.stream().map(mapper::fromEventToShortDto).collect(Collectors.toList());
-        return new ResponseEntity<>(resultList, HttpStatus.OK);
+        return list.stream().map(mapper::fromEventToShortDto).collect(Collectors.toList());
     }
 
-    public ResponseEntity<Object> getEventByIdPublic(HttpServletRequest request, long id) {
+    public EventFullDto getEventByIdPublic(HttpServletRequest request, long id) {
 
         try {
             Hit hit = new Hit(0, request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
@@ -148,8 +137,7 @@ public class EventResponse {
 
         Event event = eventService.getEventByIdPublic(id);
 
-        EventFullDto resultEventFullDto = mapper.fromEventToFullDto(event);
-        return new ResponseEntity<>(resultEventFullDto, HttpStatus.OK);
+        return mapper.fromEventToFullDto(event);
     }
 
 }

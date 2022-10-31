@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import ru.practicum.explore.Mapper;
 import ru.practicum.explore.dto.ParticipationRequestDto;
 import ru.practicum.explore.exceptions.NotFoundException;
 import ru.practicum.explore.model.Request;
@@ -21,7 +20,7 @@ public class RequestResponse {
     private final RequestService requestService;
     private final Mapper mapper;
 
-    public ResponseEntity<Object> getRequestsInfFOrEventPrivate(long userId, long eventId) {
+    public List<ParticipationRequestDto> getRequestsInfFOrEventPrivate(long userId, long eventId) {
 
         List<Request> list = requestService.getRequestsInfFOrEventPrivate(userId, eventId);
 
@@ -29,30 +28,26 @@ public class RequestResponse {
             throw new NotFoundException("Список запросов на мероприятие пуст");
         }
 
-        List<ParticipationRequestDto> resultList = list.stream()
+        return list.stream()
                 .map(mapper::fromRequestToParticipationRequestDto)
                 .collect(Collectors.toList());
-
-        return new ResponseEntity<>(resultList, HttpStatus.OK);
     }
 
-    public ResponseEntity<Object> requestApprovePrivate(long userId, long eventId, long reqId) {
+    public ParticipationRequestDto requestApprovePrivate(long userId, long eventId, long reqId) {
 
         Request request = requestService.requestApprovePrivate(userId, eventId, reqId);
 
-        ParticipationRequestDto participationRequestDto = mapper.fromRequestToParticipationRequestDto(request);
-        return new ResponseEntity<>(participationRequestDto, HttpStatus.OK);
+        return mapper.fromRequestToParticipationRequestDto(request);
     }
 
-    public ResponseEntity<Object> requestRejectPrivate(long userId, long eventId, long reqId) {
+    public ParticipationRequestDto requestRejectPrivate(long userId, long eventId, long reqId) {
 
         Request request = requestService.requestRejectPrivate(userId, eventId, reqId);
 
-        ParticipationRequestDto participationRequestDto = mapper.fromRequestToParticipationRequestDto(request);
-        return new ResponseEntity<>(participationRequestDto, HttpStatus.OK);
+        return mapper.fromRequestToParticipationRequestDto(request);
     }
 
-    public ResponseEntity<Object> getRequestsPrivate(long userId) {
+    public List<ParticipationRequestDto> getRequestsPrivate(long userId) {
 
         List<Request> list = requestService.getRequestsPrivate(userId);
 
@@ -60,26 +55,22 @@ public class RequestResponse {
             throw new NotFoundException("Список запросов пуст");
         }
 
-        List<ParticipationRequestDto> resultList = list.stream()
+        return list.stream()
                 .map(mapper::fromRequestToParticipationRequestDto)
                 .collect(Collectors.toList());
-
-        return new ResponseEntity<>(resultList, HttpStatus.OK);
     }
 
-    public ResponseEntity<Object> postRequest(long userId, long eventId) {
+    public ParticipationRequestDto postRequest(long userId, long eventId) {
 
         Request request = requestService.postRequest(userId, eventId);
 
-        ParticipationRequestDto participationRequestDto = mapper.fromRequestToParticipationRequestDto(request);
-        return new ResponseEntity<>(participationRequestDto, HttpStatus.OK);
+        return mapper.fromRequestToParticipationRequestDto(request);
     }
 
-    public ResponseEntity<Object> cancelRequest(long userId, long requestId) {
+    public ParticipationRequestDto cancelRequest(long userId, long requestId) {
 
         Request request = requestService.cancelRequest(userId, requestId);
 
-        ParticipationRequestDto participationRequestDto = mapper.fromRequestToParticipationRequestDto(request);
-        return new ResponseEntity<>(participationRequestDto, HttpStatus.OK);
+        return mapper.fromRequestToParticipationRequestDto(request);
     }
 }

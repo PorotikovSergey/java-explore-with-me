@@ -1,4 +1,4 @@
-package ru.practicum.explore.auxiliary;
+package ru.practicum.explore.responses;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +9,7 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
+import ru.practicum.explore.model.Hit;
 
 import java.util.List;
 

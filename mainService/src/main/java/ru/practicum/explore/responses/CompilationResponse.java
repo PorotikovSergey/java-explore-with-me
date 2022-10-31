@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import ru.practicum.explore.Mapper;
 import ru.practicum.explore.dto.CompilationDto;
 import ru.practicum.explore.dto.NewCompilationDto;
 import ru.practicum.explore.exceptions.NotFoundException;
@@ -22,13 +21,12 @@ public class CompilationResponse {
     private final CompilationService compilationService;
     private final Mapper mapper;
 
-    public ResponseEntity<Object> postCompilationAdmin(NewCompilationDto newCompilationDto) {
+    public CompilationDto postCompilationAdmin(NewCompilationDto newCompilationDto) {
         Compilation compilation = mapper.fromNewDtoToCompilation(newCompilationDto);
 
         Compilation backCompilation = compilationService.postCompilationAdmin(compilation);
 
-        CompilationDto resultCompilationDto = mapper.fromCompilationToDto(backCompilation);
-        return new ResponseEntity<>(resultCompilationDto, HttpStatus.OK);
+        return mapper.fromCompilationToDto(backCompilation);
     }
 
     public void deleteCompilationAdmin(long compId) {
@@ -51,22 +49,20 @@ public class CompilationResponse {
         compilationService.pinCompilationAdmin(compId);
     }
 
-    public ResponseEntity<Object> getCompilationsPublic(Boolean pinned, Integer from, Integer size) {
+    public List<CompilationDto> getCompilationsPublic(Boolean pinned, Integer from, Integer size) {
 
         List<Compilation> list = compilationService.getCompilationsPublic(pinned, from, size);
         if (list.isEmpty()) {
             throw new NotFoundException("Список подборок пуст");
         }
 
-        List<CompilationDto> resultList = list.stream().map(mapper::fromCompilationToDto).collect(Collectors.toList());
-        return new ResponseEntity<>(resultList, HttpStatus.OK);
+        return list.stream().map(mapper::fromCompilationToDto).collect(Collectors.toList());
     }
 
-    public ResponseEntity<Object> getCompilationByIdPublic(long compId) {
+    public CompilationDto getCompilationByIdPublic(long compId) {
 
         Compilation compilation = compilationService.getCompilationByIdPublic(compId);
 
-        CompilationDto compilationDto = mapper.fromCompilationToDto(compilation);
-        return new ResponseEntity<>(compilationDto, HttpStatus.OK);
+        return mapper.fromCompilationToDto(compilation);
     }
 }

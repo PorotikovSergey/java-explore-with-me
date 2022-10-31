@@ -1,4 +1,4 @@
-package ru.practicum.explore.apierrors;
+package ru.practicum.explore.exceptions;
 
 public class ServerApiError extends ApiError {
 }

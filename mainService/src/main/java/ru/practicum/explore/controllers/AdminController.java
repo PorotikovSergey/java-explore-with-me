@@ -1,6 +1,7 @@
 package ru.practicum.explore.controllers;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explore.dto.*;
@@ -39,12 +40,12 @@ public class AdminController {
                                            Integer from,
                                            @RequestParam(name = "size", defaultValue = "10")
                                            Integer size) {
-        return userResponse.getUsersAdmin(ids, from, size);
+        return new ResponseEntity<>(userResponse.getUsersAdmin(ids, from, size), HttpStatus.OK);
     }
 
     @PostMapping("/users")
     public ResponseEntity<Object> addUser(@RequestBody NewUserRequest newUserRequest) {
-        return userResponse.addUserAdmin(newUserRequest);
+        return new ResponseEntity<>(userResponse.addUserAdmin(newUserRequest), HttpStatus.OK);
     }
 
     @DeleteMapping("/users/{userId}")
@@ -67,32 +68,33 @@ public class AdminController {
                                             Integer from,
                                             @RequestParam(name = "size", defaultValue = "10")
                                             Integer size) {
-        return eventResponse.getEventsAdmin(users, states, categories, rangeStart, rangeEnd, from, size);
+        return new ResponseEntity<>(eventResponse.getEventsAdmin(users, states, categories,
+                rangeStart, rangeEnd, from, size), HttpStatus.OK);
     }
 
     @PutMapping("/events/{eventId}")
     public ResponseEntity<Object> putEvent(@PathVariable long eventId, @RequestBody AdminUpdateEventRequest adminUpdateEventRequest) {
-        return eventResponse.putEventAdmin(eventId, adminUpdateEventRequest);
+        return new ResponseEntity<>(eventResponse.putEventAdmin(eventId, adminUpdateEventRequest), HttpStatus.OK);
     }
 
     @PatchMapping("/events/{eventId}/publish")
     public ResponseEntity<Object> publishEvent(@PathVariable long eventId) {
-        return eventResponse.publishEventAdmin(eventId);
+        return new ResponseEntity<>(eventResponse.publishEventAdmin(eventId), HttpStatus.OK);
     }
 
     @PatchMapping("/events/{eventId}/reject")
     public ResponseEntity<Object> rejectEvent(@PathVariable long eventId) {
-        return eventResponse.rejectEventAdmin(eventId);
+        return new ResponseEntity<>(eventResponse.rejectEventAdmin(eventId), HttpStatus.OK);
     }
 
     @PatchMapping("/categories")
     public ResponseEntity<Object> patchCategory(@RequestBody CategoryDto categoryDto) {
-        return categoryResponse.patchCategoryAdmin(categoryDto);
+        return new ResponseEntity<>(categoryResponse.patchCategoryAdmin(categoryDto), HttpStatus.OK);
     }
 
     @PostMapping("/categories")
     public ResponseEntity<Object> postCategory(@RequestBody NewCategoryDto newCategoryDto) {
-        return categoryResponse.postCategoryAdmin(newCategoryDto);
+        return new ResponseEntity<>(categoryResponse.postCategoryAdmin(newCategoryDto), HttpStatus.OK);
     }
 
     @DeleteMapping("/categories/{catId}")
@@ -102,7 +104,7 @@ public class AdminController {
 
     @PostMapping("/compilations")
     public ResponseEntity<Object> postCompilation(@RequestBody NewCompilationDto newCompilationDto) {
-        return compilationResponse.postCompilationAdmin(newCompilationDto);
+        return new ResponseEntity<>(compilationResponse.postCompilationAdmin(newCompilationDto), HttpStatus.OK);
     }
 
     @DeleteMapping("/compilations/{compId}")
