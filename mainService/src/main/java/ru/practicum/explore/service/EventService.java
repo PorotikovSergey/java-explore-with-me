@@ -32,7 +32,7 @@ public class EventService {
 
 
     public List<Event> getEventsPublic(FilterSearchedParams params, Integer from, Integer size) {
-        List<Event> textSearchedList = searchEventsByText(params.getText());
+        List<Event> textSearchedList = eventRepository.findAllByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCase(params.getText(), params.getText());
         List<Event> afterParamsList = getFilteredEventsFromParams(textSearchedList, params);
         List<Event> afterPageableList = getPageableList(afterParamsList, from, size);
         afterPageableList.forEach(event -> event.setViews(event.getViews() + 1));
@@ -250,15 +250,5 @@ public class EventService {
         page.setPageSize(size);
         page.setPage(0);
         return page.getPageList();
-    }
-
-    private List<Event> searchEventsByText(String text) {
-        List<Event> foundAnnotation = eventRepository
-                .findAllByAnnotationContainingIgnoreCase(text);
-        List<Event> foundDescription = eventRepository
-                .findAllByDescriptionContainingIgnoreCase(text);
-        foundAnnotation.removeAll(foundDescription);
-        foundAnnotation.addAll(foundDescription);
-        return foundAnnotation;
     }
 }
