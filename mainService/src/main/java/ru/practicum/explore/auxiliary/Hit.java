@@ -9,6 +9,8 @@ import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Data
 @AllArgsConstructor
@@ -16,19 +18,19 @@ import javax.persistence.Id;
 @ToString
 public class Hit {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "app")
     private final String app = "mainService";
 
-    @Column(name = "uri")
+    @NotNull
+    @NotBlank
     private String uri;
 
-    @Column(name = "ip")
+    @NotNull
+    @NotBlank
     private String ip;
 
-    @Column(name = "timestamp")
+    @NotNull
+    @NotBlank
     private String timestamp;
 }
