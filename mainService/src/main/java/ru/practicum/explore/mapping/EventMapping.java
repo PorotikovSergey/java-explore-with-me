@@ -1,10 +1,7 @@
 package ru.practicum.explore.mapping;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.practicum.explore.model.Hit;
 import ru.practicum.explore.dto.*;
@@ -14,11 +11,8 @@ import ru.practicum.explore.model.*;
 import ru.practicum.explore.service.EventService;
 
 import javax.servlet.http.HttpServletRequest;
-import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -142,8 +136,8 @@ public class EventMapping {
             String uri = "/events/" + id;
             List<String> uriList = new ArrayList<>();
             uriList.add(uri);
-            String st = fromMainToStatsClient.getStats
-                    (uriList, false, "1900-01-01 12:00:00", "2100-01-01 12:00:00").getBody().toString();
+            String st = fromMainToStatsClient.getStats(
+                    uriList, false, "1900-01-01 12:00:00", "2100-01-01 12:00:00").getBody().toString();
             log.warn("Вот что получили из events/" + id + " - " + st);
             views = Long.parseLong(st.substring(st.lastIndexOf("=") + 1, st.length() - 2));
         } catch (Exception e) {
@@ -159,8 +153,8 @@ public class EventMapping {
             String uri = "/events";
             List<String> uriList = new ArrayList<>();
             uriList.add(uri);
-            String st = fromMainToStatsClient.getStats
-                    (uriList, false, "1900-01-01 12:00:00", "2100-01-01 12:00:00").getBody().toString();
+            String st = fromMainToStatsClient.getStats(
+                    uriList, false, "1900-01-01 12:00:00", "2100-01-01 12:00:00").getBody().toString();
             log.warn("Вот что получили из /events - " + st);
             views = Long.parseLong(st.substring(st.lastIndexOf("=") + 1, st.length() - 2));
         } catch (Exception e) {

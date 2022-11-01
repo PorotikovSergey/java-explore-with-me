@@ -32,14 +32,14 @@ public class EventService {
         Pageable pageable = PageRequest.of(from, size);
         if (params.getSort().equals("VIEWS")) {
             Page<Event> list = eventRepository
-                    .findAllByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndCategoryIdInAndPaidAndPublishedOnNotNullAndEventDateBetweenOrderByViewsAsc
-                            (params.getText(), params.getText(), params.getCategories(), params.getPaid(),
+                    .findAllByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndCategoryIdInAndPaidAndPublishedOnNotNullAndEventDateBetweenOrderByViewsAsc(
+                            params.getText(), params.getText(), params.getCategories(), params.getPaid(),
                                     params.getRangeStart(), params.getRangeEnd(), pageable);
             return list.getContent();
         } else {
             Page<Event> list = eventRepository
-                    .findAllByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndCategoryIdInAndPaidAndPublishedOnNotNullAndEventDateBetweenOrderByEventDateAsc
-                            (params.getText(), params.getText(), params.getCategories(), params.getPaid(),
+                    .findAllByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndCategoryIdInAndPaidAndPublishedOnNotNullAndEventDateBetweenOrderByEventDateAsc(
+                            params.getText(), params.getText(), params.getCategories(), params.getPaid(),
                                     params.getRangeStart(), params.getRangeEnd(), pageable);
             return list.getContent();
         }
@@ -129,8 +129,8 @@ public class EventService {
 
     public List<Event> getEventsAdmin(AdminSearchedParams params, Integer from, Integer size) {
         Pageable pageable = PageRequest.of(from, size);
-        return eventRepository.findAllByOwnerIdInAndStateInAndCategoryIdInAndEventDateBetween
-                (params.getUsers(), params.getStates(), params.getCategories(),
+        return eventRepository.findAllByOwnerIdInAndStateInAndCategoryIdInAndEventDateBetween(
+                params.getUsers(), params.getStates(), params.getCategories(),
                         params.getRangeStart(), params.getRangeEnd(), pageable).getContent();
     }
 

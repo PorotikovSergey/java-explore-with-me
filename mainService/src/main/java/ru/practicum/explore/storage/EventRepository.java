@@ -21,15 +21,15 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
 
     List<Event> findAllByCategoryId(long catId);
 
-    Page<Event> findAllByOwnerIdInAndStateInAndCategoryIdInAndEventDateBetween
-            (List<Long> users, List<String> states, List<Long> categories,
+    Page<Event> findAllByOwnerIdInAndStateInAndCategoryIdInAndEventDateBetween(
+            List<Long> users, List<String> states, List<Long> categories,
              LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
 
-    Page<Event> findAllByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndCategoryIdInAndPaidAndPublishedOnNotNullAndEventDateBetweenOrderByEventDateAsc
-            (String text, String text2, List<Long> categories, boolean paid,
+    Page<Event> findAllByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndCategoryIdInAndPaidAndPublishedOnNotNullAndEventDateBetweenOrderByEventDateAsc(
+            String text, String text2, List<Long> categories, boolean paid,
              LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
 
-    Page<Event> findAllByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndCategoryIdInAndPaidAndPublishedOnNotNullAndEventDateBetweenOrderByViewsAsc
-            (String text, String text2, List<Long> categories, boolean paid,
+    Page<Event> findAllByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndCategoryIdInAndPaidAndPublishedOnNotNullAndEventDateBetweenOrderByViewsAsc(
+            String text, String text2, List<Long> categories, boolean paid,
              LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
 }

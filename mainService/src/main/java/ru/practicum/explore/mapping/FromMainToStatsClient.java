@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
@@ -36,13 +35,13 @@ public class FromMainToStatsClient {
 
     public ResponseEntity<Object> getStats(List<String> uris, Boolean unique, String start, String end) {
         StringBuilder sb = new StringBuilder();
-        for(String url : uris) {
+        for (String url : uris) {
             sb.append("uris=").append(url).append("&");
         }
-        return makeAndSendRequest(HttpMethod.GET, "/stats?"+sb.toString()+"&unique="+unique+"&start="+start+"&end="+end, null);
+        return makeAndSendRequest(HttpMethod.GET, "/stats?" + sb.toString() + "&unique=" + unique + "&start=" + start + "&end=" + end, new Hit());
     }
 
-    private <T> ResponseEntity<Object> makeAndSendRequest(HttpMethod method, String path, @Nullable T body) {
+    private <T> ResponseEntity<Object> makeAndSendRequest(HttpMethod method, String path, T body) {
         HttpEntity<T> requestEntity = new HttpEntity<>(body);
         ResponseEntity<Object> statsResponse;
         try {
@@ -62,7 +61,8 @@ public class FromMainToStatsClient {
 
         if (response.hasBody()) {
             return responseBuilder.body(response.getBody());
-        };
+        }
+        ;
         return responseBuilder.build();
     }
 }
