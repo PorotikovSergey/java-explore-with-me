@@ -1,4 +1,4 @@
-package ru.practicum.explore.responses;
+package ru.practicum.explore.mapping;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.explore.model.Hit;
 
-import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Slf4j
@@ -37,24 +34,23 @@ public class FromMainToStatsClient {
         return makeAndSendRequest(HttpMethod.POST, "/hit", hit);
     }
 
-    private <T> ResponseEntity<Object> makeAndSendRequest(HttpMethod method, String path, @Nullable T body) {
-        HttpEntity<T> requestEntity = new HttpEntity<>(body);
-        ResponseEntity<Object> shareitServerResponse;
-        try {
-            shareitServerResponse = rest.exchange(path, method, requestEntity, Object.class);
-        } catch (HttpStatusCodeException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsByteArray());
-        }
-        return prepareGatewayResponse(shareitServerResponse);
-    }
-
-
     public ResponseEntity<Object> getStats(List<String> uris, Boolean unique, String start, String end) {
         StringBuilder sb = new StringBuilder();
         for(String url : uris) {
             sb.append("uris=").append(url).append("&");
         }
         return makeAndSendRequest(HttpMethod.GET, "/stats?"+sb.toString()+"&unique="+unique+"&start="+start+"&end="+end, null);
+    }
+
+    private <T> ResponseEntity<Object> makeAndSendRequest(HttpMethod method, String path, @Nullable T body) {
+        HttpEntity<T> requestEntity = new HttpEntity<>(body);
+        ResponseEntity<Object> statsResponse;
+        try {
+            statsResponse = rest.exchange(path, method, requestEntity, Object.class);
+        } catch (HttpStatusCodeException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsByteArray());
+        }
+        return prepareGatewayResponse(statsResponse);
     }
 
     private static ResponseEntity<Object> prepareGatewayResponse(ResponseEntity<Object> response) {
@@ -66,7 +62,7 @@ public class FromMainToStatsClient {
 
         if (response.hasBody()) {
             return responseBuilder.body(response.getBody());
-        }
+        };
         return responseBuilder.build();
     }
 }

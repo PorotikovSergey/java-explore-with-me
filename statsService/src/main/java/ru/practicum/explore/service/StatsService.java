@@ -7,6 +7,7 @@ import ru.practicum.explore.model.Hit;
 import ru.practicum.explore.model.ViewStats;
 import ru.practicum.explore.storage.StatsRepository;
 
+import java.sql.SQLOutput;
 import java.util.*;
 
 @Slf4j
@@ -22,17 +23,11 @@ public class StatsService {
     }
 
     public Collection<ViewStats> getStats(List<String> uris, boolean unique, String start, String end) {
-        log.warn("3");
         if (unique) {
-            log.warn("4.1");
             List<Hit> listUnique = statsRepository.findDistinctByUriInAndTimestampBetween(uris, start, end);
-            log.warn("5.1");
             return getViewStatsWithHit(listUnique);
         } else {
-            log.warn("4.2");
             List<Hit> list = statsRepository.findAllByUriInAndTimestampBetween(uris, start, end);
-            log.warn("5.2");
-            System.out.println(list);
             return getViewStatsWithHit(list);
         }
     }
@@ -51,7 +46,7 @@ public class StatsService {
         }
         Set<ViewStats> viewStatsSet = new HashSet<>(viewStatsList);
         for (ViewStats stat : viewStatsSet) {
-            int hits = Collections.frequency(list, stat);
+            int hits = list.size();
             stat.setHits(hits);
         }
         return new ArrayList<>(viewStatsSet);

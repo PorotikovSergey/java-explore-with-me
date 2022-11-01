@@ -5,9 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.explore.responses.CategoryResponse;
-import ru.practicum.explore.responses.CompilationResponse;
-import ru.practicum.explore.responses.EventResponse;
+import ru.practicum.explore.mapping.CategoryMapping;
+import ru.practicum.explore.mapping.CompilationMapping;
+import ru.practicum.explore.mapping.EventMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -18,9 +18,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PublicController {
 
-    private final EventResponse eventResponse;
-    private final CategoryResponse categoryResponse;
-    private final CompilationResponse compilationResponse;
+    private final EventMapping eventMapping;
+    private final CategoryMapping categoryMapping;
+    private final CompilationMapping compilationMapping;
 
 
     @GetMapping("/events")
@@ -44,14 +44,14 @@ public class PublicController {
                                             @RequestParam(name = "sort", defaultValue = "EVENT_DATE")
                                             String sort) {
 
-        return new ResponseEntity<>(eventResponse.getEventsPublic(text, categories, paid, rangeStart,
+        return new ResponseEntity<>(eventMapping.getEventsPublic(text, categories, paid, rangeStart,
                 rangeEnd, onlyAvailable, sort, from, size, request), HttpStatus.OK);
     }
 
     @GetMapping("/events/{id}")
     public ResponseEntity<Object> getEventById(HttpServletRequest request, @PathVariable long id) {
 
-        return new ResponseEntity<>(eventResponse.getEventByIdPublic(request, id), HttpStatus.OK);
+        return new ResponseEntity<>(eventMapping.getEventByIdPublic(request, id), HttpStatus.OK);
     }
 
     @GetMapping("/compilations")
@@ -62,14 +62,14 @@ public class PublicController {
                                                   @RequestParam(name = "pinned", defaultValue = "false")
                                                   Boolean pinned) {
 
-        return new ResponseEntity<>(compilationResponse.getCompilationsPublic(pinned, from, size), HttpStatus.OK);
+        return new ResponseEntity<>(compilationMapping.getCompilationsPublic(pinned, from, size), HttpStatus.OK);
 
     }
 
     @GetMapping("/compilations/{compId}")
     public ResponseEntity<Object> getCompilationById(@PathVariable long compId) {
 
-        return new ResponseEntity<>(compilationResponse.getCompilationByIdPublic(compId), HttpStatus.OK);
+        return new ResponseEntity<>(compilationMapping.getCompilationByIdPublic(compId), HttpStatus.OK);
 
     }
 
@@ -79,14 +79,14 @@ public class PublicController {
                                                 @RequestParam(name = "size", defaultValue = "10")
                                                 Integer size) {
 
-        return new ResponseEntity<>(categoryResponse.getCategoriesPublic(from, size), HttpStatus.OK);
+        return new ResponseEntity<>(categoryMapping.getCategoriesPublic(from, size), HttpStatus.OK);
 
     }
 
     @GetMapping("/categories/{catId}")
     public ResponseEntity<Object> getCategoryById(@PathVariable long catId) {
 
-        return new ResponseEntity<>(categoryResponse.getCategoryByIdPublic(catId), HttpStatus.OK);
+        return new ResponseEntity<>(categoryMapping.getCategoryByIdPublic(catId), HttpStatus.OK);
 
     }
 }

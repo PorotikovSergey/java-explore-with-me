@@ -30,11 +30,19 @@ public class EventService {
 
     public List<Event> getEventsPublic(FilterSearchedParams params, Integer from, Integer size) {
         Pageable pageable = PageRequest.of(from, size);
-        Page<Event> list = eventRepository
-                .findAllByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndCategoryIdInAndPaidAndPublishedOnNotNullAndEventDateBetweenOrderByEventDateAsc
-                        (params.getText(), params.getText(), params.getCategories(), params.getPaid(),
-                                params.getRangeStart(), params.getRangeEnd(), pageable);
-        return list.getContent();
+        if (params.getSort().equals("VIEWS")) {
+            Page<Event> list = eventRepository
+                    .findAllByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndCategoryIdInAndPaidAndPublishedOnNotNullAndEventDateBetweenOrderByViewsAsc
+                            (params.getText(), params.getText(), params.getCategories(), params.getPaid(),
+                                    params.getRangeStart(), params.getRangeEnd(), pageable);
+            return list.getContent();
+        } else {
+            Page<Event> list = eventRepository
+                    .findAllByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndCategoryIdInAndPaidAndPublishedOnNotNullAndEventDateBetweenOrderByEventDateAsc
+                            (params.getText(), params.getText(), params.getCategories(), params.getPaid(),
+                                    params.getRangeStart(), params.getRangeEnd(), pageable);
+            return list.getContent();
+        }
     }
 
     public List<Event> getEventsPrivate(long userId, Integer from, Integer size) {
@@ -42,12 +50,12 @@ public class EventService {
         return eventRepository.findAllByOwnerId(userId, pageable).getContent();
     }
 
-    public Event getEventByIdPublic(long id) {
+    public Event getEventByIdPublic(long id, long views) {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(EVENT_NOT_FOUND));
 
         if (event.getPublishedOn() != null) {
-//            event.setViews(event.getViews() + 1);
+            event.setViews(views);
             return event;
         } else {
             throw new ValidationException("Only published events can be got");

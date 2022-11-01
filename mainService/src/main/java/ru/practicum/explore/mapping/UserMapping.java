@@ -1,4 +1,4 @@
-package ru.practicum.explore.responses;
+package ru.practicum.explore.mapping;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UserResponse {
+public class UserMapping {
     private final UserService userService;
     private final Mapper mapper;
 

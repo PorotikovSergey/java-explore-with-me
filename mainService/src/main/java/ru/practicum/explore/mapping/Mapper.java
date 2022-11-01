@@ -1,4 +1,4 @@
-package ru.practicum.explore.responses;
+package ru.practicum.explore.mapping;
 
 import org.springframework.stereotype.Service;
 import ru.practicum.explore.dto.*;

@@ -28,4 +28,8 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
     Page<Event> findAllByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndCategoryIdInAndPaidAndPublishedOnNotNullAndEventDateBetweenOrderByEventDateAsc
             (String text, String text2, List<Long> categories, boolean paid,
              LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
+
+    Page<Event> findAllByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndCategoryIdInAndPaidAndPublishedOnNotNullAndEventDateBetweenOrderByViewsAsc
+            (String text, String text2, List<Long> categories, boolean paid,
+             LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
 }

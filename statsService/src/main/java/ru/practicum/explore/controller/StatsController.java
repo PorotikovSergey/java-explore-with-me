@@ -33,8 +33,6 @@ public class StatsController {
                                           String start,
                                           @RequestParam(name = "end", defaultValue = "2100-01-01 12:00:00")
                                           String end) {
-        log.warn("=====1=======");
-        System.out.println(uris +"---"+ unique+"---"+ start+"---"+ end);
         return statsService.getStats(uris, unique, start, end);
     }
 

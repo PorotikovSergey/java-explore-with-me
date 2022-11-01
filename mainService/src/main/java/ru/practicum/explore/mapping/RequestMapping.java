@@ -1,9 +1,7 @@
-package ru.practicum.explore.responses;
+package ru.practicum.explore.mapping;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.practicum.explore.dto.ParticipationRequestDto;
 import ru.practicum.explore.exceptions.NotFoundException;
@@ -16,7 +14,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class RequestResponse {
+public class RequestMapping {
     private final RequestService requestService;
     private final Mapper mapper;
 

@@ -1,8 +1,9 @@
-package ru.practicum.explore.responses;
+package ru.practicum.explore.mapping;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.practicum.explore.model.Hit;
@@ -12,11 +13,11 @@ import ru.practicum.explore.exceptions.ServerException;
 import ru.practicum.explore.model.*;
 import ru.practicum.explore.service.EventService;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class EventResponse {
+public class EventMapping {
     private final EventService eventService;
     private final Mapper mapper;
 
@@ -110,13 +111,7 @@ public class EventResponse {
                                                String rangeStart, String rangeEnd, Boolean onlyAvailable,
                                                String sort, Integer from, Integer size, HttpServletRequest request) {
 
-        try {
-            Hit hit = new Hit(0, request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
-            fromMainToStatsClient.postHit(hit);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            throw new ServerException("Запрос к сервису статистики не удался");
-        }
+        sendToStats(request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
 
         FilterSearchedParams params = new FilterSearchedParams(categories, paid, onlyAvailable,
                 rangeStart, rangeEnd, sort, text);
@@ -127,29 +122,61 @@ public class EventResponse {
             throw new NotFoundException("Список событий по данным параметрам пуст");
         }
 
-
         return list.stream().map(mapper::fromEventToShortDto).collect(Collectors.toList());
     }
 
     public EventFullDto getEventByIdPublic(HttpServletRequest request, long id) {
-        Long countViews;
 
+        sendToStats(request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
+        Long views = getFromStats(id);
+
+        Event event = eventService.getEventByIdPublic(id, views);
+
+        return mapper.fromEventToFullDto(event);
+    }
+
+
+    private Long getFromStats(long id) {
+        Long views;
         try {
-            Hit hit = new Hit(0, request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
-            log.info("такой хит записался в бд статистики: " + fromMainToStatsClient.postHit(hit));
-
             String uri = "/events/" + id;
             List<String> uriList = new ArrayList<>();
             uriList.add(uri);
-            ResponseEntity<Object> response = fromMainToStatsClient.getStats(uriList, false, "1900-01-01 12:00:00", "2100-01-01 12:00:00");
-            log.info("такая статситика вернулась " + response);
+            String st = fromMainToStatsClient.getStats
+                    (uriList, false, "1900-01-01 12:00:00", "2100-01-01 12:00:00").getBody().toString();
+            log.warn("Вот что получили из events/" + id + " - " + st);
+            views = Long.parseLong(st.substring(st.lastIndexOf("=") + 1, st.length() - 2));
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new ServerException("Запрос к сервису статистики не удался");
+            throw new ServerException("Обращение к сервису статистики неудачно. " + e.getMessage());
         }
+        return views;
+    }
 
-        Event event = eventService.getEventByIdPublic(id);
+    private Long getFromStats() {
+        Long views;
+        try {
+            String uri = "/events";
+            List<String> uriList = new ArrayList<>();
+            uriList.add(uri);
+            String st = fromMainToStatsClient.getStats
+                    (uriList, false, "1900-01-01 12:00:00", "2100-01-01 12:00:00").getBody().toString();
+            log.warn("Вот что получили из /events - " + st);
+            views = Long.parseLong(st.substring(st.lastIndexOf("=") + 1, st.length() - 2));
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new ServerException("Обращение к сервису статистики неудачно. " + e.getMessage());
+        }
+        return views;
+    }
 
-        return mapper.fromEventToFullDto(event);
+    private void sendToStats(String url, String ip, String date) {
+        try {
+            Hit hit = new Hit(0, url, ip, date);
+            log.warn("такой хит записался в бд статистики: " + fromMainToStatsClient.postHit(hit));
+        } catch (Exception e) {
+            log.error("отправка в бд не удалась");
+            throw new ServerException("Отправка в бд не удалась");
+        }
     }
 }

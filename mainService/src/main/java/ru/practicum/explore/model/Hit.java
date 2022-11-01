@@ -20,7 +20,7 @@ public class Hit {
 
     private long id;
 
-    private final String app = "mainService";
+    private final String app = "ewm-main-service";
 
     @NotNull
     @NotBlank

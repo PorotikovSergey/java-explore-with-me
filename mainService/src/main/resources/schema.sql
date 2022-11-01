@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS events (
                                       created_on TIMESTAMP NOT NULL,
                                       location BIGINT NOT NULL,
                                       state VARCHAR(9) NOT NULL,
-                                      description VARCHAR(1000) NOT NULL,
+                                      description VARCHAR(2000) NOT NULL,
                                       event_date TIMESTAMP NOT NULL,
                                       paid BOOLEAN NOT NULL,
                                       participant_limit BIGINT,

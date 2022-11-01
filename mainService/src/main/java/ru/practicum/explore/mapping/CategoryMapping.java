@@ -1,9 +1,7 @@
-package ru.practicum.explore.responses;
+package ru.practicum.explore.mapping;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.practicum.explore.dto.CategoryDto;
 import ru.practicum.explore.dto.NewCategoryDto;
@@ -17,7 +15,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CategoryResponse {
+public class CategoryMapping {
     private final CategoryService categoryService;
     private final Mapper mapper;
 
