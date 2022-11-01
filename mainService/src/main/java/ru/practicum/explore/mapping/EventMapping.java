@@ -105,12 +105,17 @@ public class EventMapping {
                                                String rangeStart, String rangeEnd, Boolean onlyAvailable,
                                                String sort, Integer from, Integer size, HttpServletRequest request) {
 
-        sendToStats(request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
-
         FilterSearchedParams params = new FilterSearchedParams(categories, paid, onlyAvailable,
                 rangeStart, rangeEnd, sort, text);
+        List<Event> list;
 
-        List<Event> list = eventService.getEventsPublic(params, from, size);
+        try {
+            sendToStats(request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
+        } catch (Exception e) {
+            log.error("Отправка статистики не удалась");
+        } finally {
+            list = eventService.getEventsPublic(params, from, size);
+        }
 
         if (list.isEmpty()) {
             throw new NotFoundException("Список событий по данным параметрам пуст");
@@ -121,10 +126,17 @@ public class EventMapping {
 
     public EventFullDto getEventByIdPublic(HttpServletRequest request, long id) {
 
-        sendToStats(request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
-        Long views = getFromStats(id);
+        Event event;
+        Long views = 0L;
 
-        Event event = eventService.getEventByIdPublic(id, views);
+        try {
+            sendToStats(request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
+            views = getFromStats(id);
+        } catch (Exception e) {
+             log.error("Отправка в и получение из статистики не удалась");
+        } finally {
+            event = eventService.getEventByIdPublic(id, views);
+        }
 
         return mapper.fromEventToFullDto(event);
     }
