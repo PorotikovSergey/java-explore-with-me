@@ -8,6 +8,7 @@ import ru.practicum.explore.model.ViewStats;
 import ru.practicum.explore.storage.StatsRepository;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -38,16 +39,12 @@ public class StatsService {
         return viewStats;
     }
 
-    private List<ViewStats> getViewStatsWithHit(List<Hit> list) {
-        List<ViewStats> viewStatsList = new ArrayList<>();
-        for (Hit hit : list) {
-            viewStatsList.add(fromHitToStat(hit));
-        }
-        Set<ViewStats> viewStatsSet = new HashSet<>(viewStatsList);
+    private Set<ViewStats> getViewStatsWithHit(List<Hit> list) {
+        Set<ViewStats> viewStatsSet = list.stream().map(this::fromHitToStat).collect(Collectors.toSet());
         for (ViewStats stat : viewStatsSet) {
             int hits = list.size();
             stat.setHits(hits);
         }
-        return new ArrayList<>(viewStatsSet);
+        return viewStatsSet;
     }
 }

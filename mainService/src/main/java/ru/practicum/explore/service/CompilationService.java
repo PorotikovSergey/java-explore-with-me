@@ -39,11 +39,7 @@ public class CompilationService {
     }
 
     public void deleteCompilationAdmin(long compId) {
-        try {
-            compilationRepository.deleteById(compId);
-        } catch (IllegalArgumentException e) {
-            throw new NotFoundException(COMPILATION_NOT_FOUND);
-        }
+        compilationRepository.deleteById(compId);
     }
 
     public void deleteEventFromCompilationAdmin(long compId, long eventId) {

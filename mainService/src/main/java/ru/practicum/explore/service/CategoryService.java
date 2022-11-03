@@ -50,11 +50,6 @@ public class CategoryService {
         if (!list.isEmpty()) {
             throw new ValidationException("Нельзя удалять категорию если есть связанные с ней события");
         }
-
-        try {
-            categoryRepository.deleteById(catId);
-        } catch (IllegalArgumentException e) {
-            throw new NotFoundException(CATEGORY_NOT_FOUND);
-        }
+        categoryRepository.deleteById(catId);
     }
 }

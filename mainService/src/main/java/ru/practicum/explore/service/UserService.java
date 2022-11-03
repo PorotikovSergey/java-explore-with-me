@@ -34,11 +34,6 @@ public class UserService {
     }
 
     public void deleteUserAdmin(long userId) {
-
-        try {
-            userRepository.deleteById(userId);
-        } catch (IllegalArgumentException e) {
-            throw new NotFoundException(USER_NOT_FOUND);
-        }
+        userRepository.deleteById(userId);
     }
 }
