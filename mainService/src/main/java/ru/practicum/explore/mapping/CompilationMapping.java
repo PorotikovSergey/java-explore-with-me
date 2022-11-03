@@ -39,12 +39,8 @@ public class CompilationMapping {
         compilationService.addEventToCompilationAdmin(compId, eventId);
     }
 
-    public void unpinCompilationAdmin(long compId) {
-        compilationService.unpinCompilationAdmin(compId);
-    }
-
-    public void pinCompilationAdmin(long compId) {
-        compilationService.pinCompilationAdmin(compId);
+    public void pinCompilationAdmin(long compId, boolean isPinned) {
+        compilationService.pinCompilationAdmin(compId, isPinned);
     }
 
     public List<CompilationDto> getCompilationsPublic(Boolean pinned, Integer from, Integer size) {

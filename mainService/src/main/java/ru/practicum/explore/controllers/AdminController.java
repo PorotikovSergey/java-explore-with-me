@@ -117,11 +117,11 @@ public class AdminController {
 
     @DeleteMapping("/compilations/{compId}/pin")
     public void unpinCompilation(@PathVariable long compId) {
-        compilationMapping.unpinCompilationAdmin(compId);
+        compilationMapping.pinCompilationAdmin(compId, false);
     }
 
     @PatchMapping("/compilations/{compId}/pin")
     public void pinEvent(@PathVariable long compId) {
-        compilationMapping.pinCompilationAdmin(compId);
+        compilationMapping.pinCompilationAdmin(compId, true);
     }
 }

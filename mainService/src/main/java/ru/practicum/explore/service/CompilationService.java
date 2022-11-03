@@ -62,19 +62,11 @@ public class CompilationService {
         compilationRepository.save(compilation);
     }
 
-    public void unpinCompilationAdmin(long compId) {
+    public void pinCompilationAdmin(long compId, boolean isPinned) {
         Compilation compilation = compilationRepository.findById(compId)
                 .orElseThrow(() -> new NotFoundException(COMPILATION_NOT_FOUND));
 
-        compilation.setPinned(false);
-        compilationRepository.save(compilation);
-    }
-
-    public void pinCompilationAdmin(long compId) {
-        Compilation compilation = compilationRepository.findById(compId)
-                .orElseThrow(() -> new NotFoundException(COMPILATION_NOT_FOUND));
-
-        compilation.setPinned(true);
+        compilation.setPinned(isPinned);
         compilationRepository.save(compilation);
     }
 }
