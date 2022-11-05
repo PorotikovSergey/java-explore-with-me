@@ -27,8 +27,16 @@ public class FilterSearchedParams {
         this.categories = categories;
         this.paid = paid;
         this.onlyAvailable = onlyAvailable;
-        this.rangeStart = LocalDateTime.parse(rangeStart, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        this.rangeEnd = LocalDateTime.parse(rangeEnd, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        if (rangeStart != null) {
+            this.rangeStart = LocalDateTime.parse(rangeStart, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        } else {
+            this.rangeStart = LocalDateTime.now();
+        }
+        if (rangeEnd != null) {
+            this.rangeEnd = LocalDateTime.parse(rangeEnd, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        } else {
+            this.rangeEnd = LocalDateTime.of(3000, 12, 12, 12, 12);
+        }
         this.sort = sort;
         this.text = text;
     }

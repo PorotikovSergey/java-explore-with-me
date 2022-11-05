@@ -1,9 +1,7 @@
 package ru.practicum.explore.mapping;
 
-import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.converter.json.GsonBuilderUtils;
 import org.springframework.stereotype.Service;
 import ru.practicum.explore.model.Hit;
 import ru.practicum.explore.dto.*;
@@ -14,10 +12,7 @@ import ru.practicum.explore.service.EventService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j

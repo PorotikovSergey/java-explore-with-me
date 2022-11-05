@@ -66,7 +66,6 @@ public class FromMainToStatsClient {
         if (response.hasBody()) {
             return responseBuilder.body(response.getBody());
         }
-        ;
         return responseBuilder.build();
     }
 
