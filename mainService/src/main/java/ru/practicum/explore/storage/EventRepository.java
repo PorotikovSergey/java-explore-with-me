@@ -31,16 +31,18 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
             List<Long> users, List<String> states, List<Long> categories,
             LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
 
-    Page<Event> findAllByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndCategoryIdInAndPaidAndPublishedOnNotNullAndEventDateBetweenOrderByEventDateAsc(
-            String text, String text2, List<Long> categories, boolean paid,
-            LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
+//    Page<Event> findAllByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndCategoryIdInAndPaidAndPublishedOnNotNullAndEventDateBetweenOrderByEventDateAsc(
+//            String text, String text2, List<Long> categories, boolean paid,
+//            LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
+//
+//    Page<Event> findAllByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndCategoryIdInAndPaidAndPublishedOnNotNullAndEventDateBetweenOrderByViewsAsc(
+//            String text, String text2, List<Long> categories, boolean paid,
+//            LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
 
-    Page<Event> findAllByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndCategoryIdInAndPaidAndPublishedOnNotNullAndEventDateBetweenOrderByViewsAsc(
-            String text, String text2, List<Long> categories, boolean paid,
-            LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
-
-    @Transactional(readOnly = true)
-    @Query("select e from Event e where e.paid = ?3 ")
-    Page<Event> findByParams(String text, List<Long> categories, boolean paid,
-                             LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
+    @Query(nativeQuery = true, value = "select * from events where events.paid = :pay " +
+            "AND (events.annotation LIKE :text OR events.description LIKE :text) " +
+            "AND  events.category IN :cat " +
+            "AND events.event_date BETWEEN :start AND :end")
+    Page<Event> findByParams(@Param("text")String text, @Param("cat")List<Long> categories, @Param("pay")boolean paid,
+                             @Param("start")LocalDateTime rangeStart, @Param("end")LocalDateTime rangeEnd, Pageable pageable);
 }

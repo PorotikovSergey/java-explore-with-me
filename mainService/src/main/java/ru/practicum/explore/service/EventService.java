@@ -42,9 +42,9 @@ public class EventService {
         log.warn(params.toString());
         log.warn(from + "  " + size);
         Pageable pageable = PageRequest.of(from, size);
-        Pageable pageable1 = PageRequest.of(from, size, Sort.by("event_date").ascending());
+        Pageable pageableDate = PageRequest.of(from, size, Sort.by("event_date").ascending());
         log.info("1");
-        Pageable pageable2 = PageRequest.of(from, size, Sort.by("views").ascending());
+        Pageable pageableViews = PageRequest.of(from, size, Sort.by("views").ascending());
         log.info("2");
         if (params.getSort().equals("VIEWS")) {
             log.info("----1");
@@ -54,9 +54,8 @@ public class EventService {
 //                            params.getRangeStart(), params.getRangeEnd(), pageable);
 
             Page<Event> list = eventRepository.findByParams(params.getText(), params.getCategories(), params.getPaid(),
-                    params.getRangeStart(), params.getRangeEnd(), pageable2);
+                    params.getRangeStart(), params.getRangeEnd(), pageableViews);
 
-            System.out.println(list.getContent());
             System.out.println("===================================");
             return list.getContent();
         } else {
@@ -66,9 +65,8 @@ public class EventService {
 //                            params.getRangeStart(), params.getRangeEnd(), pageable);
 
             Page<Event> list = eventRepository.findByParams(params.getText(), params.getCategories(), params.getPaid(),
-                    params.getRangeStart(), params.getRangeEnd(), pageable1);
+                    params.getRangeStart(), params.getRangeEnd(), pageableDate);
 
-            System.out.println(list.getContent());
             System.out.println("===================================");
             return list.getContent();
         }
