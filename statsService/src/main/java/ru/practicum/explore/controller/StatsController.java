@@ -23,6 +23,11 @@ public class StatsController {
         return statsService.postHit(hit);
     }
 
+    @PostMapping("/hit/count")
+    public Long postHitAndGetCount(@RequestBody Hit hit) {
+        return statsService.postHitAndGetCount(hit);
+    }
+
     @GetMapping("/stats")
     public Collection<ViewStats> getStats(@RequestParam(name = "uris")
                                           List<String> uris,

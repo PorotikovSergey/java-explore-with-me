@@ -1,7 +1,9 @@
 package ru.practicum.explore.mapping;
 
+import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.converter.json.GsonBuilderUtils;
 import org.springframework.stereotype.Service;
 import ru.practicum.explore.model.Hit;
 import ru.practicum.explore.dto.*;
@@ -13,6 +15,7 @@ import ru.practicum.explore.service.EventService;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -111,7 +114,7 @@ public class EventMapping {
         List<Event> list;
 
         try {
-            statsMaker(request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
+            updateStatsOfEvent(request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
         } catch (Exception e) {
             log.error("Отправка статистики не удалась");
         }
@@ -128,46 +131,26 @@ public class EventMapping {
     public EventFullDto getEventByIdPublic(HttpServletRequest request, long id) {
 
         Event event;
-        Long views = 0L;
+        long views = 0L;
 
         try {
-            views = statsMaker(request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
-            //так как запрос к данному событию по айди поступил, то я сразу записываю это в сервис статистики
-            //и в ответ получаю число обращений к данному событию включая этот просмотр
+            views = updateStatsOfEvent("/events/" + id, request.getRemoteAddr(), LocalDateTime.now().toString());
         } catch (Exception e) {
             log.error("Отправка в и получение из статистики не удалась");
         }
-
         event = eventService.getEventByIdPublic(id, views);
-        //Тут я присваиваю чуть ранее полученное количество просмотров в соответствующую переменную в событие
-        //и далее в сервисе это событие пересохраняется в БД уже с обновлённой переменной views.
-        //То есть получается просмотры считаются в сервисе статистики, но так же сразу же и записываются непосредственно
-        //в основную БД, в которой они нужны для сортировки
         return mapper.fromEventToFullDto(event);
     }
 
-    private Long statsMaker(String url, String ip, String date) {
+    private Long updateStatsOfEvent(String url, String ip, String date) {
         try {
             Hit hit = new Hit(0, url, ip, date);
-            log.warn("такой хит записался в бд статистики: " + fromMainToStatsClient.postHit(hit));
+            long views = Long.parseLong(fromMainToStatsClient.updateStats(hit).getBody().toString());
+            log.warn("такое кол-во просмотров у данного данного урла " + url + " : " + views);
+            return views;
         } catch (Exception e) {
             log.error("отправка в бд не удалась");
             throw new ServerException("Отправка в бд не удалась");
         }
-
-        long views;
-        try {
-            String uri = url;
-            List<String> uriList = new ArrayList<>();
-            uriList.add(uri);
-            String st = Objects.requireNonNull(fromMainToStatsClient.getStats(
-                    uriList, false, "1900-01-01 12:00:00", "2100-01-01 12:00:00").getBody()).toString();
-            log.warn("Вот что получили из " + uri + " - " + st);
-            views = Long.parseLong(st.substring(st.lastIndexOf("=") + 1, st.length() - 2));
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            throw new ServerException("Обращение к сервису статистики неудачно. " + e.getMessage());
-        }
-        return views;
     }
 }

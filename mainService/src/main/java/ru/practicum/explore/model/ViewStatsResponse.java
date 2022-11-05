@@ -9,7 +9,7 @@ import java.util.Objects;
 @Data
 @Getter
 @Setter
-public class ViewStats {
+public class ViewStatsResponse {
     private String app;
     private String uri;
 
@@ -19,7 +19,7 @@ public class ViewStats {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ViewStats viewStats = (ViewStats) o;
+        ViewStatsResponse viewStats = (ViewStatsResponse) o;
         return Objects.equals(app, viewStats.app) && Objects.equals(uri, viewStats.uri);
     }
 

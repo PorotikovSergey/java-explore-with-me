@@ -1,11 +1,17 @@
 package ru.practicum.explore.service;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Criteria;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.explore.enums.EventState;
 import ru.practicum.explore.dto.AdminSearchedParams;
 import ru.practicum.explore.dto.FilterSearchedParams;
@@ -15,7 +21,10 @@ import ru.practicum.explore.model.*;
 import ru.practicum.explore.storage.EventRepository;
 import ru.practicum.explore.storage.UserRepository;
 
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @Slf4j
@@ -29,18 +38,38 @@ public class EventService {
     private final UserRepository userRepository;
 
     public List<Event> getEventsPublic(FilterSearchedParams params, Integer from, Integer size) {
+        System.out.println("===================================");
+        log.warn(params.toString());
+        log.warn(from + "  " + size);
         Pageable pageable = PageRequest.of(from, size);
+        Pageable pageable1 = PageRequest.of(from, size, Sort.by("event_date").ascending());
+        log.info("1");
+        Pageable pageable2 = PageRequest.of(from, size, Sort.by("views").ascending());
+        log.info("2");
         if (params.getSort().equals("VIEWS")) {
-            Page<Event> list = eventRepository
-                    .findAllByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndCategoryIdInAndPaidAndPublishedOnNotNullAndEventDateBetweenOrderByViewsAsc(
-                            params.getText(), params.getText(), params.getCategories(), params.getPaid(),
-                                    params.getRangeStart(), params.getRangeEnd(), pageable);
+            log.info("----1");
+//            Page<Event> list = eventRepository
+//                    .findAllByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndCategoryIdInAndPaidAndPublishedOnNotNullAndEventDateBetweenOrderByViewsAsc(
+//                            params.getText(), params.getText(), params.getCategories(), params.getPaid(),
+//                            params.getRangeStart(), params.getRangeEnd(), pageable);
+
+            Page<Event> list = eventRepository.findByParams(params.getText(), params.getCategories(), params.getPaid(),
+                    params.getRangeStart(), params.getRangeEnd(), pageable2);
+
+            System.out.println(list.getContent());
+            System.out.println("===================================");
             return list.getContent();
         } else {
-            Page<Event> list = eventRepository
-                    .findAllByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndCategoryIdInAndPaidAndPublishedOnNotNullAndEventDateBetweenOrderByEventDateAsc(
-                            params.getText(), params.getText(), params.getCategories(), params.getPaid(),
-                                    params.getRangeStart(), params.getRangeEnd(), pageable);
+//            Page<Event> list = eventRepository
+//                    .findAllByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndCategoryIdInAndPaidAndPublishedOnNotNullAndEventDateBetweenOrderByEventDateAsc(
+//                            params.getText(), params.getText(), params.getCategories(), params.getPaid(),
+//                            params.getRangeStart(), params.getRangeEnd(), pageable);
+
+            Page<Event> list = eventRepository.findByParams(params.getText(), params.getCategories(), params.getPaid(),
+                    params.getRangeStart(), params.getRangeEnd(), pageable1);
+
+            System.out.println(list.getContent());
+            System.out.println("===================================");
             return list.getContent();
         }
     }
@@ -131,7 +160,7 @@ public class EventService {
         Pageable pageable = PageRequest.of(from, size);
         return eventRepository.findAllByOwnerIdInAndStateInAndCategoryIdInAndEventDateBetween(
                 params.getUsers(), params.getStates(), params.getCategories(),
-                        params.getRangeStart(), params.getRangeEnd(), pageable).getContent();
+                params.getRangeStart(), params.getRangeEnd(), pageable).getContent();
     }
 
     public Event putEventAdmin(long eventId, Event event) {

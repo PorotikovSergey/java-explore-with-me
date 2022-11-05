@@ -33,6 +33,10 @@ public class FromMainToStatsClient {
         return makeAndSendRequest(HttpMethod.POST, "/hit", hit);
     }
 
+    public ResponseEntity<Object> updateStats(Hit hit) {
+        return makeAndSendRequest(HttpMethod.POST, "/hit/count", hit);
+    }
+
     public ResponseEntity<Object> getStats(List<String> uris, Boolean unique, String start, String end) {
         StringBuilder sb = new StringBuilder();
         for (String url : uris) {
@@ -65,6 +69,8 @@ public class FromMainToStatsClient {
         ;
         return responseBuilder.build();
     }
+
+
 }
 
 

@@ -22,7 +22,14 @@ public class StatsService {
         return hit;
     }
 
-    public Collection<ViewStats> getStats(List<String> uris, boolean unique, String start, String end) {
+    public Long postHitAndGetCount(Hit hit) {
+        statsRepository.save(hit);
+        Set<ViewStats> set = getStats(Collections.singletonList(hit.getUri()), false,
+                "1900-01-01 12:00:00", "2100-01-01 12:00:00");
+        return set.iterator().next().getHits();
+    }
+
+    public Set<ViewStats> getStats(List<String> uris, boolean unique, String start, String end) {
         if (unique) {
             List<Hit> listUnique = statsRepository.findDistinctByUriInAndTimestampBetween(uris, start, end);
             return getViewStatsWithHit(listUnique);
