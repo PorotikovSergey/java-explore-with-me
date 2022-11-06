@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserMapping {
     private final UserService userService;
-    private final Mapper mapper;
 
     public List<UserDto> getUsersAdmin(List<Long> ids, Integer from, Integer size) {
 
@@ -29,20 +28,42 @@ public class UserMapping {
             //вот тут нужно оставить так,так как для тестов нужна проверка на пустой лист,а не ApiError если юзеров нет
         }
 
-        return list.stream().map(mapper::fromUserToDto).collect(Collectors.toList());
+        return list.stream().map(UserMapping::fromUserToDto).collect(Collectors.toList());
     }
 
     public UserDto addUserAdmin(NewUserRequest newUserRequest) {
-        User user = mapper.fromUserRequestToUser(newUserRequest);
+        User user = fromUserRequestToUser(newUserRequest);
 
         User backUser = userService.addUserAdmin(user);
 
-        return mapper.fromUserToDto(backUser);
+        return fromUserToDto(backUser);
     }
 
     public void deleteUserAdmin(long userId) {
         userService.deleteUserAdmin(userId);
     }
 
+
+    public static UserDto fromUserToDto(User user) {
+        UserDto userDto = new UserDto();
+        userDto.setId(user.getId());
+        userDto.setName(user.getName());
+        userDto.setEmail(user.getEmail());
+        return userDto;
+    }
+
+    public static UserShortDto fromUserToShortDto(User user) {
+        UserShortDto userShortDto = new UserShortDto();
+        userShortDto.setId(user.getId());
+        userShortDto.setName(user.getName());
+        return userShortDto;
+    }
+
+    public static User fromUserRequestToUser(NewUserRequest newUserRequest) {
+        User user = new User();
+        user.setName(newUserRequest.getName());
+        user.setEmail(newUserRequest.getEmail());
+        return user;
+    }
 }
 

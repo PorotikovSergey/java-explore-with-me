@@ -4,11 +4,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.explore.dto.CompilationDto;
+import ru.practicum.explore.dto.EventShortDto;
 import ru.practicum.explore.dto.NewCompilationDto;
 import ru.practicum.explore.exceptions.NotFoundException;
 import ru.practicum.explore.model.Compilation;
 import ru.practicum.explore.service.CompilationService;
+import ru.practicum.explore.service.EventService;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,14 +21,15 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CompilationMapping {
     private final CompilationService compilationService;
-    private final Mapper mapper;
+    private final EventService eventService;
+    private final EventMapping eventMapping;
 
     public CompilationDto postCompilationAdmin(NewCompilationDto newCompilationDto) {
-        Compilation compilation = mapper.fromNewDtoToCompilation(newCompilationDto);
+        Compilation compilation = fromNewDtoToCompilation(newCompilationDto);
 
         Compilation backCompilation = compilationService.postCompilationAdmin(compilation);
 
-        return mapper.fromCompilationToDto(backCompilation);
+        return fromCompilationToDto(backCompilation);
     }
 
     public void deleteCompilationAdmin(long compId) {
@@ -50,13 +55,42 @@ public class CompilationMapping {
             throw new NotFoundException("Список подборок пуст");
         }
 
-        return list.stream().map(mapper::fromCompilationToDto).collect(Collectors.toList());
+        return list.stream().map(this::fromCompilationToDto).collect(Collectors.toList());
     }
 
     public CompilationDto getCompilationByIdPublic(long compId) {
 
         Compilation compilation = compilationService.getCompilationByIdPublic(compId);
 
-        return mapper.fromCompilationToDto(compilation);
+        return fromCompilationToDto(compilation);
     }
+
+    public CompilationDto fromCompilationToDto(Compilation compilation) {
+        CompilationDto compilationDto = new CompilationDto();
+        compilationDto.setId(compilation.getId());
+        compilationDto.setTitle(compilation.getTitle());
+        compilationDto.setPinned(compilation.isPinned());
+        if (!compilation.getEventList().isEmpty()) {
+            List<EventShortDto> list = compilation.getEventList().stream().map(eventMapping::fromEventToShortDto).collect(Collectors.toList());
+            compilationDto.setEvents(list);
+        } else {
+            compilationDto.setEvents(Collections.emptyList());
+        }
+        return compilationDto;
+    }
+
+    public Compilation fromNewDtoToCompilation(NewCompilationDto newCompilationDto) {
+        Compilation compilation = new Compilation();
+        compilation.setTitle(newCompilationDto.getTitle());
+        compilation.setPinned(newCompilationDto.isPinned());
+        if (!newCompilationDto.getEvents().isEmpty()) {
+            compilation.setEventList(eventService.getAllByIds(newCompilationDto.getEvents()));
+            compilation.setEventList(eventService.getAllByIds(newCompilationDto.getEvents()));
+        } else {
+            compilation.setEventList(new ArrayList<>());
+        }
+        return compilation;
+    }
+
+
 }

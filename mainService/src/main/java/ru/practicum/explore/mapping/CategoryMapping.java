@@ -17,22 +17,21 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CategoryMapping {
     private final CategoryService categoryService;
-    private final Mapper mapper;
 
     public CategoryDto patchCategoryAdmin(CategoryDto categoryDto) {
-        Category category = mapper.fromDtoToCategory(categoryDto);
+        Category category = fromDtoToCategory(categoryDto);
 
         Category backCategory = categoryService.patchCategoryAdmin(category);
 
-        return mapper.fromCategoryToDto(backCategory);
+        return fromCategoryToDto(backCategory);
     }
 
     public CategoryDto postCategoryAdmin(NewCategoryDto newCategoryDto) {
-        Category category = mapper.fromNewDtoToCategory(newCategoryDto);
+        Category category = fromNewDtoToCategory(newCategoryDto);
 
         Category backCategory = categoryService.postCategoryAdmin(category);
 
-        return mapper.fromCategoryToDto(backCategory);
+        return fromCategoryToDto(backCategory);
     }
 
     public void deleteCategoryAdmin(long catId) {
@@ -46,13 +45,33 @@ public class CategoryMapping {
             throw new NotFoundException("Категории не найдены");
         }
 
-        return list.stream().map(mapper::fromCategoryToDto).collect(Collectors.toList());
+        return list.stream().map(CategoryMapping::fromCategoryToDto).collect(Collectors.toList());
     }
 
     public CategoryDto getCategoryByIdPublic(long catId) {
 
         Category category = categoryService.getCategoryByIdPublic(catId);
 
-        return mapper.fromCategoryToDto(category);
+        return fromCategoryToDto(category);
+    }
+
+    public static CategoryDto fromCategoryToDto(Category category) {
+        CategoryDto categoryDto = new CategoryDto();
+        categoryDto.setId(category.getId());
+        categoryDto.setName(category.getName());
+        return categoryDto;
+    }
+
+    public static Category fromDtoToCategory(CategoryDto categoryDto) {
+        Category category = new Category();
+        category.setId(categoryDto.getId());
+        category.setName(categoryDto.getName());
+        return category;
+    }
+
+    public static Category fromNewDtoToCategory(NewCategoryDto newCategoryDto) {
+        Category category = new Category();
+        category.setName(newCategoryDto.getName());
+        return category;
     }
 }
