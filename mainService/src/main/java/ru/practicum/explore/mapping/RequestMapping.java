@@ -21,6 +21,25 @@ public class RequestMapping {
 
     private final RequestService requestService;
 
+    //------------------------------маппер--------------------------------------------------------
+
+    public static ParticipationRequestDto fromRequestToParticipationRequestDto(Request request) {
+        ParticipationRequestDto participationRequestDto = new ParticipationRequestDto();
+        participationRequestDto.setId(request.getId());
+        participationRequestDto.setRequester(request.getRequester().getId());
+        participationRequestDto.setStatus(request.getStatus());
+        participationRequestDto.setEvent(request.getEvent().getId());
+
+        LocalDateTime dateTime = request.getCreateOn();
+        String formattedDateTime = dateTime.format(FORMATTER);
+
+        participationRequestDto.setCreated(formattedDateTime);
+
+        return participationRequestDto;
+    }
+
+    //-----------------------------------------------------------------------------------------------
+
     public List<ParticipationRequestDto> getRequestsInfFOrEventPrivate(long userId, long eventId) {
 
         List<Request> list = requestService.getRequestsInfFOrEventPrivate(userId, eventId);
@@ -73,20 +92,5 @@ public class RequestMapping {
         Request request = requestService.cancelRequest(userId, requestId);
 
         return fromRequestToParticipationRequestDto(request);
-    }
-
-    public static ParticipationRequestDto fromRequestToParticipationRequestDto(Request request) {
-        ParticipationRequestDto participationRequestDto = new ParticipationRequestDto();
-        participationRequestDto.setId(request.getId());
-        participationRequestDto.setRequester(request.getRequester().getId());
-        participationRequestDto.setStatus(request.getStatus());
-        participationRequestDto.setEvent(request.getEvent().getId());
-
-        LocalDateTime dateTime = request.getCreateOn();
-        String formattedDateTime = dateTime.format(FORMATTER);
-
-        participationRequestDto.setCreated(formattedDateTime);
-
-        return participationRequestDto;
     }
 }

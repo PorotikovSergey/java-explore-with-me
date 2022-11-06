@@ -24,6 +24,37 @@ public class CompilationMapping {
     private final EventService eventService;
     private final EventMapping eventMapping;
 
+    //-----------------------------мапперы--------------------------------------------
+
+    public CompilationDto fromCompilationToDto(Compilation compilation) {
+        CompilationDto compilationDto = new CompilationDto();
+        compilationDto.setId(compilation.getId());
+        compilationDto.setTitle(compilation.getTitle());
+        compilationDto.setPinned(compilation.isPinned());
+        if (!compilation.getEventList().isEmpty()) {
+            List<EventShortDto> list = compilation.getEventList().stream().map(eventMapping::fromEventToShortDto).collect(Collectors.toList());
+            compilationDto.setEvents(list);
+        } else {
+            compilationDto.setEvents(Collections.emptyList());
+        }
+        return compilationDto;
+    }
+
+    public Compilation fromNewDtoToCompilation(NewCompilationDto newCompilationDto) {
+        Compilation compilation = new Compilation();
+        compilation.setTitle(newCompilationDto.getTitle());
+        compilation.setPinned(newCompilationDto.isPinned());
+        if (!newCompilationDto.getEvents().isEmpty()) {
+            compilation.setEventList(eventService.getAllByIds(newCompilationDto.getEvents()));
+            compilation.setEventList(eventService.getAllByIds(newCompilationDto.getEvents()));
+        } else {
+            compilation.setEventList(new ArrayList<>());
+        }
+        return compilation;
+    }
+
+    //------------------------------------------------------------------------------
+
     public CompilationDto postCompilationAdmin(NewCompilationDto newCompilationDto) {
         Compilation compilation = fromNewDtoToCompilation(newCompilationDto);
 
@@ -64,33 +95,4 @@ public class CompilationMapping {
 
         return fromCompilationToDto(compilation);
     }
-
-    public CompilationDto fromCompilationToDto(Compilation compilation) {
-        CompilationDto compilationDto = new CompilationDto();
-        compilationDto.setId(compilation.getId());
-        compilationDto.setTitle(compilation.getTitle());
-        compilationDto.setPinned(compilation.isPinned());
-        if (!compilation.getEventList().isEmpty()) {
-            List<EventShortDto> list = compilation.getEventList().stream().map(eventMapping::fromEventToShortDto).collect(Collectors.toList());
-            compilationDto.setEvents(list);
-        } else {
-            compilationDto.setEvents(Collections.emptyList());
-        }
-        return compilationDto;
-    }
-
-    public Compilation fromNewDtoToCompilation(NewCompilationDto newCompilationDto) {
-        Compilation compilation = new Compilation();
-        compilation.setTitle(newCompilationDto.getTitle());
-        compilation.setPinned(newCompilationDto.isPinned());
-        if (!newCompilationDto.getEvents().isEmpty()) {
-            compilation.setEventList(eventService.getAllByIds(newCompilationDto.getEvents()));
-            compilation.setEventList(eventService.getAllByIds(newCompilationDto.getEvents()));
-        } else {
-            compilation.setEventList(new ArrayList<>());
-        }
-        return compilation;
-    }
-
-
 }

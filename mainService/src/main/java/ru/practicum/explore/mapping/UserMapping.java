@@ -19,6 +19,32 @@ import java.util.stream.Collectors;
 public class UserMapping {
     private final UserService userService;
 
+    //----------------------------мапперы------------------------------------------
+
+    public static UserDto fromUserToDto(User user) {
+        UserDto userDto = new UserDto();
+        userDto.setId(user.getId());
+        userDto.setName(user.getName());
+        userDto.setEmail(user.getEmail());
+        return userDto;
+    }
+
+    public static UserShortDto fromUserToShortDto(User user) {
+        UserShortDto userShortDto = new UserShortDto();
+        userShortDto.setId(user.getId());
+        userShortDto.setName(user.getName());
+        return userShortDto;
+    }
+
+    public static User fromUserRequestToUser(NewUserRequest newUserRequest) {
+        User user = new User();
+        user.setName(newUserRequest.getName());
+        user.setEmail(newUserRequest.getEmail());
+        return user;
+    }
+
+    //------------------------------------------------------------------------------
+
     public List<UserDto> getUsersAdmin(List<Long> ids, Integer from, Integer size) {
 
         List<User> list = userService.getUsersAdmin(ids, from, size);
@@ -43,27 +69,5 @@ public class UserMapping {
         userService.deleteUserAdmin(userId);
     }
 
-
-    public static UserDto fromUserToDto(User user) {
-        UserDto userDto = new UserDto();
-        userDto.setId(user.getId());
-        userDto.setName(user.getName());
-        userDto.setEmail(user.getEmail());
-        return userDto;
-    }
-
-    public static UserShortDto fromUserToShortDto(User user) {
-        UserShortDto userShortDto = new UserShortDto();
-        userShortDto.setId(user.getId());
-        userShortDto.setName(user.getName());
-        return userShortDto;
-    }
-
-    public static User fromUserRequestToUser(NewUserRequest newUserRequest) {
-        User user = new User();
-        user.setName(newUserRequest.getName());
-        user.setEmail(newUserRequest.getEmail());
-        return user;
-    }
 }
 

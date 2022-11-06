@@ -18,6 +18,30 @@ import java.util.stream.Collectors;
 public class CategoryMapping {
     private final CategoryService categoryService;
 
+    //-----------------------мапперы----------------------------------------------
+
+    public static CategoryDto fromCategoryToDto(Category category) {
+        CategoryDto categoryDto = new CategoryDto();
+        categoryDto.setId(category.getId());
+        categoryDto.setName(category.getName());
+        return categoryDto;
+    }
+
+    public static Category fromDtoToCategory(CategoryDto categoryDto) {
+        Category category = new Category();
+        category.setId(categoryDto.getId());
+        category.setName(categoryDto.getName());
+        return category;
+    }
+
+    public static Category fromNewDtoToCategory(NewCategoryDto newCategoryDto) {
+        Category category = new Category();
+        category.setName(newCategoryDto.getName());
+        return category;
+    }
+
+    //----------------------------------------------------------------------------
+
     public CategoryDto patchCategoryAdmin(CategoryDto categoryDto) {
         Category category = fromDtoToCategory(categoryDto);
 
@@ -53,25 +77,5 @@ public class CategoryMapping {
         Category category = categoryService.getCategoryByIdPublic(catId);
 
         return fromCategoryToDto(category);
-    }
-
-    public static CategoryDto fromCategoryToDto(Category category) {
-        CategoryDto categoryDto = new CategoryDto();
-        categoryDto.setId(category.getId());
-        categoryDto.setName(category.getName());
-        return categoryDto;
-    }
-
-    public static Category fromDtoToCategory(CategoryDto categoryDto) {
-        Category category = new Category();
-        category.setId(categoryDto.getId());
-        category.setName(categoryDto.getName());
-        return category;
-    }
-
-    public static Category fromNewDtoToCategory(NewCategoryDto newCategoryDto) {
-        Category category = new Category();
-        category.setName(newCategoryDto.getName());
-        return category;
     }
 }

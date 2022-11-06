@@ -2,8 +2,6 @@ package ru.practicum.explore.exceptions;
 
 import lombok.*;
 
-import java.util.List;
-
 @Getter
 @Setter
 @AllArgsConstructor

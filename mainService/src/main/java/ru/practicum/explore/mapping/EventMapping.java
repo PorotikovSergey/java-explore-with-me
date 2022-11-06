@@ -3,7 +3,6 @@ package ru.practicum.explore.mapping;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.explore.exceptions.ValidationException;
 import ru.practicum.explore.model.Hit;
 import ru.practicum.explore.dto.*;
 import ru.practicum.explore.exceptions.NotFoundException;
@@ -31,9 +30,118 @@ public class EventMapping {
     private final UserService userService;
     private final LocationService locationService;
 
-//    private final Mapper mapper;
-
     private final FromMainToStatsClient fromMainToStatsClient;
+
+    //----------------------мапперы-------------------------------------------------------------------
+
+    public EventFullDto fromEventToFullDto(Event event) {
+        EventFullDto eventFullDto = new EventFullDto();
+        eventFullDto.setId(event.getId());
+        eventFullDto.setTitle(event.getTitle());
+        eventFullDto.setAnnotation(event.getAnnotation());
+        eventFullDto.setDescription(event.getDescription());
+
+        eventFullDto.setEventDate(event.getEventDate().format(FORMATTER));
+
+        eventFullDto.setLocation(event.getLocation());
+        eventFullDto.setPaid(event.getPaid());
+        eventFullDto.setParticipantLimit(event.getParticipantLimit());
+        eventFullDto.setRequestModeration(event.isRequestModeration());
+        eventFullDto.setState(event.getState());
+
+        if (event.getPublishedOn() != null) {
+            eventFullDto.setPublishedOn(event.getPublishedOn().format(FORMATTER));
+        }
+        eventFullDto.setViews(event.getViews());
+
+        eventFullDto.setCreatedOn(event.getCreatedOn().format(FORMATTER));
+
+        Category category = categoryService.getCategoryByIdPublic(event.getCategory().getId());
+        CategoryDto categoryDto = CategoryMapping.fromCategoryToDto(category);
+        eventFullDto.setCategory(categoryDto);
+        User initiator = userService.getUser(event.getOwner().getId());
+        UserDto initiatorDto = UserMapping.fromUserToDto(initiator);
+        eventFullDto.setInitiator(initiatorDto);
+        Location location = locationService.getLocation(event.getLocation().getId());
+        eventFullDto.setLocation(location);
+        eventFullDto.setPaid(event.getPaid());
+        eventFullDto.setConfirmedRequests(event.getConfirmedRequests());
+        return eventFullDto;
+    }
+
+    public EventShortDto fromEventToShortDto(Event event) {
+        EventShortDto eventShortDto = new EventShortDto();
+        eventShortDto.setId(event.getId());
+        eventShortDto.setTitle(event.getTitle());
+        eventShortDto.setAnnotation(event.getAnnotation());
+
+        Category category = categoryService.getCategoryByIdPublic(event.getCategory().getId());
+        CategoryDto categoryDto = CategoryMapping.fromCategoryToDto(category);
+        eventShortDto.setCategory(categoryDto);
+
+        eventShortDto.setConfirmedRequests(event.getConfirmedRequests());
+
+        eventShortDto.setEventDate(event.getEventDate().format(FORMATTER));
+
+        User user = userService.getUser(event.getOwner().getId());
+        UserShortDto initiator = UserMapping.fromUserToShortDto(user);
+        eventShortDto.setInitiator(initiator);
+
+        eventShortDto.setPaid(event.getPaid());
+        return eventShortDto;
+    }
+
+    public Event fromUpdateEventRequestToEvent(UpdateEventRequest updateEventRequest) {
+        Event event = new Event();
+        event.setAnnotation(updateEventRequest.getAnnotation());
+        event.setCategory(categoryService.getCategoryByIdPublic(updateEventRequest.getCategory()));
+        event.setDescription(updateEventRequest.getDescription());
+
+        event.setEventDate(LocalDateTime.parse(updateEventRequest.getEventDate(), FORMATTER));
+
+        event.setId(updateEventRequest.getEventId());
+        event.setPaid(updateEventRequest.getPaid());
+        event.setParticipantLimit(updateEventRequest.getParticipantLimit());
+        event.setTitle(updateEventRequest.getTitle());
+        return event;
+    }
+
+    public Event fromAdminUpdateEventRequestToEvent(AdminUpdateEventRequest adminUpdateEventRequest) {
+        Event event = new Event();
+        event.setAnnotation(adminUpdateEventRequest.getAnnotation());
+        event.setCategory(categoryService.getCategoryByIdPublic(adminUpdateEventRequest.getCategory()));
+        event.setDescription(adminUpdateEventRequest.getDescription());
+
+        event.setEventDate(LocalDateTime.parse(adminUpdateEventRequest.getEventDate(), FORMATTER));
+
+        event.setPaid(adminUpdateEventRequest.getPaid());
+        event.setParticipantLimit(adminUpdateEventRequest.getParticipantLimit());
+        event.setTitle(adminUpdateEventRequest.getTitle());
+        event.setLocation(adminUpdateEventRequest.getLocation());
+        event.setRequestModeration(adminUpdateEventRequest.isRequestModeration());
+        return event;
+    }
+
+    public Event fromNewDtoToEvent(NewEventDto newEventDto) {
+        Event event = new Event();
+        event.setTitle(newEventDto.getTitle());
+        event.setAnnotation(newEventDto.getAnnotation());
+        event.setDescription(newEventDto.getDescription());
+        event.setCategory(categoryService.getCategoryByIdPublic(newEventDto.getCategory()));
+
+        event.setEventDate(LocalDateTime.parse(newEventDto.getEventDate(), FORMATTER));
+
+        Location location = new Location();
+        location.setLat(newEventDto.getLocation().getLat());
+        location.setLon(newEventDto.getLocation().getLon());
+        event.setLocation(location);
+        event.setPaid(newEventDto.getPaid());
+        event.setParticipantLimit(newEventDto.getParticipantLimit());
+        event.setRequestModeration(newEventDto.isRequestModeration());
+        return event;
+    }
+
+    //----------------------------------------------------------------------------------------------
 
     public List<EventFullDto> getEventsAdmin(List<Long> users, List<String> states, List<Long> categories,
                                              String rangeStart, String rangeEnd, Integer from, Integer size) {
@@ -160,110 +268,5 @@ public class EventMapping {
         }
     }
 
-    public EventFullDto fromEventToFullDto(Event event) {
-        EventFullDto eventFullDto = new EventFullDto();
-        eventFullDto.setId(event.getId());
-        eventFullDto.setTitle(event.getTitle());
-        eventFullDto.setAnnotation(event.getAnnotation());
-        eventFullDto.setDescription(event.getDescription());
 
-        eventFullDto.setEventDate(event.getEventDate().format(FORMATTER));
-
-        eventFullDto.setLocation(event.getLocation());
-        eventFullDto.setPaid(event.getPaid());
-        eventFullDto.setParticipantLimit(event.getParticipantLimit());
-        eventFullDto.setRequestModeration(event.isRequestModeration());
-        eventFullDto.setState(event.getState());
-
-        if (event.getPublishedOn() != null) {
-            eventFullDto.setPublishedOn(event.getPublishedOn().format(FORMATTER));
-        }
-        eventFullDto.setViews(event.getViews());
-
-        eventFullDto.setCreatedOn(event.getCreatedOn().format(FORMATTER));
-
-        Category category = categoryService.getCategoryByIdPublic(event.getCategory().getId());
-        CategoryDto categoryDto = CategoryMapping.fromCategoryToDto(category);
-        eventFullDto.setCategory(categoryDto);
-        User initiator = userService.getUser(event.getOwner().getId());
-        UserDto initiatorDto = UserMapping.fromUserToDto(initiator);
-        eventFullDto.setInitiator(initiatorDto);
-        Location location = locationService.getLocation(event.getLocation().getId());
-        eventFullDto.setLocation(location);
-        eventFullDto.setPaid(event.getPaid());
-        eventFullDto.setConfirmedRequests(event.getConfirmedRequests());
-        return eventFullDto;
-    }
-
-    public EventShortDto fromEventToShortDto(Event event) {
-        EventShortDto eventShortDto = new EventShortDto();
-        eventShortDto.setId(event.getId());
-        eventShortDto.setTitle(event.getTitle());
-        eventShortDto.setAnnotation(event.getAnnotation());
-
-        Category category = categoryService.getCategoryByIdPublic(event.getCategory().getId());
-        CategoryDto categoryDto = CategoryMapping.fromCategoryToDto(category);
-        eventShortDto.setCategory(categoryDto);
-
-        eventShortDto.setConfirmedRequests(event.getConfirmedRequests());
-
-        eventShortDto.setEventDate(event.getEventDate().format(FORMATTER));
-
-        User user = userService.getUser(event.getOwner().getId());
-        UserShortDto initiator = UserMapping.fromUserToShortDto(user);
-        eventShortDto.setInitiator(initiator);
-
-        eventShortDto.setPaid(event.getPaid());
-        return eventShortDto;
-    }
-
-    public Event fromUpdateEventRequestToEvent(UpdateEventRequest updateEventRequest) {
-        Event event = new Event();
-        event.setAnnotation(updateEventRequest.getAnnotation());
-        event.setCategory(categoryService.getCategoryByIdPublic(updateEventRequest.getCategory()));
-        event.setDescription(updateEventRequest.getDescription());
-
-        event.setEventDate(LocalDateTime.parse(updateEventRequest.getEventDate(), FORMATTER));
-
-        event.setId(updateEventRequest.getEventId());
-        event.setPaid(updateEventRequest.getPaid());
-        event.setParticipantLimit(updateEventRequest.getParticipantLimit());
-        event.setTitle(updateEventRequest.getTitle());
-        return event;
-    }
-
-    public Event fromAdminUpdateEventRequestToEvent(AdminUpdateEventRequest adminUpdateEventRequest) {
-        Event event = new Event();
-        event.setAnnotation(adminUpdateEventRequest.getAnnotation());
-        event.setCategory(categoryService.getCategoryByIdPublic(adminUpdateEventRequest.getCategory()));
-        event.setDescription(adminUpdateEventRequest.getDescription());
-
-        event.setEventDate(LocalDateTime.parse(adminUpdateEventRequest.getEventDate(), FORMATTER));
-
-        event.setPaid(adminUpdateEventRequest.getPaid());
-        event.setParticipantLimit(adminUpdateEventRequest.getParticipantLimit());
-        event.setTitle(adminUpdateEventRequest.getTitle());
-        event.setLocation(adminUpdateEventRequest.getLocation());
-        event.setRequestModeration(adminUpdateEventRequest.isRequestModeration());
-        return event;
-    }
-
-    public Event fromNewDtoToEvent(NewEventDto newEventDto) {
-        Event event = new Event();
-        event.setTitle(newEventDto.getTitle());
-        event.setAnnotation(newEventDto.getAnnotation());
-        event.setDescription(newEventDto.getDescription());
-        event.setCategory(categoryService.getCategoryByIdPublic(newEventDto.getCategory()));
-
-        event.setEventDate(LocalDateTime.parse(newEventDto.getEventDate(), FORMATTER));
-
-        Location location = new Location();
-        location.setLat(newEventDto.getLocation().getLat());
-        location.setLon(newEventDto.getLocation().getLon());
-        event.setLocation(location);
-        event.setPaid(newEventDto.getPaid());
-        event.setParticipantLimit(newEventDto.getParticipantLimit());
-        event.setRequestModeration(newEventDto.isRequestModeration());
-        return event;
-    }
 }
