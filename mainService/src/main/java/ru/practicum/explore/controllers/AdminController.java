@@ -19,6 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin")
 @RequiredArgsConstructor
+@ResponseBody
 public class AdminController {
 
     private final UserMapping userMapping;
@@ -27,18 +28,18 @@ public class AdminController {
     private final CompilationMapping compilationMapping;
 
     @GetMapping("/users")
-    public ResponseEntity<Object> getUsers(@RequestParam(name = "ids")
+    public List<UserDto> getUsers(@RequestParam(name = "ids")
                                            List<Long> ids,
-                                           @RequestParam(name = "from", defaultValue = "0")
+                                  @RequestParam(name = "from", defaultValue = "0")
                                            Integer from,
-                                           @RequestParam(name = "size", defaultValue = "10")
+                                  @RequestParam(name = "size", defaultValue = "10")
                                            Integer size) {
-        return new ResponseEntity<>(userMapping.getUsersAdmin(ids, from, size), HttpStatus.OK);
+        return userMapping.getUsersAdmin(ids, from, size);
     }
 
     @PostMapping("/users")
-    public ResponseEntity<Object> addUser(@RequestBody NewUserRequest newUserRequest) {
-        return new ResponseEntity<>(userMapping.addUserAdmin(newUserRequest), HttpStatus.OK);
+    public UserDto addUser(@RequestBody NewUserRequest newUserRequest) {
+        return userMapping.addUserAdmin(newUserRequest);
     }
 
     @DeleteMapping("/users/{userId}")
@@ -47,47 +48,47 @@ public class AdminController {
     }
 
     @GetMapping("/events")
-    public ResponseEntity<Object> getEvents(@RequestParam(name = "users")
+    public List<EventFullDto> getEvents(@RequestParam(name = "users")
                                             List<Long> users,
-                                            @RequestParam(name = "states")
+                                        @RequestParam(name = "states")
                                             List<String> states,
-                                            @RequestParam(name = "categories")
+                                        @RequestParam(name = "categories")
                                             List<Long> categories,
-                                            @RequestParam(name = "rangeStart")
+                                        @RequestParam(name = "rangeStart")
                                             String rangeStart,
-                                            @RequestParam(name = "rangeEnd")
+                                        @RequestParam(name = "rangeEnd")
                                             String rangeEnd,
-                                            @RequestParam(name = "from", defaultValue = "0")
+                                        @RequestParam(name = "from", defaultValue = "0")
                                             Integer from,
-                                            @RequestParam(name = "size", defaultValue = "10")
+                                        @RequestParam(name = "size", defaultValue = "10")
                                             Integer size) {
-        return new ResponseEntity<>(eventMapping.getEventsAdmin(users, states, categories,
-                rangeStart, rangeEnd, from, size), HttpStatus.OK);
+        return eventMapping.getEventsAdmin(users, states, categories,
+                rangeStart, rangeEnd, from, size);
     }
 
     @PutMapping("/events/{eventId}")
-    public ResponseEntity<Object> putEvent(@PathVariable long eventId, @RequestBody AdminUpdateEventRequest adminUpdateEventRequest) {
-        return new ResponseEntity<>(eventMapping.putEventAdmin(eventId, adminUpdateEventRequest), HttpStatus.OK);
+    public EventFullDto putEvent(@PathVariable long eventId, @RequestBody AdminUpdateEventRequest adminUpdateEventRequest) {
+        return eventMapping.putEventAdmin(eventId, adminUpdateEventRequest);
     }
 
     @PatchMapping("/events/{eventId}/publish")
-    public ResponseEntity<Object> publishEvent(@PathVariable long eventId) {
-        return new ResponseEntity<>(eventMapping.publishEventAdmin(eventId), HttpStatus.OK);
+    public EventFullDto publishEvent(@PathVariable long eventId) {
+        return eventMapping.publishEventAdmin(eventId);
     }
 
     @PatchMapping("/events/{eventId}/reject")
-    public ResponseEntity<Object> rejectEvent(@PathVariable long eventId) {
-        return new ResponseEntity<>(eventMapping.rejectEventAdmin(eventId), HttpStatus.OK);
+    public EventFullDto rejectEvent(@PathVariable long eventId) {
+        return eventMapping.rejectEventAdmin(eventId);
     }
 
     @PatchMapping("/categories")
-    public ResponseEntity<Object> patchCategory(@RequestBody CategoryDto categoryDto) {
-        return new ResponseEntity<>(categoryMapping.patchCategoryAdmin(categoryDto), HttpStatus.OK);
+    public CategoryDto patchCategory(@RequestBody CategoryDto categoryDto) {
+        return categoryMapping.patchCategoryAdmin(categoryDto);
     }
 
     @PostMapping("/categories")
-    public ResponseEntity<Object> postCategory(@RequestBody NewCategoryDto newCategoryDto) {
-        return new ResponseEntity<>(categoryMapping.postCategoryAdmin(newCategoryDto), HttpStatus.OK);
+    public CategoryDto postCategory(@RequestBody NewCategoryDto newCategoryDto) {
+        return categoryMapping.postCategoryAdmin(newCategoryDto);
     }
 
     @DeleteMapping("/categories/{catId}")
@@ -96,8 +97,8 @@ public class AdminController {
     }
 
     @PostMapping("/compilations")
-    public ResponseEntity<Object> postCompilation(@RequestBody NewCompilationDto newCompilationDto) {
-        return new ResponseEntity<>(compilationMapping.postCompilationAdmin(newCompilationDto), HttpStatus.OK);
+    public CompilationDto postCompilation(@RequestBody NewCompilationDto newCompilationDto) {
+        return compilationMapping.postCompilationAdmin(newCompilationDto);
     }
 
     @DeleteMapping("/compilations/{compId}")

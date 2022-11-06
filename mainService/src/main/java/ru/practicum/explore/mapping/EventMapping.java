@@ -3,6 +3,7 @@ package ru.practicum.explore.mapping;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.explore.exceptions.ValidationException;
 import ru.practicum.explore.model.Hit;
 import ru.practicum.explore.dto.*;
 import ru.practicum.explore.exceptions.NotFoundException;
