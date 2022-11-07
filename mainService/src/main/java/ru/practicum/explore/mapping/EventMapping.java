@@ -228,6 +228,9 @@ public class EventMapping {
         List<Event> list;
 
         try {
+            log.debug("Отправляем запрос в сервис статистики");
+            log.info("uri = {}, ip = {}, time = {}",
+                    request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
             updateStatsOfEvent(request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
         } catch (Exception e) {
             log.error("Отправка статистики не удалась");
@@ -248,6 +251,9 @@ public class EventMapping {
         long views = 0L;
 
         try {
+            log.debug("Отправляем запрос в сервис статистики");
+            log.info("uri = {}, ip = {}, time = {}",
+                    request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
             views = updateStatsOfEvent("/events/" + id, request.getRemoteAddr(), LocalDateTime.now().toString());
         } catch (Exception e) {
             log.error("Отправка в и получение из статистики не удалась");
