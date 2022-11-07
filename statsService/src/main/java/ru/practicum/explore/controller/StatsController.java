@@ -20,11 +20,15 @@ public class StatsController {
 
     @PostMapping("/hit")
     public Hit postHit(@RequestBody Hit hit) {
+        log.info("==ЭНДПОИНТ POST /hit");
+        log.info("В статистику пост хита {}", hit);
         return statsService.postHit(hit);
     }
 
     @PostMapping("/hit/count")
     public Long postHitAndGetCount(@RequestBody Hit hit) {
+        log.info("==ЭНДПОИНТ POST /hit/count");
+        log.info("В статистику пост хита {}, с возвращением общего количества просмотров", hit);
         return statsService.postHitAndGetCount(hit);
     }
 
@@ -37,6 +41,9 @@ public class StatsController {
                                           String start,
                                           @RequestParam(name = "end", defaultValue = "2100-01-01 12:00:00")
                                           String end) {
+        log.info("==ЭНДПОИНТ GET /stats");
+        log.info("Получение статистики по параметрам uris = {}, unique = {}, start = {}, end = {}",
+                uris, unique, start, end);
         return statsService.getStats(uris, unique, start, end);
     }
 
