@@ -24,12 +24,16 @@ public class CategoryService {
 
     public List<Category> getCategoriesPublic(Integer from, Integer size) {
         Pageable pageable = PageRequest.of(from, size);
-        return categoryRepository.findAll(pageable).getContent();
+        List<Category> result = categoryRepository.findAll(pageable).getContent();
+        log.info("Из бд получен следующий лист категорий: {}", result);
+        return result;
     }
 
     public Category getCategoryByIdPublic(long catId) {
-        return categoryRepository.findById(catId)
+        Category category = categoryRepository.findById(catId)
                 .orElseThrow(() -> new NotFoundException(CATEGORY_NOT_FOUND));
+        log.info("Из бд получена следующая категория: {}", category);
+        return category;
     }
 
     public Category patchCategoryAdmin(Category category) {
@@ -37,11 +41,13 @@ public class CategoryService {
                 .orElseThrow(() -> new NotFoundException(CATEGORY_NOT_FOUND));
         categoryForPatch.setName(category.getName());
         categoryRepository.save(categoryForPatch);
+        log.info("После изменения категория такая : {}", categoryForPatch);
         return categoryForPatch;
     }
 
     public Category postCategoryAdmin(Category category) {
         categoryRepository.save(category);
+        log.info("В бд добавлена категория : {}", category);
         return category;
     }
 
@@ -51,5 +57,6 @@ public class CategoryService {
             throw new ValidationException("Нельзя удалять категорию если есть связанные с ней события");
         }
         categoryRepository.deleteById(catId);
+        log.info("Из бд удалена категория с id: {}", catId);
     }
 }

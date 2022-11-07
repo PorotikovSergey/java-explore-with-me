@@ -32,7 +32,9 @@ public class CompilationMapping {
         compilationDto.setTitle(compilation.getTitle());
         compilationDto.setPinned(compilation.isPinned());
         if (!compilation.getEventList().isEmpty()) {
-            List<EventShortDto> list = compilation.getEventList().stream().map(eventMapping::fromEventToShortDto).collect(Collectors.toList());
+            List<EventShortDto> list = compilation.getEventList().stream()
+                    .map(eventMapping::fromEventToShortDto)
+                    .collect(Collectors.toList());
             compilationDto.setEvents(list);
         } else {
             compilationDto.setEvents(Collections.emptyList());

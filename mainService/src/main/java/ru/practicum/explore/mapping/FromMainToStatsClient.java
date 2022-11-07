@@ -42,7 +42,8 @@ public class FromMainToStatsClient {
         for (String url : uris) {
             sb.append("uris=").append(url).append("&");
         }
-        return makeAndSendRequest(HttpMethod.GET, "/stats?" + sb.toString() + "&unique=" + unique + "&start=" + start + "&end=" + end, new Hit());
+        return makeAndSendRequest(HttpMethod.GET,
+                "/stats?" + sb.toString() + "&unique=" + unique + "&start=" + start + "&end=" + end, new Hit());
     }
 
     private <T> ResponseEntity<Object> makeAndSendRequest(HttpMethod method, String path, T body) {

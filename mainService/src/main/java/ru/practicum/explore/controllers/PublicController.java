@@ -48,8 +48,8 @@ public class PublicController {
                                          String sort) {
         log.info("==ЭНДПОИНТ GET /events");
         log.info("Публичный поиск по всем событиям по параметрам categories = {}, paid = {}, onlyAvailable = {}," +
-                        "text = {}, sort = {}, start = {}, end = {}, from = {}, size = {}", categories, paid, onlyAvailable,
-                text.substring(0, 20), sort, rangeStart, rangeEnd, from, size);
+                        "text = {}, sort = {}, start = {}, end = {}, from = {}, size = {}", categories, paid,
+                onlyAvailable, text.substring(0, 20), sort, rangeStart, rangeEnd, from, size);
         return eventMapping.getEventsPublic(text, categories, paid, rangeStart,
                 rangeEnd, onlyAvailable, sort, from, size, request);
     }

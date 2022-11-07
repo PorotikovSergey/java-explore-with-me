@@ -1,5 +1,6 @@
 package ru.practicum.explore.exceptions;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -7,6 +8,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @RestControllerAdvice
 public class ErrorHandler {
 
@@ -19,6 +21,8 @@ public class ErrorHandler {
         error.setStacktrace(e.getStackTrace());
         error.setMessage(e.getMessage());
         error.setTimestamp(LocalDateTime.now().toString());
+        log.error("Неправильный запрос. Ошибка 400");
+        log.error(e.getMessage());
         return error;
     }
 
@@ -31,6 +35,8 @@ public class ErrorHandler {
         error.setReason("Объект не найден");
         error.setMessage(e.getMessage());
         error.setTimestamp(LocalDateTime.now().toString());
+        log.error("Не найдено. Ошибка 404");
+        log.error(e.getMessage());
         return error;
     }
 
@@ -44,6 +50,8 @@ public class ErrorHandler {
         error.setReason("Ошибка на сервере");
         error.setMessage(e.getMessage());
         error.setTimestamp(LocalDateTime.now().toString());
+        log.error("Ошибка на сервере. Ошибка 500");
+        log.error(e.getMessage());
         return error;
     }
 

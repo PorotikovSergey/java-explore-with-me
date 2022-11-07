@@ -28,7 +28,9 @@ public class RequestService {
     private final UserRepository userRepository;
 
     public List<Request> getRequestsInfFOrEventPrivate(long userId, long eventId) {
-        return requestRepository.findAllByEventIdAndEventOwnerId(eventId, userId);
+        List<Request> result = requestRepository.findAllByEventIdAndEventOwnerId(eventId, userId);
+        log.info("Полученный из бд список реквестов к событию: {}", result);
+        return result;
     }
 
     public Request requestApprovePrivate(long userId, long eventId, long reqId) {
@@ -66,6 +68,7 @@ public class RequestService {
             throw new ValidationException("Достигнут предел количества заявок");
         }
         requestRepository.save(request);
+        log.info("Подтверждённый реквест: {}", request);
         return request;
     }
 
@@ -83,12 +86,15 @@ public class RequestService {
         request.setStatus(RequestStatus.REJECTED.toString());
         event.setConfirmedRequests(event.getConfirmedRequests() - 1);
         requestRepository.save(request);
+        log.info("Отвергнутый реквест {}", request);
         return request;
 
     }
 
     public List<Request> getRequestsPrivate(long userId) {
-        return requestRepository.findAllByRequesterId(userId);
+        List<Request> result = requestRepository.findAllByRequesterId(userId);
+        log.info("Полученный из бд список реквестов для юзера: {}", result);
+        return result;
     }
 
     public Request postRequest(long userId, long eventId) {
@@ -127,6 +133,7 @@ public class RequestService {
         }
 
         requestRepository.save(request);
+        log.info("Сохранённый в бд реквест: {}", request);
         return request;
     }
 
@@ -144,6 +151,7 @@ public class RequestService {
 
         requestRepository.delete(request);
         request.setStatus(RequestStatus.CANCELED.toString());
+        log.info("Отменённый реквест: {}", request);
         return request;
     }
 }

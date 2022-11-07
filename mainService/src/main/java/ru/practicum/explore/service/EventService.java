@@ -33,23 +33,24 @@ public class EventService {
     public List<Event> getEventsPublic(FilterSearchedParams params, Integer from, Integer size) {
         Pageable pageableDate = PageRequest.of(from, size, Sort.by("event_date").ascending());
         Pageable pageableViews = PageRequest.of(from, size, Sort.by("views").ascending());
-
+        Page<Event> list;
         if (params.getSort().equals("VIEWS")) {
-            Page<Event> list = eventRepository.findByParams(params.getText().toLowerCase(), params.getCategories(),
+            list = eventRepository.findByParams(params.getText().toLowerCase(), params.getCategories(),
                     params.getPaid(), params.getRangeStart(), params.getRangeEnd(), pageableViews);
-
-            return list.getContent();
         } else {
-            Page<Event> list = eventRepository.findByParams(params.getText().toLowerCase(), params.getCategories(),
+            list = eventRepository.findByParams(params.getText().toLowerCase(), params.getCategories(),
                     params.getPaid(), params.getRangeStart(), params.getRangeEnd(), pageableDate);
-
-            return list.getContent();
         }
+        List<Event> result = list.getContent();
+        log.info("Итоговый возвращаемый лист событий из бд такой: {}", result);
+        return result;
     }
 
     public List<Event> getEventsPrivate(long userId, Integer from, Integer size) {
         Pageable pageable = PageRequest.of(from, size);
-        return eventRepository.findAllByOwnerId(userId, pageable).getContent();
+        List<Event> result = eventRepository.findAllByOwnerId(userId, pageable).getContent();
+        log.info("Итоговый возвращаемый лист событий из бд такой: {}", result);
+        return result;
     }
 
     public Event getEventByIdPublic(long id, long views) {
@@ -58,6 +59,8 @@ public class EventService {
 
         if (event.getPublishedOn() != null) {
             event.setViews(views);
+            eventRepository.save(event);
+            log.info("Из бд получили событие: {}", event);
             return event;
         } else {
             throw new ValidationException("Only published events can be got");
@@ -65,7 +68,9 @@ public class EventService {
     }
 
     public List<Event> getAllByIds(List<Long> ids) {
-        return eventRepository.findAllById(ids);
+        List<Event> result = eventRepository.findAllById(ids);
+        log.info("Итоговый возвращаемый лист событий из бд такой: {}", result);
+        return result;
     }
 
     public Event patchEventPrivate(long userId, Event event) {
@@ -88,11 +93,13 @@ public class EventService {
         if (eventForPatch.getState().equals(EventState.PENDING.toString())) {
             Event eventAfterPatch = patchOldEventToNew(eventForPatch, event);
             eventRepository.save(eventAfterPatch);
+            log.info("Итоговое возвращаемое событие после патча: {}", eventAfterPatch);
             return eventAfterPatch;
         } else {
             Event eventAfterPatch = patchOldEventToNew(eventForPatch, event);
             eventAfterPatch.setState(EventState.PENDING.toString());
             eventRepository.save(eventAfterPatch);
+            log.info("Итоговое возвращаемое событие после патча: {}", eventAfterPatch);
             return eventAfterPatch;
         }
     }
@@ -110,11 +117,14 @@ public class EventService {
         Location location = locationService.addLocation(event.getLocation());
         event.setLocation(location);
         eventRepository.save(event);
+        log.info("Итоговое сохранённое в бд событие: {}", event);
         return event;
     }
 
     public Event getFullEventByIdPrivate(long userId, long eventId) {
-        return eventRepository.findEventByIdAndOwnerId(eventId, userId);
+        Event event = eventRepository.findEventByIdAndOwnerId(eventId, userId);
+        log.info("Итоговое возвращаемое событие: {}", event);
+        return event;
     }
 
 
@@ -123,6 +133,7 @@ public class EventService {
         if (event.getState().equals(EventState.PENDING.toString())) {
             event.setState(EventState.CANCELED.toString());
             eventRepository.save(event);
+            log.info("Итоговое отвенённое событие: {}", event);
             return event;
         }
         throw new NotFoundException(EVENT_NOT_FOUND);
@@ -131,9 +142,11 @@ public class EventService {
 
     public List<Event> getEventsAdmin(AdminSearchedParams params, Integer from, Integer size) {
         Pageable pageable = PageRequest.of(from, size);
-        return eventRepository.findAllByOwnerIdInAndStateInAndCategoryIdInAndEventDateBetween(
+        List<Event> result = eventRepository.findAllByOwnerIdInAndStateInAndCategoryIdInAndEventDateBetween(
                 params.getUsers(), params.getStates(), params.getCategories(),
                 params.getRangeStart(), params.getRangeEnd(), pageable).getContent();
+        log.info("Итоговый возвращаемый лист событий из бд такой: {}", result);
+        return result;
     }
 
     public Event putEventAdmin(long eventId, Event event) {
@@ -142,6 +155,7 @@ public class EventService {
 
         Event eventAfterPatch = patchOldEventToNew(oldEvent, event);
         eventRepository.save(eventAfterPatch);
+        log.info("Итоговое возвращаемое событие: {}", eventAfterPatch);
         return eventAfterPatch;
     }
 
@@ -162,6 +176,7 @@ public class EventService {
 
         event.setState(EventState.PUBLISHED.toString());
         eventRepository.save(event);
+        log.info("Итоговое возвращаемое опубликованное событие: {}", event);
         return event;
     }
 
@@ -175,6 +190,7 @@ public class EventService {
 
         event.setState(EventState.CANCELED.toString());
         eventRepository.save(event);
+        log.info("Итоговое возвращаемое отменённое событие: {}", event);
         return event;
     }
 

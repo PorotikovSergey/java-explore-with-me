@@ -20,20 +20,26 @@ public class UserService {
 
     public List<User> getUsersAdmin(List<Long> ids, Integer from, Integer size) {
         Pageable pageable = PageRequest.of(from, size);
-        return userRepository.findAllByIdIn(ids, pageable).getContent();
+        List<User> result = userRepository.findAllByIdIn(ids, pageable).getContent();
+        log.info("Список юзеров из бд найденных по айдишникам: {}", result);
+        return result;
     }
 
     public User addUserAdmin(User user) {
         userRepository.save(user);
+        log.info("В бд сохранён юзер: {}", user);
         return user;
     }
 
     public User getUser(long id) {
-        return userRepository.findById(id)
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
+        log.info("Из бд получен юзер: {}", user);
+        return user;
     }
 
     public void deleteUserAdmin(long userId) {
         userRepository.deleteById(userId);
+        log.info("Юзер удалён по id {}", userId);
     }
 }

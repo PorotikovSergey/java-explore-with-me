@@ -14,11 +14,15 @@ public class LocationService {
     private final LocationRepository locationRepository;
 
     public Location getLocation(long id) {
-        return locationRepository.findById(id)
+        Location location = locationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Такой локации по данному id нет в базе данных"));
+        log.info("Из бд получено следующее местоположение {}", location);
+        return location;
     }
 
     public Location addLocation(Location location) {
-        return locationRepository.save(location);
+        Location addedLocation = locationRepository.save(location);
+        log.info("Локация {} добавлена в бд", location);
+        return addedLocation;
     }
 }
