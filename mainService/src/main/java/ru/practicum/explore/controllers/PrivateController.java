@@ -10,6 +10,7 @@ import ru.practicum.explore.dto.*;
 import ru.practicum.explore.mapping.EventMapping;
 import ru.practicum.explore.mapping.ReviewMapping;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import java.util.List;
@@ -28,7 +29,7 @@ public class PrivateController {
     @PostMapping("/events/{eventId}/reviews")
     public ReviewDto postReview(@PathVariable long userId,
                                 @PathVariable long eventId,
-                                @RequestBody NewReview newReview) {
+                                @Valid @RequestBody NewReview newReview) {
         log.info("==ЭНДПОИНТ POST /users/{userId}/events/{eventId}/reviews");
         log.info("Приватное добавление отзыва: {}", newReview);
 
@@ -58,6 +59,7 @@ public class PrivateController {
 
 
     //------------------------------------------------------------------------------
+
     @GetMapping("/events")
     public List<EventShortDto> getEvents(@PathVariable long userId,
                                          @RequestParam(name = "from", defaultValue = "0")
@@ -79,7 +81,7 @@ public class PrivateController {
     }
 
     @PostMapping("/events")
-    public EventFullDto postEvent(@PathVariable long userId, @RequestBody NewEventDto newEventDto) {
+    public EventFullDto postEvent(@PathVariable long userId, @Valid @RequestBody NewEventDto newEventDto) {
         log.info("==ЭНДПОИНТ POST /users/{userId}/events");
         log.info("Приватное добавление пользователем с id = {} события {}",
                 userId, newEventDto);

@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 public class ApiError {
-    private StackTraceElement[] stacktrace;
+    private StackTraceElement[] errors;
     private String message;
     private String reason;
     private String status;

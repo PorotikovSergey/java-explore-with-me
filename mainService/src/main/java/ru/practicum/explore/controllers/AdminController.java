@@ -11,6 +11,7 @@ import ru.practicum.explore.mapping.CompilationMapping;
 import ru.practicum.explore.mapping.EventMapping;
 import ru.practicum.explore.mapping.UserMapping;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Slf4j
@@ -37,7 +38,7 @@ public class AdminController {
     }
 
     @PostMapping("/users")
-    public UserDto addUser(@RequestBody NewUserRequest newUserRequest) {
+    public UserDto addUser(@Valid @RequestBody NewUserRequest newUserRequest) {
         log.info("==ЭНДПОИНТ POST admin/users");
         log.info("Админ добавляет пользователя: {}", newUserRequest);
         return userMapping.addUserAdmin(newUserRequest);
@@ -95,14 +96,14 @@ public class AdminController {
     }
 
     @PatchMapping("/categories")
-    public CategoryDto patchCategory(@RequestBody CategoryDto categoryDto) {
+    public CategoryDto patchCategory(@Valid @RequestBody CategoryDto categoryDto) {
         log.info("==ЭНДПОИНТ PATCH admin/categories");
         log.info("Админ изменяет категорию {}", categoryDto);
         return categoryMapping.patchCategoryAdmin(categoryDto);
     }
 
     @PostMapping("/categories")
-    public CategoryDto postCategory(@RequestBody NewCategoryDto newCategoryDto) {
+    public CategoryDto postCategory(@Valid @RequestBody NewCategoryDto newCategoryDto) {
         log.info("==ЭНДПОИНТ POST admin/categories");
         log.info("Админ постит категорию {}", newCategoryDto);
         return categoryMapping.postCategoryAdmin(newCategoryDto);
@@ -116,7 +117,7 @@ public class AdminController {
     }
 
     @PostMapping("/compilations")
-    public CompilationDto postCompilation(@RequestBody NewCompilationDto newCompilationDto) {
+    public CompilationDto postCompilation(@Valid @RequestBody NewCompilationDto newCompilationDto) {
         log.info("==ЭНДПОИНТ POST admin/compilations");
         log.info("Админ постит подборку {}", newCompilationDto);
         return compilationMapping.postCompilationAdmin(newCompilationDto);
