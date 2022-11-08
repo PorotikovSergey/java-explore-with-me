@@ -7,6 +7,7 @@ import ru.practicum.explore.model.Hit;
 import ru.practicum.explore.model.ViewStats;
 import ru.practicum.explore.storage.StatsRepository;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -25,7 +26,7 @@ public class StatsService {
     public Long postHitAndGetCount(Hit hit) {
         statsRepository.save(hit);
         Set<ViewStats> set = getStats(Collections.singletonList(hit.getUri()), false,
-                "1900-01-01 12:00:00", "2100-01-01 12:00:00");
+                LocalDateTime.MIN.toString(), LocalDateTime.MAX.toString());
         return set.iterator().next().getHits();
     }
 

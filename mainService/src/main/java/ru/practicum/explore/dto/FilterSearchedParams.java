@@ -14,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 public class FilterSearchedParams {
+    private static final String FORMATTER = "yyyy-MM-dd HH:mm:ss";
     private List<Long> categories;
     private Boolean paid;
     private Boolean onlyAvailable;
@@ -28,12 +29,12 @@ public class FilterSearchedParams {
         this.paid = paid;
         this.onlyAvailable = onlyAvailable;
         if (rangeStart != null) {
-            this.rangeStart = LocalDateTime.parse(rangeStart, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            this.rangeStart = LocalDateTime.parse(rangeStart, DateTimeFormatter.ofPattern(FORMATTER));
         } else {
             this.rangeStart = LocalDateTime.now();
         }
         if (rangeEnd != null) {
-            this.rangeEnd = LocalDateTime.parse(rangeEnd, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            this.rangeEnd = LocalDateTime.parse(rangeEnd, DateTimeFormatter.ofPattern(FORMATTER));
         } else {
             this.rangeEnd = LocalDateTime.of(3000, 12, 12, 12, 12);
         }
