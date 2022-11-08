@@ -32,8 +32,11 @@ public class Review {
     private long eventRating;
     
     @Column(name = "review_rating")
-    private long commentRating;
+    private float commentRating;
     
     @Column(name = "created_on")
     private LocalDateTime createdOn;
+
+    @Column(name = "counter")
+    private long counter;
 }

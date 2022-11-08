@@ -3,13 +3,11 @@ package ru.practicum.explore.controllers;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.explore.dto.CategoryDto;
-import ru.practicum.explore.dto.CompilationDto;
-import ru.practicum.explore.dto.EventFullDto;
-import ru.practicum.explore.dto.EventShortDto;
+import ru.practicum.explore.dto.*;
 import ru.practicum.explore.mapping.CategoryMapping;
 import ru.practicum.explore.mapping.CompilationMapping;
 import ru.practicum.explore.mapping.EventMapping;
+import ru.practicum.explore.mapping.ReviewMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -18,12 +16,29 @@ import java.util.List;
 @RestController
 @RequestMapping
 @RequiredArgsConstructor
-@ResponseBody
 public class PublicController {
 
     private final EventMapping eventMapping;
     private final CategoryMapping categoryMapping;
     private final CompilationMapping compilationMapping;
+    private final ReviewMapping reviewMapping;
+
+    //--------------------------------ФИЧА------------------------------------------
+
+    @GetMapping("/events/{eventId}/reviews")
+    public List<ReviewDto> getAllReviewsForEvent(@PathVariable long eventId,
+                                                 @RequestParam(name = "from", defaultValue = "0")
+                                                 Integer from,
+                                                 @RequestParam(name = "size", defaultValue = "10")
+                                                 Integer size,
+                                                 @RequestParam(name = "sort", defaultValue = "REVIEW_RATING")
+                                                 String sort) {
+
+        log.info("==ЭНДПОИНТ GET /events/{eventId}/reviews");
+        log.info("Публичный поиск отзывов на событие {}", eventId);
+        return reviewMapping.getReviews(eventId, from, size, sort);
+    }
+    //------------------------------------------------------------------------------
 
 
     @GetMapping("/events")
