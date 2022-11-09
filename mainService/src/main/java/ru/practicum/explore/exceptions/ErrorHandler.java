@@ -32,11 +32,11 @@ public class ErrorHandler {
     public ApiError handleMethodArgumentException(final MethodArgumentNotValidException e) {
         ForbiddenApiError error = new ForbiddenApiError();
         error.setStatus("BAD_REQUEST");
-        error.setReason("Невалидный запрос");
+        error.setReason("Невалидные данные для создания объекта");
         error.setErrors(e.getStackTrace());
         error.setMessage(e.getMessage());
         error.setTimestamp(LocalDateTime.now().toString());
-        log.error("Неправильный запрос. Ошибка 400");
+        log.error("Невалидные данные. Ошибка 400");
         log.error(e.getMessage());
         return error;
     }

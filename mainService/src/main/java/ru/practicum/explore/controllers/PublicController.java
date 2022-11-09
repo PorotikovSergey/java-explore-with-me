@@ -10,6 +10,7 @@ import ru.practicum.explore.mapping.EventMapping;
 import ru.practicum.explore.mapping.ReviewMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -43,24 +44,27 @@ public class PublicController {
 
     @GetMapping("/events")
     public List<EventShortDto> getEvents(HttpServletRequest request,
-                                         @RequestParam(name = "from", defaultValue = "0")
+                                         @RequestParam(name = "from", defaultValue = "0", required = false)
                                          Integer from,
-                                         @RequestParam(name = "size", defaultValue = "10")
+                                         @RequestParam(name = "size", defaultValue = "10", required = false)
                                          Integer size,
-                                         @RequestParam(name = "text")
+                                         @RequestParam(name = "text", required = false)
                                          String text,
-                                         @RequestParam(name = "categories")
+                                         @RequestParam(name = "categories", required = false)
                                          List<Long> categories,
-                                         @RequestParam(name = "paid", defaultValue = "false")
+                                         @RequestParam(name = "paid", required = false)
                                          Boolean paid,
-                                         @RequestParam(name = "rangeStart")
+                                         @RequestParam(name = "rangeStart", defaultValue = "2021-01-06 12:12:12", required = false)
                                          String rangeStart,
-                                         @RequestParam(name = "rangeEnd")
+                                         @RequestParam(name = "rangeEnd", defaultValue = "2097-01-06 12:12:12", required = false)
                                          String rangeEnd,
-                                         @RequestParam(name = "onlyAvailable", defaultValue = "false")
+                                         @RequestParam(name = "onlyAvailable", required = false)
                                          Boolean onlyAvailable,
-                                         @RequestParam(name = "sort", defaultValue = "EVENT_DATE")
+                                         @RequestParam(name = "sort", defaultValue = "EVENT_DATE", required = false)
                                          String sort) {
+        System.out.println("*");
+        System.out.println("**********************");
+        System.out.println("************************************************");
         log.info("==ЭНДПОИНТ GET /events");
         log.info("Публичный поиск по всем событиям по параметрам categories = {}, paid = {}, onlyAvailable = {}," +
                         "text = {}, sort = {}, start = {}, end = {}, from = {}, size = {}", categories, paid,

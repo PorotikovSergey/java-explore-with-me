@@ -25,15 +25,20 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
 
     List<Event> findAllByCategoryId(long catId);
 
-    Page<Event> findAllByOwnerIdInAndStateInAndCategoryIdInAndEventDateBetween(
-            List<Long> users, List<String> states, List<Long> categories,
-            LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
+    @Query("select e from Event e where (:users is null OR e.owner.id IN :users) " +
+            "AND (:states is null OR e.state IN :states) " +
+            "AND (:cat is null OR e.category.id IN :cat) " +
+            "AND (e.eventDate BETWEEN :start AND :end)")
+    Page<Event> findByParamsAdmin(@Param("users") List<Long> users, @Param("states") List<String> states,
+                                  @Param("cat") List<Long> categories, @Param("start") LocalDateTime rangeStart,
+                                  @Param("end") LocalDateTime rangeEnd, Pageable pageable);
 
-    @Query(nativeQuery = true, value = "select * from events where events.paid = :pay " +
-            "AND (lower(events.annotation) LIKE :text OR lower(events.description) LIKE :text) " +
-            "AND  events.category IN :cat " +
-            "AND events.event_date BETWEEN :start AND :end")
+    @Query("select e from Event e where (:pay is null OR e.paid = :pay) " +
+            "AND (:text is null OR ((lower(e.annotation) LIKE :text OR lower(e.description) LIKE :text))) " +
+            "AND (:cat is null OR e.category.id IN :cat) " +
+            "AND (e.eventDate BETWEEN :start AND :end) " +
+            "AND (:onlyAv is null OR e.publishedOn is not null)")
     Page<Event> findByParams(@Param("text") String text, @Param("cat") List<Long> categories,
-                             @Param("pay") boolean paid, @Param("start") LocalDateTime rangeStart,
-                             @Param("end") LocalDateTime rangeEnd, Pageable pageable);
+                             @Param("pay") Boolean paid, @Param("start") LocalDateTime rangeStart,
+                             @Param("end") LocalDateTime rangeEnd, @Param("onlyAv") Boolean onlyAv, Pageable pageable);
 }

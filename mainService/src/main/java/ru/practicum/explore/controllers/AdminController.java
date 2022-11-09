@@ -52,20 +52,21 @@ public class AdminController {
     }
 
     @GetMapping("/events")
-    public List<EventFullDto> getEvents(@RequestParam(name = "users")
+    public List<EventFullDto> getEvents(@RequestParam(name = "users", required = false)
                                         List<Long> users,
-                                        @RequestParam(name = "states")
+                                        @RequestParam(name = "states", required = false)
                                         List<String> states,
-                                        @RequestParam(name = "categories")
+                                        @RequestParam(name = "categories", required = false)
                                         List<Long> categories,
-                                        @RequestParam(name = "rangeStart")
+                                        @RequestParam(name = "rangeStart", defaultValue = "2022-01-06 12:12:12")
                                         String rangeStart,
-                                        @RequestParam(name = "rangeEnd")
+                                        @RequestParam(name = "rangeEnd", defaultValue = "2097-01-06 12:12:12")
                                         String rangeEnd,
                                         @RequestParam(name = "from", defaultValue = "0")
                                         Integer from,
                                         @RequestParam(name = "size", defaultValue = "10")
                                         Integer size) {
+
         log.info("==ЭНДПОИНТ GET admin/events");
         log.info("Админ получает события по параметрам: users = {}, states = {}, categories = {}, между {} и {} , " +
                 "и пагинацией от {} по {}", users, states, categories, rangeStart, rangeEnd, from, size);

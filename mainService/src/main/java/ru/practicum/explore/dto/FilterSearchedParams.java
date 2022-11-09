@@ -15,13 +15,13 @@ import java.util.List;
 @ToString
 public class FilterSearchedParams {
     private static final String FORMATTER = "yyyy-MM-dd HH:mm:ss";
-    private List<Long> categories;
+    private List<Long> categories = null;
     private Boolean paid;
     private Boolean onlyAvailable;
     private LocalDateTime rangeStart;
     private LocalDateTime rangeEnd;
     private String sort;
-    private String text;
+    private String text = null;
 
     public FilterSearchedParams(List<Long> categories, Boolean paid, Boolean onlyAvailable,
                                 String rangeStart, String rangeEnd, String sort, String text) {
