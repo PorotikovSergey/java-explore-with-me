@@ -1,6 +1,7 @@
 package ru.practicum.explore.model;
 
 import lombok.*;
+import ru.practicum.explore.enums.EventState;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -30,13 +31,16 @@ public class Review {
 
     @Column(name = "event_rating")
     private long eventRating;
-    
+
     @Column(name = "review_rating")
     private float commentRating;
-    
+
     @Column(name = "created_on")
     private LocalDateTime createdOn;
 
     @Column(name = "counter")
     private long counter;
+
+    @Column(name = "state")
+    private String state = EventState.PENDING.toString();
 }

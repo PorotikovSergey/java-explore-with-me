@@ -25,6 +25,7 @@ public class StatsService {
 
     public Long postHitAndGetCount(Hit hit) {
         statsRepository.save(hit);
+
         Set<ViewStats> set = getStats(Collections.singletonList(hit.getUri()), false,
                 LocalDateTime.MIN.toString(), LocalDateTime.MAX.toString());
         return set.iterator().next().getHits();
@@ -35,7 +36,7 @@ public class StatsService {
             List<Hit> listUnique = statsRepository.findDistinctByUriInAndTimestampBetween(uris, start, end);
             return getViewStatsWithHit(listUnique);
         } else {
-            List<Hit> list = statsRepository.findAllByUriInAndTimestampBetween(uris, start, end);
+            List<Hit> list = statsRepository.findAllByUriIn(uris);
             return getViewStatsWithHit(list);
         }
     }
@@ -48,11 +49,14 @@ public class StatsService {
     }
 
     private Set<ViewStats> getViewStatsWithHit(List<Hit> list) {
+        System.out.println("---1---");
         Set<ViewStats> viewStatsSet = list.stream().map(this::fromHitToStat).collect(Collectors.toSet());
+        System.out.println("---2---");
         for (ViewStats stat : viewStatsSet) {
             int hits = list.size();
             stat.setHits(hits);
         }
+        System.out.println("---3---");
         return viewStatsSet;
     }
 }

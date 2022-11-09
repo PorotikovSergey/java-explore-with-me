@@ -88,6 +88,7 @@ CREATE TABLE IF NOT EXISTS reviews (
                                        event_rating INTEGER NOT NULL ,
                                        review_rating FLOAT NOT NULL ,
                                        counter BIGINT,
+                                       state VARCHAR(9) NOT NULL,
                                        CONSTRAINT pk_reviews PRIMARY KEY (id),
                                        CONSTRAINT author_of_review FOREIGN KEY(author) REFERENCES users(id),
                                        CONSTRAINT event_of_review FOREIGN KEY(event) REFERENCES events(id)

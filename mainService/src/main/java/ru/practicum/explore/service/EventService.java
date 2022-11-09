@@ -31,23 +31,18 @@ public class EventService {
     private final UserRepository userRepository;
 
     public List<Event> getEventsPublic(FilterSearchedParams params, Integer from, Integer size) {
-        System.out.println("1");
         Pageable pageableDate = PageRequest.of(from, size, Sort.by("eventDate").ascending());
         Pageable pageableViews = PageRequest.of(from, size, Sort.by("views").ascending());
-        System.out.println("2");
         Page<Event> list;
         if (params.getSort().equals("VIEWS")) {
-            System.out.println("3");
             list = eventRepository.findByParams(params.getText().toLowerCase(), params.getCategories(),
                     params.getPaid(), params.getRangeStart(), params.getRangeEnd(),
                     params.getOnlyAvailable(), pageableViews);
         } else {
-            System.out.println("4");
             list = eventRepository.findByParams(params.getText().toLowerCase(), params.getCategories(),
                     params.getPaid(), params.getRangeStart(), params.getRangeEnd(),
                     params.getOnlyAvailable(),pageableDate);
         }
-        System.out.println("--5");
         List<Event> result = list.getContent();
         log.info("Итоговый возвращаемый лист событий из бд такой: {}", result);
         return result;

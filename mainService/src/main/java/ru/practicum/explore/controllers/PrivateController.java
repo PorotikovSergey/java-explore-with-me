@@ -26,6 +26,7 @@ public class PrivateController {
     private final ReviewMapping reviewMapping;
 
     //--------------------------------ФИЧА------------------------------------------
+
     @PostMapping("/events/{eventId}/reviews")
     public ReviewDto postReview(@PathVariable long userId,
                                 @PathVariable long eventId,

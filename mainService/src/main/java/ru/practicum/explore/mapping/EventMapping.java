@@ -227,15 +227,15 @@ public class EventMapping {
         FilterSearchedParams params = produceFilterParams(text, categories, paid,
                 rangeStart, rangeEnd, onlyAvailable, sort);
 
-        System.out.println("params :" + params);
-
         List<Event> list;
 
         try {
-            log.debug("Отправляем запрос в сервис статистики");
+            log.info("Отправляем запрос в сервис статистики");
             log.info("uri = {}, ip = {}, time = {}",
                     request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
-            updateStatsOfEvent(request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
+            long views = updateStatsOfEvent(request.getRequestURI(), request.getRemoteAddr(),
+                    LocalDateTime.now().toString());
+            log.info("по данному эндпоинту статистика а на данный составляет: {}", views);
         } catch (Exception e) {
             log.error("Отправка статистики не удалась");
         }
@@ -255,10 +255,11 @@ public class EventMapping {
         long views = 0L;
 
         try {
-            log.debug("Отправляем запрос в сервис статистики");
+            log.info("Отправляем запрос в сервис статистики");
             log.info("uri = {}, ip = {}, time = {}",
                     request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
             views = updateStatsOfEvent("/events/" + id, request.getRemoteAddr(), LocalDateTime.now().toString());
+            log.info("по данному эндпоинту статистика а на данный составляет: {}", views);
         } catch (Exception e) {
             log.error("Отправка в и получение из статистики не удалась");
         }
@@ -306,10 +307,10 @@ public class EventMapping {
         if (categories != null && !categories.isEmpty()) {
             params.setCategories(categories);
         }
-        if(onlyAvailable!=null && onlyAvailable) {
+        if (onlyAvailable != null && onlyAvailable) {
             params.setOnlyAvailable(true);
         }
-        if(paid!=null) {
+        if (paid != null) {
             params.setOnlyAvailable(paid);
         }
         params.setSort(sort);

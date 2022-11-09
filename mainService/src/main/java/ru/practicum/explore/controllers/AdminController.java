@@ -3,13 +3,11 @@ package ru.practicum.explore.controllers;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ru.practicum.explore.dto.*;
 import ru.practicum.explore.dto.AdminUpdateEventRequest;
 import ru.practicum.explore.dto.NewUserRequest;
-import ru.practicum.explore.mapping.CategoryMapping;
-import ru.practicum.explore.mapping.CompilationMapping;
-import ru.practicum.explore.mapping.EventMapping;
-import ru.practicum.explore.mapping.UserMapping;
+import ru.practicum.explore.mapping.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -24,6 +22,27 @@ public class AdminController {
     private final EventMapping eventMapping;
     private final CategoryMapping categoryMapping;
     private final CompilationMapping compilationMapping;
+    private final ReviewMapping reviewMapping;
+
+    //--------------------------------ФИЧА------------------------------------------
+
+    @PatchMapping("/reviews/{reviewId}")
+    public void patchReview(@PathVariable long reviewId,
+                             @RequestParam(name = "decision", defaultValue = "false") Boolean decision) {
+        log.info("==ЭНДПОИНТ PATCH admin/reviews/{reviewId}?decision=");
+        log.info("Патч админом отзыва с id: {}", reviewId);
+
+        reviewMapping.patchReviewByAdmin(reviewId, decision);
+    }
+
+    @DeleteMapping("/reviews/{reviewId}")
+    public void patchReview(@PathVariable long reviewId) {
+        log.info("==ЭНДПОИНТ DELETE admin/reviews/{reviewId}");
+        log.info("Удаление админом отзыва с id: {}", reviewId);
+
+        reviewMapping.deleteReviewByAdmin(reviewId);
+    }
+    //------------------------------------------------------------------------------
 
     @GetMapping("/users")
     public List<UserDto> getUsers(@RequestParam(name = "ids")

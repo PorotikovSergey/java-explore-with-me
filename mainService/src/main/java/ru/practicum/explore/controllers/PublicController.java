@@ -10,7 +10,6 @@ import ru.practicum.explore.mapping.EventMapping;
 import ru.practicum.explore.mapping.ReviewMapping;
 
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -26,6 +25,8 @@ public class PublicController {
 
     //--------------------------------ФИЧА------------------------------------------
 
+    //в публичном контроллере неавторизированные пользователи могут только посмотреть комменты к событию
+    //добавление, удаление, оценка - это всё в приватном контроллере
     @GetMapping("/events/{eventId}/reviews")
     public List<ReviewDto> getAllReviewsForEvent(@PathVariable long eventId,
                                                  @RequestParam(name = "from", defaultValue = "0")
@@ -62,9 +63,6 @@ public class PublicController {
                                          Boolean onlyAvailable,
                                          @RequestParam(name = "sort", defaultValue = "EVENT_DATE", required = false)
                                          String sort) {
-        System.out.println("*");
-        System.out.println("**********************");
-        System.out.println("************************************************");
         log.info("==ЭНДПОИНТ GET /events");
         log.info("Публичный поиск по всем событиям по параметрам categories = {}, paid = {}, onlyAvailable = {}," +
                         "text = {}, sort = {}, start = {}, end = {}, from = {}, size = {}", categories, paid,

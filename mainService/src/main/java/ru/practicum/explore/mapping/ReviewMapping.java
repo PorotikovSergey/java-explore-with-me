@@ -37,8 +37,7 @@ public class ReviewMapping {
     public ReviewDto postReview(long userId, long eventId, NewReview newReview) {
         Review review = fromNewToReview(newReview);
         Review backReview = reviewService.postReview(userId, eventId, review);
-        ReviewDto reviewDto = fromReviewToDto(backReview);
-        return reviewDto;
+        return fromReviewToDto(backReview);
     }
 
     public void deleteReview(long userId, long eventId, long reviewId) {
@@ -51,7 +50,14 @@ public class ReviewMapping {
 
     public List<ReviewDto> getReviews(long eventId, Integer from, Integer size, String sort) {
         List<Review> reviews = reviewService.getReviews(eventId, from, size, sort);
-        List<ReviewDto> result = reviews.stream().map(ReviewMapping::fromReviewToDto).collect(Collectors.toList());
-        return result;
+        return reviews.stream().map(ReviewMapping::fromReviewToDto).collect(Collectors.toList());
+    }
+
+    public void deleteReviewByAdmin(long reviewId) {
+        reviewService.deleteReviewByAdmin(reviewId);
+    }
+
+    public void patchReviewByAdmin(long reviewId, boolean decision) {
+        reviewService.patchReview(reviewId, decision);
     }
 }
