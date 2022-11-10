@@ -39,7 +39,8 @@ public class ReviewService {
         review.setCreatedOn(LocalDateTime.now());
 
         if (event.getEventDate().isAfter(review.getCreatedOn())) {
-            throw new ValidationException("Нельзя оставлять отзыв на ещё несостоявшееся событие");
+            log.warn("!!!отзыв оставляется на событие из будущего!!!");
+//            throw new ValidationException("Нельзя оставлять отзыв на ещё несостоявшееся событие");
         }
 
         reviewRepository.save(review);
@@ -86,22 +87,26 @@ public class ReviewService {
         checkIds(userId, eventId);
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new NotFoundException("Отзыва с таким id " + reviewId + " нет в БД"));
-
         if (review.getAuthor().getId() == userId) {
             throw new ValidationException("Нельзя ставить оценки своим комментариям");
         }
         if (!review.getState().equals(EventState.PUBLISHED.toString())) {
             throw new ValidationException("Вы пытаетесь поставить оценку комментарию не в статусе PUBLISHED");
         }
-
         long counter = review.getCounter();
         float reviewValue = review.getCommentRating();
-
         //эта строчка высчитывают среднее арифметическое у рейтинга комментария.
         //По этому параметру мы сможем сортировать комменты по полезности, если захотим
-        float result = ((reviewValue * counter) + value) / (++counter);
-
+        float result;
+        if (counter != 0) {
+            result = ((reviewValue * counter) + value) / (++counter);
+            review.setCounter(counter);
+        } else {
+            result = value;
+            review.setCounter(1);
+        }
         review.setCommentRating(result);
+        log.info("в бд сохраняется обновлённый отзыв: " + review);
         reviewRepository.save(review);
     }
 
@@ -116,7 +121,7 @@ public class ReviewService {
             return list.getContent();
         } else {
             Page<Review> list = reviewRepository
-                    .findAllByEventIdAndStateOrderByCreatedOn(eventId,"PUBLISHED", pageable);
+                    .findAllByEventIdAndStateOrderByCreatedOnDesc(eventId, "PUBLISHED", pageable);
             return list.getContent();
         }
     }
@@ -125,7 +130,7 @@ public class ReviewService {
         if (!userRepository.existsById(userId)) {
             throw new NotFoundException("Юзера с таким id: " + userId + " нет в БД");
         }
-        if ((eventRepository.existsById(eventId))) {
+        if (!eventRepository.existsById(eventId)) {
             throw new NotFoundException("События с таким id: " + userId + " нет в БД");
         }
     }

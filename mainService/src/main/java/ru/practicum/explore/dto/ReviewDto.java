@@ -19,5 +19,5 @@ public class ReviewDto {
 
     private long eventRating;
 
-    private long commentRating;
+    private float commentRating;
 }

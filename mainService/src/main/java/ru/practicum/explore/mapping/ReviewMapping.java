@@ -30,7 +30,8 @@ public class ReviewMapping {
         reviewDto.setEventTitle(review.getEvent().getTitle());
         reviewDto.setText(review.getText());
         reviewDto.setId(review.getId());
-        reviewDto.setEventRating(reviewDto.getEventRating());
+        reviewDto.setEventRating(review.getEventRating());
+        reviewDto.setCommentRating(review.getCommentRating());
         return reviewDto;
     }
 

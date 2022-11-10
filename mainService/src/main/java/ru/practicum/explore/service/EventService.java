@@ -118,7 +118,11 @@ public class EventService {
         event.setCreatedOn(LocalDateTime.now());
         Location location = locationService.addLocation(event.getLocation());
         event.setLocation(location);
-        eventRepository.save(event);
+        try {
+            eventRepository.save(event);
+        } catch (Exception e) {
+            throw new ValidationException("Нарушение уникальности в БД события");
+        }
         log.info("Итоговое сохранённое в бд событие: {}", event);
         return event;
     }
