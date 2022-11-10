@@ -49,14 +49,11 @@ public class StatsService {
     }
 
     private Set<ViewStats> getViewStatsWithHit(List<Hit> list) {
-        System.out.println("---1---");
         Set<ViewStats> viewStatsSet = list.stream().map(this::fromHitToStat).collect(Collectors.toSet());
-        System.out.println("---2---");
         for (ViewStats stat : viewStatsSet) {
             int hits = list.size();
             stat.setHits(hits);
         }
-        System.out.println("---3---");
         return viewStatsSet;
     }
 }

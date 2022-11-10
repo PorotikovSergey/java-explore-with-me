@@ -12,6 +12,7 @@ import ru.practicum.explore.exceptions.NotFoundException;
 import ru.practicum.explore.exceptions.ValidationException;
 import ru.practicum.explore.model.Event;
 import ru.practicum.explore.model.Review;
+import ru.practicum.explore.model.User;
 import ru.practicum.explore.storage.EventRepository;
 import ru.practicum.explore.storage.ReviewRepository;
 import ru.practicum.explore.storage.UserRepository;
@@ -29,15 +30,15 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
 
     public Review postReview(long userId, long eventId, Review review) {
-        checkIds(userId, eventId);
 
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException("События с таким id " + eventId + " нет в БД"));
+        User author = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Юзера с таким id " + userId + " нет в БД"));
+
+        review.setAuthor(author);
+        review.setEvent(event);
         review.setCreatedOn(LocalDateTime.now());
-        //вот тут оставил этот вариант, так как чуть выше уже проверил существование по айдишникам
-        //но могу изменить на выброс ошибки .orElseThrow() ->
-        review.setAuthor(userRepository.findById(userId).get());
-        review.setEvent(eventRepository.findById(eventId).get());
-        review.setCreatedOn(LocalDateTime.now());
-        Event event = eventRepository.findById(eventId).get();
 
         if (event.getEventDate().isAfter(review.getCreatedOn())) {
             throw new ValidationException("Нельзя оставлять отзыв на ещё несостоявшееся событие");
@@ -49,9 +50,12 @@ public class ReviewService {
     }
 
     public void deleteReview(long userId, long eventId, long reviewId) {
-        checkIds(userId, eventId);
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new NotFoundException("Отзыва с таким id " + reviewId + " нет в БД"));
+
+        if (review.getEvent().getId() != eventId) {
+            throw new ValidationException("Событие в запросе и в отзыве не совпадают");
+        }
 
         if (review.getAuthor().getId() != userId) {
             throw new ValidationException("Нельзя удалять чужой комментарий");
@@ -89,33 +93,33 @@ public class ReviewService {
             throw new ValidationException("Нельзя ставить оценки своим комментариям");
         }
         if (!review.getState().equals(EventState.PUBLISHED.toString())) {
-            throw new ValidationException("Вы пытаетесь поставить оценку комментарию в состоянии ожидания публикации");
+            throw new ValidationException("Вы пытаетесь поставить оценку комментарию не в статусе PUBLISHED");
         }
 
-        //следующие 2 строчки высчитывают средне арифметическое у рейтинга комментария.
-        //По этому параметру мы сможем сортировать комменты по полезности, если захотим
         long counter = review.getCounter();
         float reviewValue = review.getCommentRating();
 
+        //эта строчка высчитывают среднее арифметическое у рейтинга комментария.
+        //По этому параметру мы сможем сортировать комменты по полезности, если захотим
         float result = ((reviewValue * counter) + value) / (++counter);
+
         review.setCommentRating(result);
         reviewRepository.save(review);
     }
 
     public List<Review> getReviews(long eventId, Integer from, Integer size, String sort) {
+        Pageable pageable = PageRequest.of(from, size);
         //вот тут мы получаем список комментов к событию и сортируем
         //Либо по рейтингу коммента, иначе по дате создания
         //Причём получаем только опубликованные
         if (sort.equals("REVIEW_RATING")) {
-            Pageable pageable = PageRequest.of(from, size, Sort.by("review_rating").ascending());
-            Page<Review> list = reviewRepository.findAllByEventId(eventId, pageable);
-            return list.getContent().stream()
-                    .filter(r -> r.getState().equals(EventState.PUBLISHED.toString())).collect(Collectors.toList());
+            Page<Review> list = reviewRepository
+                    .findAllByEventIdAndStateOrderByCommentRatingDesc(eventId, "PUBLISHED", pageable);
+            return list.getContent();
         } else {
-            Pageable pageable = PageRequest.of(from, size, Sort.by("created_on").descending());
-            Page<Review> list = reviewRepository.findAllByEventId(eventId, pageable);
-            return list.getContent().stream()
-                    .filter(r -> r.getState().equals(EventState.PUBLISHED.toString())).collect(Collectors.toList());
+            Page<Review> list = reviewRepository
+                    .findAllByEventIdAndStateOrderByCreatedOn(eventId,"PUBLISHED", pageable);
+            return list.getContent();
         }
     }
 
