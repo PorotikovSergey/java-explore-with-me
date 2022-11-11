@@ -43,6 +43,10 @@ public class ReviewService {
 //            throw new ValidationException("Нельзя оставлять отзыв на ещё несостоявшееся событие");
         }
 
+        if (reviewRepository.findByEventIdAndAndAuthorId(eventId, userId) != null) {
+            throw new ValidationException("Похоже вы уже оставляли ваш отзыв о данном событии");
+        }
+
         reviewRepository.save(review);
         log.info("Вот такой отзыв по итогу сохранён в бд: {}", review);
         return review;

@@ -48,7 +48,7 @@ public class PrivateController {
     }
 
     @PostMapping("/events/{eventId}/reviews/{reviewId}")
-    public void rateReview(@RequestParam(name = "value") @Max(10) @Min(1) Integer value,
+    public void rateReview(@Valid @RequestParam(name = "value") @Max(10) @Min(1) Integer value,
                            @PathVariable long userId,
                            @PathVariable long eventId,
                            @PathVariable long reviewId) {

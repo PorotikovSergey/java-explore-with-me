@@ -9,7 +9,7 @@ import ru.practicum.explore.model.Review;
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
-    Page<Review> findAllByEventId(long id, Pageable pageable);
+    Review findByEventIdAndAndAuthorId(long eventId, long authorId);
 
     Page<Review> findAllByEventIdAndStateOrderByCreatedOnDesc(long id, String state, Pageable pageable);
 
