@@ -145,7 +145,8 @@ public class EventMapping {
 
     public List<EventFullDto> getEventsAdmin(List<Long> users, List<String> states, List<Long> categories,
                                              String rangeStart, String rangeEnd, Integer from, Integer size) {
-        AdminSearchedParams params = new AdminSearchedParams(users, states, categories, rangeStart, rangeEnd);
+
+        AdminSearchedParams params = fromParamsToObject(users, states, categories, rangeStart, rangeEnd);
 
         List<Event> list = eventService.getEventsAdmin(params, from, size);
 
@@ -223,15 +224,18 @@ public class EventMapping {
                                                String rangeStart, String rangeEnd, Boolean onlyAvailable,
                                                String sort, Integer from, Integer size, HttpServletRequest request) {
 
-        FilterSearchedParams params = new FilterSearchedParams(categories, paid, onlyAvailable,
-                rangeStart, rangeEnd, sort, text);
+        FilterSearchedParams params = produceFilterParams(text, categories, paid,
+                rangeStart, rangeEnd, onlyAvailable, sort);
+
         List<Event> list;
 
         try {
-            log.debug("Отправляем запрос в сервис статистики");
+            log.info("Отправляем запрос в сервис статистики");
             log.info("uri = {}, ip = {}, time = {}",
                     request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
-            updateStatsOfEvent(request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
+            long views = updateStatsOfEvent(request.getRequestURI(), request.getRemoteAddr(),
+                    LocalDateTime.now().toString());
+            log.info("по данному эндпоинту статистика а на данный составляет: {}", views);
         } catch (Exception e) {
             log.error("Отправка статистики не удалась");
         }
@@ -251,10 +255,11 @@ public class EventMapping {
         long views = 0L;
 
         try {
-            log.debug("Отправляем запрос в сервис статистики");
+            log.info("Отправляем запрос в сервис статистики");
             log.info("uri = {}, ip = {}, time = {}",
                     request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now().toString());
             views = updateStatsOfEvent("/events/" + id, request.getRemoteAddr(), LocalDateTime.now().toString());
+            log.info("по данному эндпоинту статистика а на данный составляет: {}", views);
         } catch (Exception e) {
             log.error("Отправка в и получение из статистики не удалась");
         }
@@ -274,5 +279,44 @@ public class EventMapping {
         }
     }
 
+    private AdminSearchedParams fromParamsToObject(List<Long> users, List<String> states, List<Long> categories,
+                                                   String rangeStart, String rangeEnd) {
+        AdminSearchedParams params = new AdminSearchedParams();
+        if (users != null && !users.isEmpty()) {
+            params.setUsers(users);
+        }
+        if (states != null && !states.isEmpty()) {
+            params.setStates(states);
+        }
+        if (categories != null && !categories.isEmpty()) {
+            params.setCategories(categories);
+        }
+        params.setRangeStart(LocalDateTime.parse(rangeStart, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        params.setRangeEnd(LocalDateTime.parse(rangeEnd, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
+        return params;
+    }
+
+    private FilterSearchedParams produceFilterParams(String text, List<Long> categories, Boolean paid,
+                                                     String rangeStart, String rangeEnd, Boolean onlyAvailable,
+                                                     String sort) {
+        FilterSearchedParams params = new FilterSearchedParams();
+        if (text != null && !text.isEmpty()) {
+            params.setText(text);
+        }
+        if (categories != null && !categories.isEmpty()) {
+            params.setCategories(categories);
+        }
+        if (onlyAvailable != null && onlyAvailable) {
+            params.setOnlyAvailable(true);
+        }
+        if (paid != null) {
+            params.setOnlyAvailable(paid);
+        }
+        params.setSort(sort);
+        params.setRangeStart(LocalDateTime.parse(rangeStart, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        params.setRangeEnd(LocalDateTime.parse(rangeEnd, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+
+        return params;
+    }
 }

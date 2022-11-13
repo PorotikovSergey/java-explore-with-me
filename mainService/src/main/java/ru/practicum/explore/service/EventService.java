@@ -31,15 +31,17 @@ public class EventService {
     private final UserRepository userRepository;
 
     public List<Event> getEventsPublic(FilterSearchedParams params, Integer from, Integer size) {
-        Pageable pageableDate = PageRequest.of(from, size, Sort.by("event_date").ascending());
+        Pageable pageableDate = PageRequest.of(from, size, Sort.by("eventDate").ascending());
         Pageable pageableViews = PageRequest.of(from, size, Sort.by("views").ascending());
         Page<Event> list;
         if (params.getSort().equals("VIEWS")) {
             list = eventRepository.findByParams(params.getText().toLowerCase(), params.getCategories(),
-                    params.getPaid(), params.getRangeStart(), params.getRangeEnd(), pageableViews);
+                    params.getPaid(), params.getRangeStart(), params.getRangeEnd(),
+                    params.getOnlyAvailable(), pageableViews);
         } else {
             list = eventRepository.findByParams(params.getText().toLowerCase(), params.getCategories(),
-                    params.getPaid(), params.getRangeStart(), params.getRangeEnd(), pageableDate);
+                    params.getPaid(), params.getRangeStart(), params.getRangeEnd(),
+                    params.getOnlyAvailable(),pageableDate);
         }
         List<Event> result = list.getContent();
         log.info("Итоговый возвращаемый лист событий из бд такой: {}", result);
@@ -116,7 +118,11 @@ public class EventService {
         event.setCreatedOn(LocalDateTime.now());
         Location location = locationService.addLocation(event.getLocation());
         event.setLocation(location);
-        eventRepository.save(event);
+        try {
+            eventRepository.save(event);
+        } catch (Exception e) {
+            throw new ValidationException("Нарушение уникальности в БД события");
+        }
         log.info("Итоговое сохранённое в бд событие: {}", event);
         return event;
     }
@@ -142,9 +148,8 @@ public class EventService {
 
     public List<Event> getEventsAdmin(AdminSearchedParams params, Integer from, Integer size) {
         Pageable pageable = PageRequest.of(from, size);
-        List<Event> result = eventRepository.findAllByOwnerIdInAndStateInAndCategoryIdInAndEventDateBetween(
-                params.getUsers(), params.getStates(), params.getCategories(),
-                params.getRangeStart(), params.getRangeEnd(), pageable).getContent();
+        List<Event> result = eventRepository.findByParamsAdmin(params.getUsers(), params.getStates(),
+                params.getCategories(), params.getRangeStart(), params.getRangeEnd(), pageable).getContent();
         log.info("Итоговый возвращаемый лист событий из бд такой: {}", result);
         return result;
     }

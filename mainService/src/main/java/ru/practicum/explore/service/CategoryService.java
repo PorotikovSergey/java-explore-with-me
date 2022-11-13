@@ -46,7 +46,11 @@ public class CategoryService {
     }
 
     public Category postCategoryAdmin(Category category) {
-        categoryRepository.save(category);
+        try {
+            categoryRepository.save(category);
+        } catch (Exception e) {
+            throw new ValidationException("Нарушение уникальности в БД категории");
+        }
         log.info("В бд добавлена категория : {}", category);
         return category;
     }

@@ -4,20 +4,62 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explore.dto.*;
 import ru.practicum.explore.mapping.EventMapping;
+import ru.practicum.explore.mapping.ReviewMapping;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 @Slf4j
+@Validated
 @RestController
 @RequiredArgsConstructor
-@ResponseBody
-@org.springframework.web.bind.annotation.RequestMapping("/users/{userId}")
+@RequestMapping("/users/{userId}")
 public class PrivateController {
     private final EventMapping eventMapping;
     private final ru.practicum.explore.mapping.RequestMapping requestMapping;
+    private final ReviewMapping reviewMapping;
+
+    //--------------------------------ФИЧА------------------------------------------
+
+    @PostMapping("/events/{eventId}/reviews")
+    public ReviewDto postReview(@PathVariable long userId,
+                                @PathVariable long eventId,
+                                @Valid @RequestBody NewReview newReview) {
+        log.info("==ЭНДПОИНТ POST /users/{userId}/events/{eventId}/reviews");
+        log.info("Приватное добавление отзыва: {}", newReview);
+
+        return reviewMapping.postReview(userId, eventId, newReview);
+    }
+
+    @DeleteMapping("/events/{eventId}/reviews/{reviewId}")
+    public void deleteReview(@PathVariable long userId,
+                             @PathVariable long eventId,
+                             @PathVariable long reviewId) {
+        log.info("==ЭНДПОИНТ DELETE /users/{userId}/events/{eventId}/reviews/{reviewId}");
+        log.info("Приватное удаление отзыва с id: {}", reviewId);
+
+        reviewMapping.deleteReview(userId, eventId, reviewId);
+    }
+
+    @PostMapping("/events/{eventId}/reviews/{reviewId}")
+    public void rateReview(@Valid @RequestParam(name = "value") @Max(10) @Min(1) Integer value,
+                           @PathVariable long userId,
+                           @PathVariable long eventId,
+                           @PathVariable long reviewId) {
+        log.info("==ЭНДПОИНТ POST /users/{userId}/events/{eventId}/reviews/{reviewId}");
+        log.info("Приватное добавление оценки {} отзыву {}", value, reviewId);
+
+        reviewMapping.rateReview(userId, eventId, reviewId, value);
+    }
+
+
+    //------------------------------------------------------------------------------
 
     @GetMapping("/events")
     public List<EventShortDto> getEvents(@PathVariable long userId,
@@ -40,7 +82,7 @@ public class PrivateController {
     }
 
     @PostMapping("/events")
-    public EventFullDto postEvent(@PathVariable long userId, @RequestBody NewEventDto newEventDto) {
+    public EventFullDto postEvent(@PathVariable long userId, @Valid @RequestBody NewEventDto newEventDto) {
         log.info("==ЭНДПОИНТ POST /users/{userId}/events");
         log.info("Приватное добавление пользователем с id = {} события {}",
                 userId, newEventDto);

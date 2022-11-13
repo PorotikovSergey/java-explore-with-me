@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.explore.exceptions.NotFoundException;
+import ru.practicum.explore.exceptions.ValidationException;
 import ru.practicum.explore.model.User;
 import ru.practicum.explore.storage.UserRepository;
 
@@ -26,7 +27,11 @@ public class UserService {
     }
 
     public User addUserAdmin(User user) {
-        userRepository.save(user);
+        try {
+            userRepository.save(user);
+        } catch (Exception e) {
+            throw new ValidationException("Нарушение уникальности в БД юзеры");
+        }
         log.info("В бд сохранён юзер: {}", user);
         return user;
     }

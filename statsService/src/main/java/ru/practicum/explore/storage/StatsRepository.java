@@ -8,6 +8,8 @@ import java.util.List;
 
 @Repository
 public interface StatsRepository extends JpaRepository<Hit, Long> {
+    List<Hit> findAllByUriIn(List<String> uris);
+
     List<Hit> findAllByUriInAndTimestampBetween(List<String> uris, String start, String end);
 
     List<Hit> findDistinctByUriInAndTimestampBetween(List<String> uris, String start, String end);

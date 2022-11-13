@@ -3,14 +3,13 @@ package ru.practicum.explore.controllers;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ru.practicum.explore.dto.*;
 import ru.practicum.explore.dto.AdminUpdateEventRequest;
 import ru.practicum.explore.dto.NewUserRequest;
-import ru.practicum.explore.mapping.CategoryMapping;
-import ru.practicum.explore.mapping.CompilationMapping;
-import ru.practicum.explore.mapping.EventMapping;
-import ru.practicum.explore.mapping.UserMapping;
+import ru.practicum.explore.mapping.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Slf4j
@@ -23,6 +22,27 @@ public class AdminController {
     private final EventMapping eventMapping;
     private final CategoryMapping categoryMapping;
     private final CompilationMapping compilationMapping;
+    private final ReviewMapping reviewMapping;
+
+    //--------------------------------ФИЧА------------------------------------------
+
+    @PatchMapping("/reviews/{reviewId}")
+    public void patchReview(@PathVariable long reviewId,
+                             @RequestParam(name = "decision", defaultValue = "false") Boolean decision) {
+        log.info("==ЭНДПОИНТ PATCH admin/reviews/{reviewId}?decision=");
+        log.info("Патч админом отзыва с id: {}", reviewId);
+
+        reviewMapping.patchReviewByAdmin(reviewId, decision);
+    }
+
+    @DeleteMapping("/reviews/{reviewId}")
+    public void patchReview(@PathVariable long reviewId) {
+        log.info("==ЭНДПОИНТ DELETE admin/reviews/{reviewId}");
+        log.info("Удаление админом отзыва с id: {}", reviewId);
+
+        reviewMapping.deleteReviewByAdmin(reviewId);
+    }
+    //------------------------------------------------------------------------------
 
     @GetMapping("/users")
     public List<UserDto> getUsers(@RequestParam(name = "ids")
@@ -37,7 +57,7 @@ public class AdminController {
     }
 
     @PostMapping("/users")
-    public UserDto addUser(@RequestBody NewUserRequest newUserRequest) {
+    public UserDto addUser(@Valid @RequestBody NewUserRequest newUserRequest) {
         log.info("==ЭНДПОИНТ POST admin/users");
         log.info("Админ добавляет пользователя: {}", newUserRequest);
         return userMapping.addUserAdmin(newUserRequest);
@@ -51,20 +71,21 @@ public class AdminController {
     }
 
     @GetMapping("/events")
-    public List<EventFullDto> getEvents(@RequestParam(name = "users")
+    public List<EventFullDto> getEvents(@RequestParam(name = "users", required = false)
                                         List<Long> users,
-                                        @RequestParam(name = "states")
+                                        @RequestParam(name = "states", required = false)
                                         List<String> states,
-                                        @RequestParam(name = "categories")
+                                        @RequestParam(name = "categories", required = false)
                                         List<Long> categories,
-                                        @RequestParam(name = "rangeStart")
+                                        @RequestParam(name = "rangeStart", defaultValue = "2022-01-06 12:12:12")
                                         String rangeStart,
-                                        @RequestParam(name = "rangeEnd")
+                                        @RequestParam(name = "rangeEnd", defaultValue = "2097-01-06 12:12:12")
                                         String rangeEnd,
                                         @RequestParam(name = "from", defaultValue = "0")
                                         Integer from,
                                         @RequestParam(name = "size", defaultValue = "10")
                                         Integer size) {
+
         log.info("==ЭНДПОИНТ GET admin/events");
         log.info("Админ получает события по параметрам: users = {}, states = {}, categories = {}, между {} и {} , " +
                 "и пагинацией от {} по {}", users, states, categories, rangeStart, rangeEnd, from, size);
@@ -95,14 +116,14 @@ public class AdminController {
     }
 
     @PatchMapping("/categories")
-    public CategoryDto patchCategory(@RequestBody CategoryDto categoryDto) {
+    public CategoryDto patchCategory(@Valid @RequestBody CategoryDto categoryDto) {
         log.info("==ЭНДПОИНТ PATCH admin/categories");
         log.info("Админ изменяет категорию {}", categoryDto);
         return categoryMapping.patchCategoryAdmin(categoryDto);
     }
 
     @PostMapping("/categories")
-    public CategoryDto postCategory(@RequestBody NewCategoryDto newCategoryDto) {
+    public CategoryDto postCategory(@Valid @RequestBody NewCategoryDto newCategoryDto) {
         log.info("==ЭНДПОИНТ POST admin/categories");
         log.info("Админ постит категорию {}", newCategoryDto);
         return categoryMapping.postCategoryAdmin(newCategoryDto);
@@ -116,7 +137,7 @@ public class AdminController {
     }
 
     @PostMapping("/compilations")
-    public CompilationDto postCompilation(@RequestBody NewCompilationDto newCompilationDto) {
+    public CompilationDto postCompilation(@Valid @RequestBody NewCompilationDto newCompilationDto) {
         log.info("==ЭНДПОИНТ POST admin/compilations");
         log.info("Админ постит подборку {}", newCompilationDto);
         return compilationMapping.postCompilationAdmin(newCompilationDto);

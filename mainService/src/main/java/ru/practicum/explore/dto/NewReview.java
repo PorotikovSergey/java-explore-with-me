@@ -2,6 +2,8 @@ package ru.practicum.explore.dto;
 
 import lombok.*;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -10,12 +12,13 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class NewUserRequest {
+public class NewReview {
     @NotNull
     @NotBlank
-    private String email;
+    private String text;
 
     @NotNull
-    @NotBlank
-    private String name;
+    @Min(1)
+    @Max(10)
+    private long eventRating;
 }
